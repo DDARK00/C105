@@ -28,4 +28,8 @@ public class Planner {
         this.content = content;
     }
 
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
 }

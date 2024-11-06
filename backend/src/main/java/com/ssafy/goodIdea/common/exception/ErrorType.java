@@ -40,6 +40,7 @@ public enum ErrorType {
     COMMENT_NOT_FOUND(404, HttpStatus.BAD_REQUEST, "존재하지 않는 댓글입니다."),
     IDEA_NOT_EMPTY(404, HttpStatus.BAD_REQUEST, "아이디어가 비어있습니다."),
     NO_PERMISSION(404, HttpStatus.BAD_REQUEST, "권한이 없습니다."),
+    PLANNER_NOT_FOUND(404, HttpStatus.BAD_REQUEST, "플래너를 찾을 수 없습니다."),
     ;
     
     private final int code;
