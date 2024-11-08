@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@hocuspocus/server": "^2.13.7",
+    "@hocuspocus/transformer": "^2.13.7"
+  }
+}
