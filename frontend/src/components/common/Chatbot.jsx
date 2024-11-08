@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import useChatbotStore from "../../store/useChatbotStore";
 import { sendMessageToGPT } from "../../api/gptApi";
-import "./Chatbot.css";
 
 const Chatbot = () => {
   const { messages, addUserMessage, addGPTMessage, clearMessages } =
@@ -17,7 +16,6 @@ const Chatbot = () => {
   const handleSend = async () => {
     if (input.trim() === "") return;
 
-    // Add user message
     addUserMessage(input);
     setInput("");
     setIsLoading(true);
@@ -41,50 +39,73 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="chatbot-container">
+    <div className="fixed bottom-6 right-6 z-50">
       {isOpen && (
-        <div className="chatbot-window">
-          <div className="chatbot-header">
-            <span>챗봇</span>
-            <button className="chatbot-close-button" onClick={toggleChatbot}>
+        <div className="w-96 h-[500px] bg-white border border-gray-300 rounded-lg flex flex-col shadow-2xl">
+          {/* Header */}
+          <div className="flex justify-between items-center bg-indigo-600 text-white p-4 rounded-t-lg">
+            <span className="font-semibold text-lg">
+              무엇이든 물어보삼. 나 GPT-4임
+            </span>
+            <button onClick={toggleChatbot} className="text-2xl font-bold">
               ×
             </button>
           </div>
-          <div className="chatbot-messages">
+
+          {/* Messages */}
+          <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`chatbot-message ${
-                  msg.role === "user" ? "user-message" : "gpt-message"
+                className={`mb-3 p-3 rounded-lg max-w-full break-words ${
+                  msg.role === "user"
+                    ? "bg-indigo-500 text-white self-end"
+                    : "bg-gray-200 text-gray-800"
                 }`}
               >
                 {msg.content}
               </div>
             ))}
             {isLoading && (
-              <div className="chatbot-message gpt-message">
+              <div className="bg-gray-200 text-gray-800 p-3 rounded-lg">
                 응답을 작성 중입니다...
               </div>
             )}
           </div>
-          <div className="chatbot-input-area">
+
+          {/* Input Area */}
+          <div className="flex border-t border-gray-300 p-3 bg-gray-50 items-center space-x-2">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="메시지를 입력하세요..."
+              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none h-10"
             />
-            <button onClick={handleSend}>전송</button>
-          </div>
-          <div className="chatbot-footer">
-            <button onClick={clearMessages}>대화 초기화</button>
+            <button
+              onClick={handleSend}
+              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none h-10 text-xs"
+            >
+              전송
+            </button>
+            <button
+              onClick={clearMessages}
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none h-10 text-xs"
+            >
+              초기화
+            </button>
           </div>
         </div>
       )}
-      <button className="chatbot-toggle-button" onClick={toggleChatbot}>
-        💬
-      </button>
+      {!isOpen && (
+        <button
+          onClick={toggleChatbot}
+          className="bg-indigo-600 text-sm text-white rounded-full w-40 h-12 flex items-center justify-center hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 fixed bottom-6 right-6 shadow-md"
+        >
+          GPT에게 물어보기
+        </button>
+      )}
     </div>
   );
 };

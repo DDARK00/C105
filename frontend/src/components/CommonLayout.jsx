@@ -23,7 +23,7 @@ function CommonLayout() {
         {/* 자식 컴포넌트를 렌더링 */}
         {location.pathname.includes("project") && <Header />}
         <Outlet />
-        <Chatbot />
+        {location.pathname.split("/")[1] && <Chatbot />}
       </main>
     </div>
   );
