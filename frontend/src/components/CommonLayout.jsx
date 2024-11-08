@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet, useLocation, useParams } from "react-router-dom";
 import Nav from "./common/Nav";
 import Header from "./common/Header";
+import Chatbot from "./common/Chatbot";
 
 function CommonLayout() {
   const [isproject, setisproject] = useState(false);
@@ -22,6 +23,7 @@ function CommonLayout() {
         {/* 자식 컴포넌트를 렌더링 */}
         {location.pathname.includes("project") && <Header />}
         <Outlet />
+        <Chatbot />
       </main>
     </div>
   );

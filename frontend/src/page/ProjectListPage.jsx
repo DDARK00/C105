@@ -6,7 +6,7 @@ import ProjectListItem from "../components/projectlist/ProjectLIstItem";
 import Select from "../components/projectlist/Select";
 import PortalModal from "../components/common/PortalModal";
 import CreateProject from "../components/projectlist/CreateProject";
-import { useProjectStore } from "../store/useProjectStore";
+import { useProjectListStore } from "../store/useProjectListStore";
 import { fetchGitlabProjectList, fetchProjectList } from "../api/axios";
 import ProjectListItemSkeleton from "../components/skeleton/ProjectListItemSkeleton";
 
@@ -15,7 +15,7 @@ function ProjectListPage() {
   const [filter1, setFilter1] = useState({ value: "ALL", showOptions: false });
   const [filter2, setFilter2] = useState({ value: "ALL", showOptions: false });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { projects } = useProjectStore();
+  const { projects } = useProjectListStore();
 
   useEffect(() => {
     const init = async () => {
@@ -26,7 +26,7 @@ function ProjectListPage() {
         // console.log(projectList, "gitlabProjectlist");
         // console.log(gitlabProjectList, "gitlabProjectlist");
         if (gitlabProjectList && projectList) {
-          useProjectStore.setState({
+          useProjectListStore.setState({
             projects: [...projectList],
           });
         }

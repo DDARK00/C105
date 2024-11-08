@@ -1,9 +1,9 @@
 import { useFormStore } from "../../store/useAPIStore";
-import { useProjectStore } from "../../store/useProjectStore";
+import { useProjectListStore } from "../../store/useProjectListStore";
 
 function TableRow({ spec, onUriClick, columnWidths }) {
   const { updateSpec } = useFormStore();
-  const { methods, importanceLevels } = useProjectStore();
+  const { methods, importanceLevels } = useProjectListStore();
 
   const handleChange = (e) => {
     const { name, value } = e.target;

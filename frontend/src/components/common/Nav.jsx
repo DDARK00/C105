@@ -1,11 +1,36 @@
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import useProjectStore from "../../store/useProjectStore";
+import authAxiosInstance from "../../api/http-commons/authAxios";
 
 function Nav() {
   const location = useLocation();
   const navigate = useNavigate();
   const param = useParams();
+  const [hasMainIdea, setHasMainIdea] = useState(false);
 
+  // ProjectStore에서 필요한 정보 가져오기
+  const { setProjectInfo, mainIdea } = useProjectStore();
+
+  // 프로젝트 정보 가져오기
+  useEffect(() => {
+    const fetchProjectInfo = async () => {
+      try {
+        const response = await authAxiosInstance.get(
+          `/api/v1/project/${param?.id}`
+        );
+        setProjectInfo(response.data.data);
+        setHasMainIdea(!!response.data.data.mainIdea?.id);
+      } catch (error) {
+        console.error("프로젝트 정보 조회 실패:", error);
+        setHasMainIdea(false);
+      }
+    };
+
+    if (param?.id) {
+      fetchProjectInfo();
+    }
+  }, [param?.id, setProjectInfo]);
   // useEffect(() => {
   //   console.log(param?.id);
   //   if (param?.id) {
@@ -177,106 +202,108 @@ function Nav() {
             </li>
 
             {/* 산출물 메뉴 */}
-            <li>
-              <div
-                className={` text-xl flex flex-row justify-between items-center cursor-pointer border border-[#858585] shadow-md p-2 select-none rounded-lg ${
-                  isResultOpen ? "font-bold" : ""
-                }`}
-                onClick={toggleResult}
-              >
-                채택 아이디어
-                <svg
-                  width="29"
-                  height="28"
-                  viewBox="0 0 29 28"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`ml-2 transition-transform duration-500 ${
-                    isResultOpen ? "rotate-[540deg]" : ""
+            {hasMainIdea && (
+              <li>
+                <div
+                  className={` text-xl flex flex-row justify-between items-center cursor-pointer border border-[#858585] shadow-md p-2 select-none rounded-lg ${
+                    isResultOpen ? "font-bold" : ""
+                  }`}
+                  onClick={toggleResult}
+                >
+                  채택 아이디어
+                  <svg
+                    width="29"
+                    height="28"
+                    viewBox="0 0 29 28"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`ml-2 transition-transform duration-500 ${
+                      isResultOpen ? "rotate-[540deg]" : ""
+                    }`}
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M16.3251 18.3025C15.9736 18.6107 15.497 18.7838 15.0001 18.7838C14.5032 18.7838 14.0267 18.6107 13.6751 18.3025L6.60262 12.096C6.25104 11.7872 6.05359 11.3685 6.05371 10.9319C6.05383 10.4953 6.2515 10.0766 6.60324 9.768C6.95499 9.45936 7.43199 9.28603 7.92931 9.28613C8.42664 9.28624 8.90354 9.45977 9.25512 9.76855L15.0001 14.8119L20.7451 9.76855C21.0986 9.46857 21.5721 9.30246 22.0638 9.30601C22.5554 9.30955 23.0257 9.48247 23.3736 9.7875C23.7214 10.0925 23.9188 10.5053 23.9233 10.9369C23.9278 11.3684 23.739 11.7843 23.3976 12.0949L16.3264 18.3036L16.3251 18.3025Z"
+                      fill="white"
+                    />
+                  </svg>
+                </div>
+
+                {/* 산출물 드롭다운 */}
+                <ul
+                  className={`transition-all duration-500 overflow-hidden ${
+                    isResultOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
                   }`}
                 >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M16.3251 18.3025C15.9736 18.6107 15.497 18.7838 15.0001 18.7838C14.5032 18.7838 14.0267 18.6107 13.6751 18.3025L6.60262 12.096C6.25104 11.7872 6.05359 11.3685 6.05371 10.9319C6.05383 10.4953 6.2515 10.0766 6.60324 9.768C6.95499 9.45936 7.43199 9.28603 7.92931 9.28613C8.42664 9.28624 8.90354 9.45977 9.25512 9.76855L15.0001 14.8119L20.7451 9.76855C21.0986 9.46857 21.5721 9.30246 22.0638 9.30601C22.5554 9.30955 23.0257 9.48247 23.3736 9.7875C23.7214 10.0925 23.9188 10.5053 23.9233 10.9369C23.9278 11.3684 23.739 11.7843 23.3976 12.0949L16.3264 18.3036L16.3251 18.3025Z"
-                    fill="white"
-                  />
-                </svg>
-              </div>
-
-              {/* 산출물 드롭다운 */}
-              <ul
-                className={`transition-all duration-500 overflow-hidden ${
-                  isResultOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
-                }`}
-              >
-                <li className="mt-5">
-                  <Link
-                    to={`/project/${param?.id}/idea/:ideaid/proposal`}
-                    className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                      activeItem === "기획서"
-                        ? "bg-[#666666] cursor-default"
-                        : "cursor-pointer"
-                    }`}
-                    onClick={() => handleItemClick("기획서")}
-                  >
-                    기획서
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/project/${param?.id}/idea/:ideaid/requirementsspecification`}
-                    className={`block w-full h-fullx text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                      activeItem === "요구사항 명세서"
-                        ? "bg-[#666666] cursor-default"
-                        : "cursor-pointer"
-                    }`}
-                    onClick={() => handleItemClick("요구사항 명세서")}
-                  >
-                    요구사항 명세서
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/project/${param?.id}/idea/:ideaid/apispecification`}
-                    className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                      activeItem === "API 명세서"
-                        ? "bg-[#666666] cursor-default"
-                        : "cursor-pointer"
-                    }`}
-                    onClick={() => handleItemClick("API 명세서")}
-                  >
-                    API 명세서
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/project/${param?.id}/idea/:ideaid/erd`}
-                    className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                      activeItem === "ERD"
-                        ? "bg-[#666666] cursor-default"
-                        : "cursor-pointer"
-                    }`}
-                    onClick={() => handleItemClick("ERD")}
-                  >
-                    ERD
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/project/${param?.id}/idea/:ideaid/flowchart`}
-                    className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                      activeItem === "FLOWCHART"
-                        ? "bg-[#666666] cursor-default"
-                        : "cursor-pointer"
-                    }`}
-                    onClick={() => handleItemClick("FLOWCHART")}
-                  >
-                    FLOWCHART
-                  </Link>
-                </li>
-              </ul>
-            </li>
+                  <li className="mt-5">
+                    <Link
+                      to={`/project/${param?.id}/idea/${mainIdea?.id}/proposal`}
+                      className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
+                        activeItem === "기획서"
+                          ? "bg-[#666666] cursor-default"
+                          : "cursor-pointer"
+                      }`}
+                      onClick={() => handleItemClick("기획서")}
+                    >
+                      기획서
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={`/project/${param?.id}/idea/${mainIdea?.id}/requirementsspecification`}
+                      className={`block w-full h-fullx text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
+                        activeItem === "요구사항 명세서"
+                          ? "bg-[#666666] cursor-default"
+                          : "cursor-pointer"
+                      }`}
+                      onClick={() => handleItemClick("요구사항 명세서")}
+                    >
+                      요구사항 명세서
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={`/project/${param?.id}/idea/${mainIdea?.id}/apispecification`}
+                      className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
+                        activeItem === "API 명세서"
+                          ? "bg-[#666666] cursor-default"
+                          : "cursor-pointer"
+                      }`}
+                      onClick={() => handleItemClick("API 명세서")}
+                    >
+                      API 명세서
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={`/project/${param?.id}/idea/${mainIdea?.id}/erd`}
+                      className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
+                        activeItem === "ERD"
+                          ? "bg-[#666666] cursor-default"
+                          : "cursor-pointer"
+                      }`}
+                      onClick={() => handleItemClick("ERD")}
+                    >
+                      ERD
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={`/project/${param?.id}/idea/${mainIdea?.id}/flowchart`}
+                      className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
+                        activeItem === "FLOWCHART"
+                          ? "bg-[#666666] cursor-default"
+                          : "cursor-pointer"
+                      }`}
+                      onClick={() => handleItemClick("FLOWCHART")}
+                    >
+                      FLOWCHART
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+            )}
           </ul>
         </nav>
       </div>

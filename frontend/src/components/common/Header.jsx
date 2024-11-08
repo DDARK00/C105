@@ -3,13 +3,13 @@ import DefaultButton from "./DefaultButton";
 import { useUserStore } from "../../store/useUserStore";
 import { clearAuthAxiosInstance } from "../../api/http-commons/authAxios";
 import { useEffect, useState } from "react";
-import { useProjectStore } from "../../store/useProjectStore";
+import { useProjectListStore } from "../../store/useProjectListStore";
 
 function Header() {
   const navigate = useNavigate();
   const param = useParams();
   const [content, setContent] = useState(null);
-  const { projects } = useProjectStore();
+  const { projects } = useProjectListStore();
 
   useEffect(() => {
     if (param?.id) {

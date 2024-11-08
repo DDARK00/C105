@@ -162,7 +162,7 @@ function MindMapPage() {
         <div className="flex-1 m-auto w-full my-2 max-w-5xl relative">
           <DefaultButton
             text="AI Support"
-            className="absolute right-0 animate-bounce hover:animate-none "
+            className="absolute right-0 animate-pulse hover:animate-none "
             onClick={() => setIsPlanOpen(true)}
           />
           {/* 추천키워드 */}

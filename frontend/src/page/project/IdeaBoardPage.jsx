@@ -115,8 +115,8 @@ function IdeaBoardPage() {
 
     // 마우스를 움직일 때 호출되는 함수
     const handleMouseMove = (moveEvent) => {
-      const dx = (moveEvent.clientX - startX) / scale; // X축 이동 거리, 확대/축소 비율 반영
-      const dy = (moveEvent.clientY - startY) / scale; // Y축 이동 거리, 확대/축소 비율 반영
+      const dx = ((moveEvent.clientX - startX) / scale) * 2; // X축 이동 거리, 확대/축소 비율 반영
+      const dy = ((moveEvent.clientY - startY) / scale) * 2; // Y축 이동 거리, 확대/축소 비율 반영
 
       // 부모 요소의 크기를 참조하여 화면 경계 설정
       const { offsetWidth: parentWidth, offsetHeight: parentHeight } =
@@ -157,7 +157,7 @@ function IdeaBoardPage() {
     if (e.ctrlKey) {
       // ctrl 키와 함께 휠을 움직일 때만 확대/축소 적용
       e.preventDefault(); // 기본 확대/축소 동작 막기
-      const zoomIntensity = 0.1; // 확대/축소 강도
+      const zoomIntensity = 0.2; // 확대/축소 강도
       let newScale = scale - e.deltaY * zoomIntensity * 0.01; // 스케일 조정
       newScale = Math.min(Math.max(newScale, 1), 3); // 스케일을 최소 1배, 최대 3배로 제한
 
@@ -179,7 +179,7 @@ function IdeaBoardPage() {
 
   // 확대/축소 버튼 클릭 핸들러
   const handleZoom = (zoomIn) => {
-    let newScale = zoomIn ? scale + 0.1 : scale - 0.1;
+    let newScale = zoomIn ? scale + 0.2 : scale - 0.2;
     newScale = Math.min(Math.max(newScale, 1), 3);
     updateTranslate(newScale);
   };
@@ -253,7 +253,7 @@ function IdeaBoardPage() {
         >
           +
         </button>
-        <div className="relative w-1 h-24 bg-gray-300 rounded overflow-hidden cursor-pointer">
+        <div className="relative w-1 h-24 bg-gray-300 rounded overflow-hidden">
           <div
             className="absolute bottom-0 w-full bg-blue-500 transition-all duration-200 ease-in-out"
             style={{

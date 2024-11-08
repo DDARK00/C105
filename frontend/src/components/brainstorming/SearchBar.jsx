@@ -19,10 +19,8 @@ function SearchBar({
       {/* 검색창 */}
       <div className="flex justify-center my-8">
         <div
-          className={`w-full max-w-2xl  transition-all rounded-full p-1 ${
-            isFocused
-              ? "bg-gradient-to-r from-red-500 via-blue-500 to-pink-500 animate-rotation"
-              : "bg-gray-700"
+          className={`w-full max-w-2xl transition-all rounded-full p-1 ${
+            isFocused ? "animate-rotation" : "bg-gray-700"
           }`}
         >
           <input
@@ -72,6 +70,7 @@ function SearchBar({
             fill="currentColor"
             height="2em"
             width="2em"
+            className="from-red-500 via-blue-500 to-pink-500"
           >
             <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z" />
             <path d="M464 336a48 48 0 1096 0 48 48 0 10-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z" />
@@ -79,19 +78,27 @@ function SearchBar({
         </div>
       </div>
       <style>
-        {`@keyframes rotation {
-    0% {
-      background-position-x: 0;
-    }
-    100% {
-      background-position-x: 1000px;
-    }
-  }
-  .animate-rotation {
-    animation: rotation 2s linear infinite;
-  }
-
-`}
+        {`
+          .animate-rotation {
+            background: linear-gradient(
+              to right,
+              #ef4444,
+              #3b82f6,
+              #ec4899
+            );
+            background-size: 300% 100%;
+            animation: gradient 1s linear infinite;
+          }
+          
+          @keyframes gradient {
+            0% {
+              background-position: 0% 0%;
+            }
+            100% {
+              background-position: 150% 0%;
+            }
+          }
+        `}
       </style>
     </>
   );
