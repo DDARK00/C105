@@ -1,88 +1,330 @@
+import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import DefaultButton from "../components/common/DefaultButton";
 import Typewriter from "../components/main/Typewriter";
+import MindType from "../components/main/Mindmap";
+import ContactType from "../components/main/Contact";
+import AIType from "../components/main/AI";
+import PlanType from "../components/main/Plan";
+import StartType from "../components/main/Start";
 
 function MainPage() {
+  const [activeSection, setActiveSection] = useState("section1");
   const REDIRECT_URI = "https://oracle1.mypjt.xyz/api/v1/auth/callback";
 
   const handleGitLabLogin = () => {
     window.location.href = `https://lab.ssafy.com/oauth/authorize?client_id=423f3efe4f264ff88416dc5ad049498edfaeaf5a68dcdb835ee4ce5b0bf48f32&redirect_uri=${REDIRECT_URI}&response_type=code&scope=read_user%20api&state=random_state_string`;
   };
 
+  const sections = [
+    {
+      id: "section1",
+      counter: "01",
+      title: "싸피인을 위한 올인원 기획 플랫폼 서비스",
+      body: (
+        <>
+          이곳에서 <span className="text-blue-600 font-extrabold">싸피인</span>
+          을 위한 최적의{" "}
+          <span className="text-yellow-300 font-extrabold">기획</span> 경험을
+          만나보세요.
+        </>
+      ),
+      bgColor: "bg-gray-900",
+    },
+    {
+      id: "section2",
+      counter: "02",
+      title: "contact",
+      body: "궁금한 점이 있거나 문의하고 싶다면 언제든지 연락해주세요. 여러분의 의견을 듣고 싶습니다.",
+      bgColor: "bg-red-500",
+    },
+    {
+      id: "section3",
+      counter: "03",
+      title: "마인드맵 및 기획 도구",
+      body: (
+        <>
+          <span className="text-red-300 font-extrabold">마인드맵</span>과 이전
+          기수의
+          <span className="text-yellow-300 font-extrabold">레퍼런스</span>를
+          통해 창의적인 아이디어를 쉽게 도출할 수 있습니다. 다양한 기획 도구를
+          경험해보세요.
+        </>
+      ),
+      bgColor: "bg-blue-500",
+    },
+    {
+      id: "section4",
+      counter: "04",
+      title: "AI 기반 기획서 작성",
+      body: (
+        <>
+          <span className="text-yellow-300 font-extrabold">AI</span>가 자동으로
+          기획서를 작성해줍니다. 아이디어가 떠오르지 않을 때{" "}
+          <span className="text-yellow-300 font-extrabold">AI</span>의 도움을
+          받아보세요.
+          <span className="text-red-500 font-extrabold">빠르고</span>{" "}
+          <span className="text-blue-500 font-extrabold">간편</span>하게 기획을
+          시작할 수 있습니다
+        </>
+      ),
+      bgColor: "bg-orange-500",
+    },
+    {
+      id: "section5",
+      counter: "05",
+      title: "기획 산출물 작성 및 공동 편집",
+      body: (
+        <>
+          <span className="text-amber-400 font-extrabold">요구사항 명세서</span>
+          , <span className="text-sky-200 font-extrabold">API 명세서</span>,
+          <span className="text-blue-600 font-extrabold">FLOW CHART</span>,{" "}
+          <span className="text-amber-800 font-extrabold">ERD</span>등 다양한
+          산출물을 작성할 수 있습니다.
+          <span className="text-red-600 font-extrabold">
+            CRDT
+          </span> 기반으로{" "}
+          <span className="text-emerald-800 font-extrabold">공동 편집</span>과
+          <span className="text-emerald-800 font-extrabold">커서 공유</span>를
+          통해 팀원들과{" "}
+          <span className="text-red-600 font-extrabold">실시간 작업</span>을 할
+          수 있습니다.
+        </>
+      ),
+      bgColor: "bg-purple-500",
+    },
+    {
+      id: "section6",
+      counter: "06",
+      title: "GitLab 연동으로 간편한 시작",
+      body: (
+        <>
+          <span className="text-blue-600 font-extrabold">SSAFY</span>{" "}
+          <span className="text-orange-600 font-extrabold">GitLab</span>과
+          연동하여 프로젝트 정보를 손쉽게 가져오세요.{" "}
+          <span className="text-orange-600 font-extrabold">GitLab</span>
+          계정으로 로그인하고 플랫폼 기능을 사용해서 프로젝트 기획을
+          시작해보세요.
+        </>
+      ),
+      bgColor: "bg-emerald-500",
+    },
+  ];
+
+  const fixedPositions = [
+    { top: "5%", left: "10%" },
+    { top: "5%", left: "50%" },
+    { top: "5%", left: "70%" },
+    { top: "20%", left: "15%" },
+    { top: "20%", left: "35%" },
+    { top: "20%", left: "55%" },
+    { top: "20%", left: "75%" },
+    { top: "20%", left: "95%" },
+    { top: "35%", left: "10%" },
+    { top: "35%", left: "70%" },
+    { top: "65%", left: "10%" },
+    { top: "65%", left: "30%" },
+    { top: "65%", left: "50%" },
+    { top: "80%", left: "15%" },
+    { top: "80%", left: "55%" },
+    { top: "80%", left: "75%" },
+    { top: "10%", left: "5%" },
+    { top: "40%", left: "85%" },
+    { top: "80%", left: "85%" },
+    { top: "83%", left: "82%" },
+  ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+
+      for (const section of sections) {
+        const element = document.getElementById(section.id);
+        if (element) {
+          const { top } = element.getBoundingClientRect();
+          if (top <= windowHeight / 2 && top > -windowHeight / 2) {
+            setActiveSection(section.id);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [sections]);
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const PostitNote = ({ children }) => (
+    <div className="relative group">
+      {/* Tape effect */}
+      <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-14 h-4 bg-white/40 rounded-sm transform -rotate-2" />
+      <div className="relative transform transition-transform duration-300 ease-out hover:-rotate-1 hover:translate-y-1">
+        {/* Main Post-it Note */}
+        <div
+          className="bg-yellow-300 p-8 rounded-sm relative z-50
+             before:absolute before:inset-0 before:bg-gradient-to-b 
+             before:from-white/5 before:to-transparent before:rounded-sm"
+        >
+          {/* Subtle texture overlay */}
+          <div
+            className="absolute inset-0 opacity-[0.02]"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+              mixBlendMode: "multiply",
+            }}
+          />
+
+          {/* Content container */}
+          <div className="relative z-70">{children}</div>
+        </div>
+
+        {/* Enhanced shadow layers */}
+        <div className="absolute inset-0 bg-black/20 rounded-sm blur-sm -z-10 transform translate-y-2 translate-x-2" />
+        <div className="absolute inset-0 bg-black/15 rounded-sm blur-md -z-20 transform translate-y-3 translate-x-3" />
+        <div className="absolute inset-0 bg-black/10 rounded-sm blur-lg -z-30 transform translate-y-4 translate-x-4" />
+      </div>
+    </div>
+  );
+
   return (
     <>
       <Helmet>
         <title>메인페이지</title>
       </Helmet>
-      <div className="h-full w-full flex flex-col ">
-        <div className="min-h-screen bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100">
-          {/* Header Section */}
-          <header className="py-10 flex flex-col items-center">
-            <h1 className="text-5xl font-bold text-gray-800">
-              환영합니다! SSAFY PROJECT!
-            </h1>
-            <p className="mt-4 text-lg text-gray-600">
-              기획을 쉽게 만들 수 있어요!
-            </p>
-            <Typewriter />
-          </header>
 
-          {/* Hero Section */}
-          <section className="mt-16 flex flex-col items-center">
-            <img
-              src="https://via.placeholder.com/400"
-              alt="Main Visual"
-              className="rounded-lg shadow-lg w-80 sm:w-[400px]"
-            />
-            <div className="mt-8 max-w-md text-center">
-              <h2 className="text-3xl font-semibold text-purple-700">
-                혁신적인 솔루션을 제공하다
-              </h2>
-              <p className="mt-4 text-gray-500">
-                이곳은 여러분의 아이디어를 더욱 빛나게 만들 메인 페이지입니다.
-                다양한 기능을 확인해 보세요.
-              </p>
+      <div className="min-h-screen font-serif relative">
+        <nav className="fixed h-full p-8 flex flex-col justify-end z-50">
+          <ul className="mb-24 ml-8">
+            {sections.map((section) => (
+              <li
+                key={section.id}
+                className={`relative mb-4 transition-all duration-300 ${
+                  activeSection === section.id ? "pl-4 pointer-events-none" : ""
+                }`}
+              >
+                <div
+                  className={`absolute left-[-30px] top-[15px] w-5 h-[250px] border-l-2 border-t-2 border-white
+                    ${
+                      activeSection === section.id
+                        ? "w-8 h-[400px] top-[35px]"
+                        : ""
+                    }`}
+                />
+                <button
+                  onClick={() => scrollToSection(section.id)}
+                  className="text-white transition-all duration-150 hover:pl-4 block w-full text-left"
+                >
+                  <span
+                    className={`transition-all duration-150
+                    ${activeSection === section.id ? "text-5xl" : "text-xl"}`}
+                  >
+                    {section.counter}
+                  </span>
 
-              <DefaultButton
-                onClick={handleGitLabLogin}
-                theme="bright"
-                className="hover:bg-blue-700 py-2 px-4 rounded m-0 text-sm"
-                text="GitLab 로그인"
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${
+                      activeSection === section.id
+                        ? "max-h-60 mt-2 opacity-100"
+                        : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <h3 className="text-3xl font-light w-[300px] mb-2">
+                      {section.title}
+                    </h3>
+                    <p className="text-md font-thin w-[300px]">
+                      {section.body}
+                    </p>
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {sections.map((section) => (
+          <section
+            key={section.id}
+            id={section.id}
+            className={`h-screen text-4xl font-thin ${section.bgColor} text-white
+              flex flex-col justify-center items-center gap-8 relative`}
+          >
+            {/* 배경 포스트잇 추가 */}
+            {fixedPositions.map((position, index) => (
+              <div
+                key={index}
+                className="absolute rounded-lg transform shadow-lg z-30"
+                style={{
+                  width: "115px",
+                  height: "115px",
+                  top: position.top,
+                  left: position.left,
+                  transform: `rotate(${Math.random() * 20 - 10}deg)`,
+                  opacity: 0.7,
+                  backgroundColor: [
+                    "#ffd54f",
+                    "#ff8a65",
+                    "#a5d6a7",
+                    "#90caf9",
+                    "#f48fb1",
+                  ][index % 5],
+                }}
               />
-              {/* <button className="mt-8 bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-700 transition duration-300 ease-in-out">
-                시작하기
-              </button> */}
-            </div>
-          </section>
+            ))}
 
-          {/* Features Section */}
-          <section className="mt-24 px-6 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-indigo-800 mb-2">
-                기능 1
-              </h3>
-              <p className="text-gray-600">브레인스토밍 지원</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-indigo-800 mb-2">
-                기능 2
-              </h3>
-              <p className="text-gray-600">산출물 생성</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-indigo-800 mb-2">
-                기능 3
-              </h3>
-              <p className="text-gray-600">협업 가능</p>
-            </div>
+            <PostitNote>
+              {section.id === "section1" && (
+                <>
+                  <Typewriter />
+                  <p className="text-2xl font-bold mt-8 text-gray-800">
+                    Welcome to Our Platform
+                  </p>
+                  <p className="text-xl text-gray-700">
+                    아래로 스크롤하거나 네비게이션을 사용해보세요.
+                  </p>
+                </>
+              )}
+              {section.id === "section2" && (
+                <>
+                  <ContactType />
+                </>
+              )}
+              {section.id === "section3" && (
+                <>
+                  <MindType />
+                </>
+              )}
+              {section.id === "section4" && (
+                <>
+                  <AIType />
+                </>
+              )}
+              {section.id === "section5" && (
+                <>
+                  <PlanType />
+                </>
+              )}
+              {section.id === "section6" && (
+                <>
+                  <StartType />
+                  <DefaultButton
+                    onClick={handleGitLabLogin}
+                    theme="bright"
+                    className="bg-slate-500 hover:bg-slate-300 mt-3"
+                    text="GitLab으로 로그인"
+                  />
+                </>
+              )}
+            </PostitNote>
           </section>
-
-          {/* Footer Section */}
-          <footer className="mt-24 bg-indigo-900 text-white py-12 text-center">
-            <p className="text-lg">즐겁게 사용해 주세요!!</p>
-            <p className="mt-4">© 푸터영역 </p>
-          </footer>
-        </div>
+        ))}
       </div>
     </>
   );

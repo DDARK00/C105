@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import * as Y from "yjs";
 import { HocuspocusProvider, TiptapCollabProvider } from "@hocuspocus/provider";
-
+import DefaultButton from "../../components/common/DefaultButton";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { deleteProject } from "../../api/axios";
 // Yjs 문서 생성 및 필드 초기화
 const doc = new Y.Doc();
 const fields = {
@@ -16,14 +18,19 @@ const fields = {
   teamInfo: doc.getText("teamInfo"),
 };
 
-// 초기값 설정
-Object.keys(fields).forEach((key) => {
-  if (fields[key].toString() === "") {
-    fields[key].insert(0, ""); // 필요시 초기값 설정
-  }
-});
+// // 초기값 설정
+// Object.keys(fields).forEach((key) => {
+//   console.log(fields[key].toString());
+//   if (fields[key].toString() === "") {
+//     fields[key].insert(0, ""); // 필요시 초기값 설정
+//   }
+// });
 
 function ProjectEssentialPage() {
+  const navigate = useNavigate();
+  const params = useParams();
+  const projectId = params?.id;
+
   const [fieldValues, setFieldValues] = useState({
     teamGitlabCode: "",
     teamName: "",
@@ -66,6 +73,7 @@ function ProjectEssentialPage() {
         setFieldValues(newFieldValues);
       }
     };
+    doc.on("load", updateFieldValues);
 
     // Yjs 문서 변경 시 updateFieldValues 실행
     doc.on("update", updateFieldValues);
@@ -106,7 +114,6 @@ function ProjectEssentialPage() {
                   { label: "프로젝트 명", name: "projectName" },
                   { label: "피그마 링크", name: "figmaLink" },
                   { label: "지라 링크", name: "jiraLink" },
-                  { label: "깃랩 링크", name: "gitlabLink" },
                 ].map((field) => (
                   <React.Fragment key={field.name}>
                     <div className="col-span-1 flex items-center">
@@ -136,6 +143,14 @@ function ProjectEssentialPage() {
                 </div>
               </div>
             </div>
+            <DefaultButton
+              onClick={() => {
+                deleteProject(projectId);
+                navigate("/");
+              }}
+              theme="bright"
+              text={"프로젝트 삭제"}
+            />
             <div className="bg-blue-900 text-white p-8"></div>
           </div>
         </div>

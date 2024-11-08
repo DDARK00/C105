@@ -8,8 +8,10 @@ import PortalModal from "../components/common/PortalModal";
 import CreateProject from "../components/projectlist/CreateProject";
 import { useProjectStore } from "../store/useProjectStore";
 import { fetchGitlabProjectList, fetchProjectList } from "../api/axios";
+import ProjectListItemSkeleton from "../components/skeleton/ProjectListItemSkeleton";
 
 function ProjectListPage() {
+  const [loading, setLoading] = useState(true);
   const [filter1, setFilter1] = useState({ value: "ALL", showOptions: false });
   const [filter2, setFilter2] = useState({ value: "ALL", showOptions: false });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -17,14 +19,19 @@ function ProjectListPage() {
 
   useEffect(() => {
     const init = async () => {
-      const gitlabProjectList = await fetchGitlabProjectList();
-      const projectList = await fetchProjectList();
-      console.log(projectList, "gitlabProjectlist");
-      console.log(gitlabProjectList, "gitlabProjectlist");
-      if (gitlabProjectList && projectList) {
-        useProjectStore.setState({
-          projects: [...projectList],
-        });
+      try {
+        setLoading(true);
+        const gitlabProjectList = await fetchGitlabProjectList();
+        const projectList = await fetchProjectList();
+        // console.log(projectList, "gitlabProjectlist");
+        // console.log(gitlabProjectList, "gitlabProjectlist");
+        if (gitlabProjectList && projectList) {
+          useProjectStore.setState({
+            projects: [...projectList],
+          });
+        }
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -85,12 +92,20 @@ function ProjectListPage() {
               />
             </div>
           </div>
+          {loading && (
+            <div className="mt-8 gap-y-2 grid px-2">
+              <ProjectListItemSkeleton />
+              <ProjectListItemSkeleton />
+              <ProjectListItemSkeleton />
+              <ProjectListItemSkeleton />
+            </div>
+          )}
 
           {/* 프로젝트가 없을 시 이거 */}
-          {projects.length === 0 && noProject}
+          {!loading && projects.length === 0 && noProject}
 
           {/* 프로젝트가 있으면 이거 */}
-          {projects.length !== 0 && (
+          {!loading && projects.length !== 0 && (
             <div className="mt-8 gap-y-2 grid px-2">
               {/* 프로젝트 목록 */}
               {projects.map((project) => (

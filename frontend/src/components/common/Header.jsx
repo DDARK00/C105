@@ -10,12 +10,11 @@ function Header({ content }) {
     // 프로젝트 리스트로 이동
     navigate("/projectlist");
   };
-  const { userInfo, isLogin, setLogout } = useUserStore();
+  const { userInfo, setLogout } = useUserStore();
 
   useEffect(() => {
-    console.log("isLogin", isLogin);
     console.log("userInfo", userInfo);
-  }, [isLogin, userInfo]);
+  }, [userInfo]);
 
   return (
     <div className="border-b-2 border-gray-300 flex items-center justify-between p-2">
@@ -46,26 +45,22 @@ function Header({ content }) {
         theme="bright"
         className="hover:bg-blue-700 py-2 px-4 rounded m-0 text-sm"
         text={
-          isLogin && userInfo ? (
-            <div className="flex items-center">
-              {userInfo.username}
-              {/* logout */}
-              <svg
-                fill="none"
-                viewBox="0 0 15 15"
-                height="1em"
-                width="1em"
-                className="ml-2"
-              >
-                <path
-                  stroke="currentColor"
-                  d="M13.5 7.5l-3 3.25m3-3.25l-3-3m3 3H4m4 6H1.5v-12H8"
-                />
-              </svg>
-            </div>
-          ) : (
-            "로그인"
-          )
+          <div className="flex items-center">
+            {userInfo.username}
+            {/* logout */}
+            <svg
+              fill="none"
+              viewBox="0 0 15 15"
+              height="1em"
+              width="1em"
+              className="ml-2"
+            >
+              <path
+                stroke="currentColor"
+                d="M13.5 7.5l-3 3.25m3-3.25l-3-3m3 3H4m4 6H1.5v-12H8"
+              />
+            </svg>
+          </div>
         }
       />
     </div>
