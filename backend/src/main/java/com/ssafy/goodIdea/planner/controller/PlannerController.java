@@ -21,7 +21,7 @@ public class PlannerController {
      * 플래너 조회
      */
     @GetMapping("/{ideaId}")
-    public ApiResponse<PlannerResponseDto> getPlanner(@PathVariable Long ideaId) {
+    public ApiResponse<PlannerResponseDto> getPlanner(@PathVariable(name = "ideaId") Long ideaId) {
         PlannerResponseDto planner = plannerService.getPlanner(ideaId);
         return ApiResponse.ok(planner);
     }
@@ -30,11 +30,11 @@ public class PlannerController {
      * 플래너 수정
      */
     @MessageMapping("/planner/{ideaId}")
-    public ApiResponse<PlannerResponseDto> updatePlanner(@DestinationVariable Long ideaId, @RequestBody DocumentOperationDto operation) {
+    public ApiResponse<PlannerResponseDto> updatePlanner(@DestinationVariable Long ideaId, DocumentOperationDto operation) {
         PlannerResponseDto updatedPlanner = plannerService.updateContent(operation);
-        /* 변경사항을 모든 구독자에게 브로드캐스트 
+        /* 변경사항을 모든 구독자에게 브로드캐스트
          * 웹소켓 메시징은 별도의 경로 체계를 가짐 /topic/planner/{ideaId}
-        */
+         */
         messagingTemplate.convertAndSend("/topic/planner/" + ideaId, updatedPlanner);
         return ApiResponse.ok(updatedPlanner);
     }
