@@ -68,10 +68,7 @@ function ProposalPage() {
 
   useEffect(() => {
     const client = new Client({
-      brokerURL: `wss://${import.meta.env.VITE_BASE_URL.replace(
-        "https://",
-        ""
-      ).replace("/", "")}/ws`,
+      brokerURL: `wss://oracle1.pjt.xyz/ws`,
       connectHeaders: {},
       debug: function (str) {
         console.log("STOMP:", str);

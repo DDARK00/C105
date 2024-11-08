@@ -44,7 +44,7 @@ function ProjectEssentialPage() {
 
   useEffect(() => {
     const provider = new HocuspocusProvider({
-      url: "ws://localhost:3001", // WebSocket URL
+      url: `wss://oracle1.pjt.xyz/ws`, // WebSocket URL
       document: doc,
       // appId: "7j9y6m10",
       name: "projectEssential_private", // 문서의 고유 식별자
