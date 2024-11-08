@@ -19,6 +19,8 @@ function DefaultButton({
   text,
   className = "",
   theme = "default",
+
+  children,
 }) {
   const styles = {
     default:
@@ -35,6 +37,7 @@ function DefaultButton({
       className={`${styles[theme]} ${className}`}
     >
       {text}
+      {children}
     </button>
   );
 }
@@ -43,8 +46,9 @@ DefaultButton.propTypes = {
   onClick: PropTypes.func.isRequired,
   type: PropTypes.string,
   text: PropTypes.node.isRequired,
+  children: PropTypes.node,
   className: PropTypes.string,
-  theme: PropTypes.oneOf(["default", "bright"]),
+  theme: PropTypes.oneOf(["default", "bright", "alert"]),
 };
 
 export default DefaultButton;

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import DefaultButton from "../common/DefaultButton";
 
 const CloudOverlay = () => {
   const [visible, setVisible] = useState(false);
@@ -12,9 +13,10 @@ const CloudOverlay = () => {
     <div className="flex items-center justify-center">
       <button
         onClick={handleClick}
-        className="px-4 py-2 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300"
+        className="px-4 py-2 bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 text-white font-bold rounded-full 
+         duration-300 ease-out border-blue-800 hover:animate-none focus:outline-none focus:ring-4 focus:ring-yellow-500 animate-bounce"
       >
-        ?
+        <span className="text-xs tracking-wider uppercase">Keyword추천</span>
       </button>
 
       {/* 구름 오버레이 */}
@@ -55,6 +57,9 @@ const CloudOverlay = () => {
           </div>
           {/* 우아한 텍스트 애니메이션 */}
           <div className="flex space-x-8 z-20">
+            <DefaultButton onClick={() => setVisible(false)} theme="default">
+              닫기
+            </DefaultButton>
             {textArray.map((text, index) => (
               <span
                 key={index}

@@ -2,14 +2,9 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import DefaultButton from "../components/common/DefaultButton";
-import Typewriter from "../components/main/Typewriter";
-import MindType from "../components/main/Mindmap";
-import ContactType from "../components/main/Contact";
-import AIType from "../components/main/AI";
-import PlanType from "../components/main/Plan";
-import StartType from "../components/main/Start";
 import { useUserStore } from "../store/useUserStore";
 import axios from "axios";
+import MainPhaseContent from "../components/main/MainPhaseContent";
 
 function MainPage() {
   const [activeSection, setActiveSection] = useState("section1");
@@ -248,12 +243,24 @@ function MainPage() {
     <>
       <Helmet>
         <title>메인페이지</title>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/fonts-archive/Maplestory/Maplestory.css"
+          type="text/css"
+        />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap"
+          rel="stylesheet"
+        ></link>
       </Helmet>
 
-      <div className="min-h-screen font-serif relative overflow-x-hidden">
+      <div className="min-h-screen font-serif relative overflow-x-hidden font-Maplestory">
         {/* 고정된 GitLab 로그인 버튼: 마지막 섹션에서 안 보이게 */}
         {!isLastSection && (
-          <div className="fixed top-8 right-8 z-50 flex flex-col items-center animate-tinUpIn">
+          <div className="fixed top-8 right-8 z-[51] flex flex-col items-center animate-tinUpIn">
             <DefaultButton
               onClick={handleGitLabLogin}
               theme="bright"
@@ -335,7 +342,7 @@ function MainPage() {
             {fixedPositions.map((position, index) => (
               <div
                 key={index}
-                className="absolute rounded-lg transform shadow-lg z-30"
+                className="absolute rounded-lg transform shadow-lg "
                 style={{
                   width: "115px",
                   height: "115px",
@@ -357,7 +364,12 @@ function MainPage() {
             <PostitNote>
               {section.id === "section1" && (
                 <>
-                  <Typewriter />
+                  <MainPhaseContent
+                    phrases={[
+                      "마인드맵 및 기획 도구",
+                      "GOOD IDEA에서 한 번에 !!",
+                    ]}
+                  />
                   <p className="text-2xl font-bold mt-8 text-gray-800">
                     Welcome to Our Platform
                   </p>
@@ -368,27 +380,49 @@ function MainPage() {
               )}
               {section.id === "section2" && (
                 <>
-                  <ContactType />
+                  <MainPhaseContent
+                    phrases={["CONTACT US !!", "연락주세요 !!"]}
+                  />
                 </>
               )}
               {section.id === "section3" && (
                 <>
-                  <MindType />
+                  <MainPhaseContent
+                    phrases={[
+                      "마인드맵 및 기획 도구",
+                      "GOOD IDEA에서 한 번에 !!",
+                    ]}
+                  />
                 </>
               )}
               {section.id === "section4" && (
                 <>
-                  <AIType />
+                  <MainPhaseContent
+                    phrases={[
+                      "AI기반 기획서 작성",
+                      "손쉽게 기획서 작성 가능 !!",
+                    ]}
+                  />
                 </>
               )}
               {section.id === "section5" && (
                 <>
-                  <PlanType />
+                  <MainPhaseContent
+                    phrases={[
+                      "기획 산출물 작성 및 공동 편집",
+                      "노션보다 쉽다 !!",
+                    ]}
+                  />
                 </>
               )}
               {section.id === "section6" && (
                 <div className="flex flex-col">
-                  <StartType />
+                  <MainPhaseContent
+                    phrases={[
+                      "GitLab 연동으로 간편한 시작 !",
+                      "회원가입? 필요 없다 !!",
+                    ]}
+                  />
                   <DefaultButton
                     onClick={handleGitLabLogin}
                     theme="bright"
@@ -412,6 +446,29 @@ function MainPage() {
           </section>
         ))}
       </div>
+
+      <style>
+        {`
+        *{
+        font-family: 'Maplestory', sans-serif;
+        }
+        
+        ::-webkit-scrollbar {
+            background-color: #000;
+            width: 12px;
+            // border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            // border-radius: 10px;
+            box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
+        }
+        
+        ::-webkit-scrollbar-thumb {  
+
+            background-image: -webkit-gradient(linear, left bottom, left top,color-stop(1, #ff5733), color-stop(.5, #a520ca), color-stop(0, #2681cc));
+            `}
+      </style>
     </>
   );
 }

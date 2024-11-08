@@ -87,10 +87,10 @@ function SearchBar({
       background-position-x: 1000px;
     }
   }
-
   .animate-rotation {
     animation: rotation 2s linear infinite;
   }
+
 `}
       </style>
     </>

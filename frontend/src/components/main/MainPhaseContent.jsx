@@ -4,14 +4,14 @@ import { CustomEase } from "gsap/CustomEase";
 import { TextPlugin } from "gsap/TextPlugin";
 gsap.registerPlugin(CustomEase, TextPlugin);
 
-const AIType = () => {
+function MainPhaseContent({ phrases }) {
   // Refs for elements
   const typewriterTextRef = useRef(null);
   const cursorRef = useRef(null);
 
   useEffect(() => {
     // Array of phrases
-    const phrases = ["AI기반 기획서 작성", "손쉽게 기획서 작성 가능 !!"];
+    // const phrases = ["마인드맵 및 기획 도구", "GOOD IDEA에서 한 번에 !!"];
 
     // Cursor animation
     const cursor = gsap.to(cursorRef.current, {
@@ -70,12 +70,12 @@ const AIType = () => {
       masterTl.kill();
       cursor.kill();
     };
-  }, []);
+  }, [phrases]);
 
   return (
-    <div className="flex flex-row items-start">
+    <div className="flex flex-row items-start ">
       <span
-        className="flex typewriter-text text-3xl font-bold text-black"
+        className="flex typewriter-text text-5xl  text-black"
         ref={typewriterTextRef}
         style={{
           display: "inline-block",
@@ -88,6 +88,6 @@ const AIType = () => {
       ></span>
     </div>
   );
-};
+}
 
-export default AIType;
+export default MainPhaseContent;

@@ -1,68 +1,151 @@
+import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import "./ProposalPage.module.css";
-
-import * as Y from "yjs";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Collaboration from "@tiptap/extension-collaboration";
-import { useEffect, useRef, useState } from "react";
-import { HocuspocusProvider, TiptapCollabProvider } from "@hocuspocus/provider";
+import { useEffect, useRef } from "react";
+import { Client } from "@stomp/stompjs";
+import Header from "../../components/common/Header";
+import authAxiosInstance from "../../api//http-commons/authAxios";
+import { debounce } from "lodash";
+import useIdeaStore from "../../store/useIdeaStore";
 
-const ydoc = new Y.Doc();
 function ProposalPage() {
-  // useRef를 사용하여 provider를 저장할 공간을 만듭니다.
-  const providerRef = useRef(null);
-  // useEditor를 최상위에서 호출하여 editor 인스턴스를 생성합니다.
+  const { ideaId: routeIdeaId } = useParams();
+  const { setIdeaId, ideaId, clearIdeaId } = useIdeaStore();
+
+  const stompClient = useRef(null); // WebSocket 클라이언트
+  const isLocalUpdate = useRef(false); // 로컬 업데이트 여부 플래그
+  const clientId = useRef(`client-${Math.random().toString(36).substr(2, 9)}`); // 고유 클라이언트 ID
+
+  // URL의 ideaId를 store에 저장
+  useEffect(() => {
+    if (routeIdeaId) {
+      setIdeaId(Number(routeIdeaId));
+    }
+    return () => {
+      clearIdeaId();
+    };
+  }, [routeIdeaId, setIdeaId, clearIdeaId]);
+
+  // debounce된 업데이트 함수 생성
+  const debouncedSendContent = useRef(
+    debounce((content) => {
+      // 500ms 동안 추가 업데이트가 없을 때만 실행
+      // 불필요한 서버 요청 방지
+      if (!stompClient.current?.connected || isLocalUpdate.current) return;
+
+      const operation = {
+        ideaId: ideaId,
+        data: JSON.stringify({
+          content,
+          timestamp: Date.now(),
+          clientId: clientId.current,
+        }),
+      };
+
+      // WebSocket으로 변경사항 전송
+      stompClient.current.publish({
+        destination: `/app/planner/${ideaId}`,
+        body: JSON.stringify(operation),
+      });
+    }, 500)
+  ).current;
+
   const editor = useEditor({
     autofocus: true,
     extensions: [
       StarterKit.configure({
-        history: false,
-      }),
-
-      Collaboration.configure({
-        document: ydoc,
+        history: true,
       }),
     ],
+    // 내용이 변경될 때마다 디바운스된 함수 호출
+    onUpdate: ({ editor }) => {
+      const content = editor.getHTML();
+      debouncedSendContent(content);
+    },
   });
 
   useEffect(() => {
-    // HocuspocusProvider 생성 및 연결
-    providerRef.current = new HocuspocusProvider({
-      url: "ws://192.168.100.129:3001", // WebSocket URL
-      name: "document-name2", // 동기화할 문서 식별자
-      document: ydoc, // Y.js 문서 객체 생성
-      token: "notoken", // JWT 토큰 (필요에 따라 설정)
+    const client = new Client({
+      brokerURL: `wss://${import.meta.env.VITE_BASE_URL.replace(
+        "https://",
+        ""
+      ).replace("/", "")}/ws`,
+      connectHeaders: {},
+      debug: function (str) {
+        console.log("STOMP:", str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+      onConnect: () => {
+        console.log("Connected to WebSocket");
+        // 다른 클라이언트의 변경사항 수신
+        client.subscribe(`/topic/planner/${ideaId}`, (message) => {
+          try {
+            // ... 메시지 파싱 및 처리
+            console.log("1. Raw message received:", message);
+            console.log("2. Message body:", message.body);
 
-      onSynced: () => {
-        console.log("Synced with server");
+            const data = JSON.parse(message.body);
+            console.log("3. Parsed data:", data);
+
+            // 자신이 보낸 메시지는 무시
+            if (data.data.clientId === clientId.current) return;
+
+            // data.data.content로 수정
+            if (editor && data.data?.content) {
+              isLocalUpdate.current = true;
+              const { from, to } = editor.state.selection;
+              editor.commands.setContent(data.data.content);
+              editor.commands.setTextSelection({ from, to });
+              isLocalUpdate.current = false;
+            }
+          } catch (error) {
+            console.error("Parsing error details:", {
+              error: error.message,
+              step: error.stack,
+              rawMessage: message.body,
+            });
+          }
+        });
+      },
+      onError: (error) => {
+        console.error("WebSocket Error:", error);
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from WebSocket");
       },
     });
 
-    // provider가 초기화되면 상태를 업데이트
-    providerRef.current.on("sync", () => {
-      // setIsProviderReady(true);
-    });
+    client.activate();
+    stompClient.current = client;
+    loadInitialContent();
 
-    // 컴포넌트 언마운트 시 provider 해제
     return () => {
-      providerRef.current?.destroy();
+      if (stompClient.current) {
+        stompClient.current.deactivate();
+      }
     };
-  }, [editor]);
+  }, []);
 
-  // useEffect(() => {
-  //   if (editor && isProviderReady && providerRef.current) {
-  //     // provider의 문서 객체를 editor에 설정합니다.
-  //     editor.setOptions({
-  //       extensions: [
-  //         StarterKit,
-  //         Collaboration.configure({
-  //           document: providerRef.current.document, // provider의 문서를 사용
-  //         }),
-  //       ],
-  //     });
-  //   }
-  // }, [editor, isProviderReady]);
+  // HTTP 요청으로 초기 문서 내용 가져오기(API 호출)
+  const loadInitialContent = async () => {
+    try {
+      console.log("Loading content for ideaId:", ideaId);
+      const response = await authAxiosInstance.get(`/api/v1/planner/${ideaId}`);
+      console.log("Loaded content:", response.data);
+
+      if (editor && response.data.data?.content) {
+        isLocalUpdate.current = true;
+        editor.commands.setContent(response.data.data.content);
+        isLocalUpdate.current = false;
+      }
+    } catch (error) {
+      console.error("Failed to load content:", error.response?.data || error);
+    }
+  };
 
   return (
     <>
@@ -70,10 +153,12 @@ function ProposalPage() {
         <title>기획서</title>
       </Helmet>
       <div className="h-full w-full flex flex-col">
-        <div className="flex-1 items-center justify-center flex containers">
-          {providerRef.current && (
-            <EditorContent className="w-full h-full" editor={editor} />
-          )}
+        <Header content="관통 프로젝트" />
+        <div className="flex-1 p-4">
+          <EditorContent
+            className="w-full h-full border rounded-lg p-4 prose max-w-none"
+            editor={editor}
+          />
         </div>
       </div>
     </>

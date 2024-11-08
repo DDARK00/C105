@@ -95,7 +95,7 @@ export const createMindMap = async ({ projectId, mainKeyword, keywords }) => {
 // 마인드맵 서브 키워드 조회
 export const fetchMindMapSubKeyword = async (keyword) => {
   const response = await helper(
-    () => AIAxios.post(`api/v1/recommend?keyword=${keyword}`),
+    () => AIAxios.get(`api/v1/recommend?keyword=${keyword}`),
     "마인드맵 서브 키워드 조회"
   );
   if (!response.ok) return;
@@ -119,6 +119,19 @@ export const fetchNewstoKeyword = async (keyword) => {
   const response = await helper(
     () => AIAxios.post(`api/v1/news?query=${keyword}`),
     "마인드맵 키워드 -> 뉴스 조회"
+  );
+  if (!response.ok) return;
+  // console.log(response.data);
+  return response?.data?.data;
+};
+
+// --------------------기획서 api 시작---------------------
+// 기획서 조회
+
+export const getProposal = async (ideaId) => {
+  const response = await helper(
+    () => authAxiosInstance.get(`api/v1/planner/${ideaId}`),
+    "기획서 조회"
   );
   if (!response.ok) return;
   // console.log(response.data);

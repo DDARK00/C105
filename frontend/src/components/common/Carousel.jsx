@@ -8,7 +8,7 @@ const Carousel = ({ slides, currentIndex, setCurrentIndex, children }) => {
       setCurrentIndex((prevIndex) =>
         prevIndex === slides?.length - 1 ? 0 : prevIndex + 1
       );
-    }, 5000); // 자동 슬라이드 시간 (3초)
+    }, 5000); // 자동 슬라이드 시간 (5초)
 
     return () => clearInterval(interval);
   }, [slides?.length, setCurrentIndex]);
