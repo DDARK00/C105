@@ -22,8 +22,8 @@ const Sticker = ({ delay, x, y, color, darkColor, onClick }) => {
 
   return (
     <div
-      className={`absolute w-72 h-72 cursor-pointer ${
-        animate ? randomAnimation : "opacity-0"
+      className={`absolute w-72 h-72 cursor-pointer scale-50 ${
+        animate ? "" : "opacity-0"
       } `}
       style={{
         left: x,

@@ -25,36 +25,6 @@ const CloudOverlay = () => {
           className="absolute inset-0 flex items-center h-screen justify-center transition-opacity duration-700"
           style={{ backgroundColor: "#f0faff", opacity: 0.9 }}
         >
-          {/* 입체적인 구름 애니메이션 */}
-          <div className="absolute inset-0 overflow-hidden z-10">
-            <div
-              className="absolute w-[180%] h-[180%] opacity-40 rounded-full"
-              style={{
-                backgroundImage: "url('/path/to/cloud-layer1.png')",
-                backgroundSize: "cover",
-                animation: "cloudFloat 20s linear infinite",
-                filter: "blur(4px)",
-              }}
-            />
-            <div
-              className="absolute w-[200%] h-[200%] opacity-30 rounded-full"
-              style={{
-                backgroundImage: "url('/path/to/cloud-layer2.png')",
-                backgroundSize: "cover",
-                animation: "cloudFloat 25s linear infinite reverse",
-                filter: "blur(8px)",
-              }}
-            />
-            <div
-              className="absolute w-[220%] h-[220%] opacity-20 rounded-full"
-              style={{
-                backgroundImage: "url('/path/to/cloud-layer3.png')",
-                backgroundSize: "cover",
-                animation: "cloudFloat 30s linear infinite",
-                filter: "blur(12px)",
-              }}
-            />
-          </div>
           {/* 우아한 텍스트 애니메이션 */}
           <div className="flex space-x-8 z-20">
             <DefaultButton onClick={() => setVisible(false)} theme="default">
@@ -78,11 +48,7 @@ const CloudOverlay = () => {
 
       {/* 인라인 keyframes 스타일 */}
       <style>{`
-        @keyframes cloudFloat {
-          0% { transform: translate(-50%, -50%) scale(1); }
-          50% { transform: translate(-45%, -55%) scale(1.1); }
-          100% { transform: translate(-50%, -50%) scale(1); }
-        }
+
         @keyframes textPop {
           0% { opacity: 0; transform: scale(0.7); }
           50% { opacity: 0.8; transform: scale(1.2); }

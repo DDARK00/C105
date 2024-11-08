@@ -35,6 +35,7 @@ function MindMapPage() {
 
   const [githubDatas, setGithubdatas] = useState([]);
   const [newsDatas, setNewsdatas] = useState([]);
+  const [dataLoading, setDataLoading] = useState(false);
 
   useEffect(() => {
     // 스크롤 애니메이션 효과
@@ -54,10 +55,12 @@ function MindMapPage() {
       if (response) {
         // 이미 생성된 마인드맵이 있으면
         const { mainKeyword, keywords } = response;
+        const words = keywords.map((item) => item.content);
         const { nodes: newNodes, links: newLinks } = CreateMindMapData(
           mainKeyword,
-          keywords
+          words
         );
+
         setMindMapData({
           nodes: newNodes,
           links: newLinks,
@@ -109,17 +112,22 @@ function MindMapPage() {
       return;
     }
     setSelectedDetail(detail);
+    try {
+      setDataLoading(true);
 
-    setNewsIndex(0); // 선택할 때 뉴스 인덱스 초기화
-    setGithubIndex(0); // 선택할 때 GitHub 링크 인덱스 초기화
-    const [gitDatas, newsDatas] = await Promise.all([
-      fetchAllGenGithubPJTtoKeyword(detail.id),
-      fetchNewstoKeyword(detail.id),
-    ]);
+      setNewsIndex(0); // 선택할 때 뉴스 인덱스 초기화
+      setGithubIndex(0); // 선택할 때 GitHub 링크 인덱스 초기화
+      const [newGitDatas, newNewsDatas] = await Promise.all([
+        fetchAllGenGithubPJTtoKeyword(detail.id),
+        fetchNewstoKeyword(detail.id),
+      ]);
 
-    // 데이터가 존재하는 경우 각각 상태 업데이트
-    if (gitDatas) setGithubdatas(gitDatas);
-    if (newsDatas) setNewsdatas(newsDatas);
+      // 데이터가 존재하는 경우 각각 상태 업데이트
+      if (newGitDatas) setGithubdatas(newGitDatas?.repositories ?? []);
+      if (newNewsDatas) setNewsdatas(newNewsDatas?.items ?? []);
+    } finally {
+      setDataLoading(false);
+    }
   };
 
   const handeInfoClick = () => {
@@ -143,7 +151,7 @@ function MindMapPage() {
         <title>마인드맵페이지</title>
       </Helmet>
 
-      <div className="h-full w-full flex flex-col">
+      <div className="h-full w-full flex flex-col relative">
         {/* 검색창 */}
         <SearchBar
           handleInfoClick={handeInfoClick}
@@ -151,8 +159,15 @@ function MindMapPage() {
           searchKeyword={searchKeyword}
           setSearchKeyword={setSearchKeyword}
         />
-        {/* 추천키워드 */}
-        <CloudOverlay />
+        <div className="flex-1 m-auto w-full my-2 max-w-5xl relative">
+          <DefaultButton
+            text="AI Support"
+            className="absolute right-0 animate-bounce hover:animate-none "
+            onClick={() => setIsPlanOpen(true)}
+          />
+          {/* 추천키워드 */}
+          <CloudOverlay />
+        </div>
         {/* 컨텐츠 레이아웃 */}
         <div className="flex justify-center">
           {/* 컨텐츠 영역 */}
@@ -192,17 +207,23 @@ function MindMapPage() {
                               <h3 className="font-bold text-base text-gray-800 mb-2">
                                 관련 뉴스
                               </h3>
-                              {newsDatas.length ? (
-                                <NewsCarousel
-                                  slides={newsDatas}
-                                  currentIndex={newsIndex}
-                                  setCurrentIndex={setNewsIndex}
-                                />
-                              ) : (
+                              {dataLoading && (
                                 <p className="text-gray-400">
-                                  뉴스 정보가 없습니다
+                                  데이터 로딩 중...
                                 </p>
                               )}
+                              {!dataLoading &&
+                                (newsDatas.length ? (
+                                  <NewsCarousel
+                                    slides={newsDatas}
+                                    currentIndex={newsIndex}
+                                    setCurrentIndex={setNewsIndex}
+                                  />
+                                ) : (
+                                  <p className="text-gray-400">
+                                    뉴스 정보가 없습니다
+                                  </p>
+                                ))}
                             </div>
 
                             {/* GitHub 링크 카드 */}
@@ -210,17 +231,23 @@ function MindMapPage() {
                               <h3 className="font-bold text-base text-gray-800 mb-2">
                                 GitHub 링크
                               </h3>
-                              {githubDatas.length ? (
-                                <GithubCarousel
-                                  slides={githubDatas}
-                                  currentIndex={githubIndex}
-                                  setCurrentIndex={setGithubIndex}
-                                />
-                              ) : (
+                              {dataLoading && (
                                 <p className="text-gray-400">
-                                  링크 정보가 없습니다
+                                  데이터 로딩 중...
                                 </p>
                               )}
+                              {!dataLoading &&
+                                (githubDatas.length ? (
+                                  <GithubCarousel
+                                    slides={githubDatas}
+                                    currentIndex={githubIndex}
+                                    setCurrentIndex={setGithubIndex}
+                                  />
+                                ) : (
+                                  <p className="text-gray-400">
+                                    링크 정보가 없습니다
+                                  </p>
+                                ))}
                             </div>
                           </div>
                         )}
@@ -232,8 +259,6 @@ function MindMapPage() {
             )}
           </div>
         </div>
-
-        <DefaultButton text="모달 열기" onClick={() => setIsPlanOpen(true)} />
 
         <PortalModal
           className="max-w-4xl"

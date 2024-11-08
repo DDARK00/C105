@@ -8,7 +8,7 @@ const BASE_URL = "https://k11c105.p.ssafy.io/";
 // api/v1/recommend
 const AIAxios = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000, // 10초
+  // timeout: 10000, // 10초
   // 추가적인 설정이 필요할 경우 여기에 작성
 });
 
