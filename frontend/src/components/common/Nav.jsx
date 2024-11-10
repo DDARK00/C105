@@ -240,13 +240,7 @@ function Nav() {
                           ? "bg-[#666666] cursor-default"
                           : "cursor-pointer"
                       }`}
-                      onClick={(e) => {
-                        if (!mainIdea?.id) {
-                          e.preventDefault();
-                          return;
-                        }
-                        handleItemClick("기획서");
-                      }}
+                      onClick={() => handleItemClick("기획서")}
                     >
                       기획서
                     </Link>
