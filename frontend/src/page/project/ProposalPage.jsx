@@ -67,7 +67,7 @@ function ProposalPage() {
 
   useEffect(() => {
     const client = new Client({
-      brokerURL: `wss://oracle1.mypjt.xyz/ws`,
+      brokerURL: `https://oracle1.mypjt.xyz/ws`,
       connectHeaders: {},
       debug: function (str) {
         console.log("STOMP:", str);
@@ -124,7 +124,7 @@ function ProposalPage() {
         stompClient.current.deactivate();
       }
     };
-  }, []);
+  }, [ideaId]);
 
   // HTTP 요청으로 초기 문서 내용 가져오기(API 호출)
   const loadInitialContent = async () => {
