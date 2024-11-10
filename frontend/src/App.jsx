@@ -49,31 +49,31 @@ function App() {
 
                 {/* 기획서 페이지 */}
                 <Route
-                  path="/project/:id/idea/:ideaid/proposal"
+                  path="/project/:id/idea/:ideaId/proposal"
                   element={<ProposalPage />}
                 />
 
                 {/* api명세서 페이지 */}
                 <Route
-                  path="/project/:id/idea/:ideaid/apispecification"
+                  path="/project/:id/idea/:ideaId/apispecification"
                   element={<ApiSpecificationPage />}
                 />
 
                 {/* ERD페이지 */}
                 <Route
-                  path="/project/:id/idea/:ideaid/erd"
+                  path="/project/:id/idea/:ideaId/erd"
                   element={<ERDPage />}
                 />
 
                 {/* 요구사항 명세서 페이지 */}
                 <Route
-                  path="/project/:id/idea/:ideaid/requirementsspecification"
+                  path="/project/:id/idea/:ideaId/requirementsspecification"
                   element={<RequirementsSpecificationPage />}
                 />
 
                 {/* 플로우차트 페이지 */}
                 <Route
-                  path="/project/:id/idea/:ideaid/flowchart"
+                  path="/project/:id/idea/:ideaId/flowchart"
                   element={<FlowChartPage />}
                 />
               </Route>
