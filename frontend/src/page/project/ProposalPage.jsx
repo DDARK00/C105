@@ -7,25 +7,13 @@ import { useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
 import authAxiosInstance from "../../api//http-commons/authAxios";
 import { debounce } from "lodash";
-import useIdeaStore from "../../store/useIdeaStore";
+import SockJS from 'sockjs-client';
 
 function ProposalPage() {
-  const { ideaId: routeIdeaId } = useParams();
-  const { setIdeaId, ideaId, clearIdeaId } = useIdeaStore();
-
+  const { ideaId } = useParams();
   const stompClient = useRef(null); // WebSocket 클라이언트
   const isLocalUpdate = useRef(false); // 로컬 업데이트 여부 플래그
   const clientId = useRef(`client-${Math.random().toString(36).substr(2, 9)}`); // 고유 클라이언트 ID
-
-  // URL의 ideaId를 store에 저장
-  useEffect(() => {
-    if (routeIdeaId) {
-      setIdeaId(Number(routeIdeaId));
-    }
-    return () => {
-      clearIdeaId();
-    };
-  }, [routeIdeaId, setIdeaId, clearIdeaId]);
 
   // debounce된 업데이트 함수 생성
   const debouncedSendContent = useRef(
@@ -35,7 +23,7 @@ function ProposalPage() {
       if (!stompClient.current?.connected || isLocalUpdate.current) return;
 
       const operation = {
-        ideaId: ideaId,
+        ideaId: Number(ideaId),
         data: JSON.stringify({
           content,
           timestamp: Date.now(),
@@ -67,7 +55,7 @@ function ProposalPage() {
 
   useEffect(() => {
     const client = new Client({
-      brokerURL: `https://oracle1.mypjt.xyz/ws`,
+      webSocketFactory: () => new SockJS("https://oracle1.mypjt.xyz/ws"),
       connectHeaders: {},
       debug: function (str) {
         console.log("STOMP:", str);
