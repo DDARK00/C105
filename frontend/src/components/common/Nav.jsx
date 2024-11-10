@@ -8,7 +8,7 @@ function Nav() {
   const navigate = useNavigate();
   const param = useParams();
   // ProjectStore에서 필요한 정보 가져오기
-  const { setProjectInfo, mainIdea, hasMainIdea } = useProjectStore();
+  const { setProjectInfo, mainIdea, setMainIdea } = useProjectStore();
 
   // 프로젝트 정보 가져오기
   useEffect(() => {
@@ -26,7 +26,7 @@ function Nav() {
     if (param?.id) {
       fetchProjectInfo();
     }
-  }, [param?.id, setProjectInfo]);
+  }, [param?.id, setProjectInfo, setMainIdea]);
   // useEffect(() => {
   //   console.log(param?.id);
   //   if (param?.id) {
@@ -198,7 +198,7 @@ function Nav() {
             </li>
 
             {/* 산출물 메뉴 */}
-            {hasMainIdea() && (
+            {mainIdea?.ideaId && (
               <li>
                 <div
                   className={` text-xl flex flex-row justify-between items-center cursor-pointer border border-[#858585] shadow-md p-2 select-none rounded-lg ${
@@ -234,7 +234,7 @@ function Nav() {
                 >
                   <li className="mt-5">
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea}/proposal`}
+                      to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/proposal`}
                       className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
                         activeItem === "기획서"
                           ? "bg-[#666666] cursor-default"
@@ -253,7 +253,7 @@ function Nav() {
                   </li>
                   <li>
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea}/requirementsspecification`}
+                      to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/requirementsspecification`}
                       className={`block w-full h-fullx text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
                         activeItem === "요구사항 명세서"
                           ? "bg-[#666666] cursor-default"
@@ -266,7 +266,7 @@ function Nav() {
                   </li>
                   <li>
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea}/apispecification`}
+                      to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/apispecification`}
                       className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
                         activeItem === "API 명세서"
                           ? "bg-[#666666] cursor-default"
@@ -279,7 +279,7 @@ function Nav() {
                   </li>
                   <li>
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea}/erd`}
+                      to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/erd`}
                       className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
                         activeItem === "ERD"
                           ? "bg-[#666666] cursor-default"
@@ -292,7 +292,7 @@ function Nav() {
                   </li>
                   <li>
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea}/flowchart`}
+                      to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/flowchart`}
                       className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
                         activeItem === "FLOWCHART"
                           ? "bg-[#666666] cursor-default"
