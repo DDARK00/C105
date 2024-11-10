@@ -7,10 +7,8 @@ function Nav() {
   const location = useLocation();
   const navigate = useNavigate();
   const param = useParams();
-  const [hasMainIdea, setHasMainIdea] = useState(false);
-
   // ProjectStore에서 필요한 정보 가져오기
-  const { setProjectInfo, mainIdea } = useProjectStore();
+  const { setProjectInfo, mainIdea, hasMainIdea } = useProjectStore();
 
   // 프로젝트 정보 가져오기
   useEffect(() => {
@@ -20,10 +18,8 @@ function Nav() {
           `/api/v1/project/${param?.id}`
         );
         setProjectInfo(response.data.data);
-        setHasMainIdea(!!response.data.data.mainIdea?.id);
       } catch (error) {
         console.error("프로젝트 정보 조회 실패:", error);
-        setHasMainIdea(false);
       }
     };
 
@@ -202,7 +198,7 @@ function Nav() {
             </li>
 
             {/* 산출물 메뉴 */}
-            {hasMainIdea && (
+            {hasMainIdea() && (
               <li>
                 <div
                   className={` text-xl flex flex-row justify-between items-center cursor-pointer border border-[#858585] shadow-md p-2 select-none rounded-lg ${

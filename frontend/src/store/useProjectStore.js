@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-const useProjectStore = create((set) => ({
+const useProjectStore = create((set, get) => ({
   // 프로젝트 정보
   projectId: null,
   gitlabProjectId: null,
@@ -25,6 +25,11 @@ const useProjectStore = create((set) => ({
       gitlabUrl: projectData.gitlab_url,
       members: projectData.members,
     }),
+
+    hasMainIdea: () => {
+      const state = get();
+      return state.mainIdea !== null && state.mainIdea !== undefined && state.mainIdea !== '';
+    },
 
   // 초기화
   clearProjectInfo: () =>
