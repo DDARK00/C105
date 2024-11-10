@@ -52,6 +52,11 @@ public class IdeaService {
             .introduction(dto.getIntroduction())
             .target(dto.getTarget())
             .expectedEffect(dto.getExpectedEffect())
+            .x(dto.getX())
+            .y(dto.getY())
+            .color(dto.getColor())
+            .darkColor(dto.getDarkColor())
+            .animation(dto.getAnimation())
             .build();
 
         idea = ideaRepository.save(idea);
@@ -63,6 +68,11 @@ public class IdeaService {
             .introduction(idea.getIntroduction()) 
             .target(idea.getTarget())
             .expectedEffect(idea.getExpectedEffect())
+            .x(idea.getX())
+            .y(idea.getY())
+            .color(idea.getColor())
+            .darkColor(idea.getDarkColor())
+            .animation(idea.getAnimation())
             .build();
     }
     /*

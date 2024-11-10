@@ -13,4 +13,9 @@ public class IdeaCreateResponseDto {
     private String target;
     private String expectedEffect;
     private float averagRating;
+    private String x;
+    private String y;
+    private String color;
+    private String darkColor;
+    private String animation;
 }
