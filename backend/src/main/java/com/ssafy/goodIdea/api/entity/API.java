@@ -15,7 +15,7 @@ public class API extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "api_id")
-    private Long id;
+    private Long apiId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "apidocs_id", nullable = false)

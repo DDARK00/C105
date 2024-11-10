@@ -7,10 +7,16 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
+import com.ssafy.goodIdea.apiDocs.entity.APIDocs;
+import com.ssafy.goodIdea.apiDocs.repository.APIDocsRepository;
 import com.ssafy.goodIdea.comment.entity.Comment;
 import com.ssafy.goodIdea.comment.repository.CommentRepository;
 import com.ssafy.goodIdea.common.exception.BaseException;
 import com.ssafy.goodIdea.common.exception.ErrorType;
+import com.ssafy.goodIdea.erd.entity.ERD;
+import com.ssafy.goodIdea.erd.repository.ERDRepository;
+import com.ssafy.goodIdea.flowChart.entity.Flowchart;
+import com.ssafy.goodIdea.flowChart.repository.FlowChartRepository;
 import com.ssafy.goodIdea.idea.dto.request.IdeaCreateRequestDto;
 import com.ssafy.goodIdea.idea.dto.request.IdeaUpdateRequestDto;
 import com.ssafy.goodIdea.idea.dto.response.IdeaCreateResponseDto;
@@ -19,8 +25,12 @@ import com.ssafy.goodIdea.idea.dto.response.IdeaListResponseDto;
 import com.ssafy.goodIdea.idea.dto.response.IdeaUpdateResponseDto;
 import com.ssafy.goodIdea.idea.entity.Idea;
 import com.ssafy.goodIdea.idea.repository.IdeaRepository;
+import com.ssafy.goodIdea.planner.entity.Planner;
+import com.ssafy.goodIdea.planner.repository.PlannerRepository;
 import com.ssafy.goodIdea.project.entity.Project;
 import com.ssafy.goodIdea.project.repository.ProjectRepository;
+import com.ssafy.goodIdea.reqDocs.entity.ReqDocs;
+import com.ssafy.goodIdea.reqDocs.repository.ReqDocsRepository;
 import com.ssafy.goodIdea.user.entity.User;
 import com.ssafy.goodIdea.userProject.repository.UserProjectRepository;
 
@@ -36,7 +46,11 @@ public class IdeaService {
     private final ProjectRepository projectRepository;
     private final CommentRepository commentRepository;
     private final UserProjectRepository userProjectRepository;
-    
+    private final PlannerRepository plannerRepository;
+    private final ReqDocsRepository reqDocsRepository;
+    private final APIDocsRepository apiDocsRepository;
+    private final ERDRepository erdRepository;
+    private final FlowChartRepository flowChartRepository;
     /*
      * 아이디어 생성
      * return created idea
@@ -60,6 +74,39 @@ public class IdeaService {
             .build();
 
         idea = ideaRepository.save(idea);
+
+        // 기획서 생성
+        Planner planner = Planner.builder()
+            .idea(idea)
+            .content("")
+            .build();
+        plannerRepository.save(planner);
+
+        // 요구사항 명세서 생성
+        ReqDocs reqDocs = ReqDocs.builder()
+            .idea(idea)
+            .build();
+        reqDocsRepository.save(reqDocs);
+
+        // API 명세서 생성
+        APIDocs apiDocs = APIDocs.builder()
+            .idea(idea)
+            .build();
+        apiDocsRepository.save(apiDocs);
+
+        // ERD 생성
+        ERD erd = ERD.builder()
+            .idea(idea)
+            .code("")
+            .build();
+        erdRepository.save(erd);
+
+        // 플로우차트 생성
+        Flowchart flowchart = Flowchart.builder()
+            .idea(idea)
+            .code("")
+            .build();
+        flowChartRepository.save(flowchart);
 
         return IdeaCreateResponseDto.builder()
             .ideaId(idea.getId())

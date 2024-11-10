@@ -15,7 +15,7 @@ public class ReqDocs extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reqdocs_id")
-    private Long id;
+    private Long reqDocsId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idea_id", nullable = false)
