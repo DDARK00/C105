@@ -137,6 +137,11 @@ public class IdeaService {
                 .serviceName(idea.getServiceName())
                 .introduction(idea.getIntroduction())
                 .averageRating(idea.getAverageRating())
+                .x(idea.getX())
+                .y(idea.getY())
+                .color(idea.getColor())
+                .darkColor(idea.getDarkColor())
+                .animation(idea.getAnimation())
                 .build())
             .collect(Collectors.toList());
     }
