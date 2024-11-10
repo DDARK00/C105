@@ -212,6 +212,11 @@ public class IdeaService {
                 .introduction(dto.getIntroduction())
                 .target(dto.getTarget())
                 .expectedEffect(dto.getExpectedEffect())
+                .x(dto.getX())
+                .y(dto.getY())
+                .color(dto.getColor())
+                .darkColor(dto.getDarkColor())
+                .animation(dto.getAnimation())
                 .build(); 
 
         // dto의 내용으로 아이디어 업데이트

@@ -88,5 +88,10 @@ public class Idea extends BaseTime {
         this.introduction = dto.getIntroduction();
         this.target = dto.getTarget();
         this.expectedEffect = dto.getExpectedEffect();
+        this.x = dto.getX();
+        this.y = dto.getY();
+        this.color = dto.getColor();
+        this.darkColor = dto.getDarkColor();
+        this.animation = dto.getAnimation();
     }
 }
