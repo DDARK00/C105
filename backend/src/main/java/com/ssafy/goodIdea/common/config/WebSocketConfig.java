@@ -24,6 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOrigins(
             "http://localhost:5173", // Vite 개발 서버 주소
                     "https://oracle1.mypjt.xyz" // 배포 서버 주소
-                );
+                )
+                .withSockJS();
     }
 }

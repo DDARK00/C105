@@ -234,20 +234,26 @@ function Nav() {
                 >
                   <li className="mt-5">
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea?.id}/proposal`}
+                      to={`/project/${param?.id}/idea/${mainIdea}/proposal`}
                       className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
                         activeItem === "기획서"
                           ? "bg-[#666666] cursor-default"
                           : "cursor-pointer"
                       }`}
-                      onClick={() => handleItemClick("기획서")}
+                      onClick={(e) => {
+                        if (!mainIdea?.id) {
+                          e.preventDefault();
+                          return;
+                        }
+                        handleItemClick("기획서");
+                      }}
                     >
                       기획서
                     </Link>
                   </li>
                   <li>
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea?.id}/requirementsspecification`}
+                      to={`/project/${param?.id}/idea/${mainIdea}/requirementsspecification`}
                       className={`block w-full h-fullx text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
                         activeItem === "요구사항 명세서"
                           ? "bg-[#666666] cursor-default"
@@ -260,7 +266,7 @@ function Nav() {
                   </li>
                   <li>
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea?.id}/apispecification`}
+                      to={`/project/${param?.id}/idea/${mainIdea}/apispecification`}
                       className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
                         activeItem === "API 명세서"
                           ? "bg-[#666666] cursor-default"
@@ -273,7 +279,7 @@ function Nav() {
                   </li>
                   <li>
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea?.id}/erd`}
+                      to={`/project/${param?.id}/idea/${mainIdea}/erd`}
                       className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
                         activeItem === "ERD"
                           ? "bg-[#666666] cursor-default"
@@ -286,7 +292,7 @@ function Nav() {
                   </li>
                   <li>
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea?.id}/flowchart`}
+                      to={`/project/${param?.id}/idea/${mainIdea}/flowchart`}
                       className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
                         activeItem === "FLOWCHART"
                           ? "bg-[#666666] cursor-default"
