@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import DefaultButton from "../common/DefaultButton";
 
-const CloudOverlay = () => {
+const CloudOverlay = ({ setIsPlanOpen }) => {
   const containerRef = useRef(null);
   const [visible, setVisible] = useState(false);
   const textArray = ["1번", "2번", "3번", "4번", "5번"];
@@ -28,59 +28,66 @@ const CloudOverlay = () => {
   };
 
   return (
-    <div className="flex items-center justify-center">
-      <button
-        onClick={handleClick}
-        className="px-4 py-2 bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 text-white font-bold rounded-full 
-         duration-300 ease-out border-blue-800 hover:animate-none focus:outline-none focus:ring-4 focus:ring-yellow-500 animate-bounce"
-      >
-        <span className="text-xs tracking-wider uppercase">Keyword추천</span>
-      </button>
-
-      {
-        // container
-        <div
-          title="클릭하면 창이 닫힙니다."
-          ref={containerRef}
+    <>
+      <div className="text-end space-x-3">
+        <button
           onClick={handleClick}
-          className={`fixed cursor-pointer table h-full w-full justify-center top-0 left-0 transform scale-0 transition-opacity duration-700`}
-          style={{ backgroundColor: "#f0faff", opacity: 0.91 }}
+          className="px-4 py-2 bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 text-white font-bold rounded-full 
+        border-blue-800 focus:outline-none focus:ring-4 focus:ring-yellow-500"
         >
-          {/* background */}
-          <div className="table-cell bg-black/80 text-center align-middle modal-background">
-            {/* modal */}
-            <div
-              title=""
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white cursor-auto p-12 inline-block rounded-lg relative modal"
-            >
-              <h2
-                className="text-3xl font-bold mb-6 
-              text-transparent bg-clip-text bg-gradient-to-l from-indigo-500 via-purple-500 to-pink-500"
+          <span className="text-xs tracking-wider uppercase">Keyword추천</span>
+        </button>
+        <DefaultButton
+          // theme="bright"
+          text="AI Support"
+          onClick={() => setIsPlanOpen(true)}
+        />
+      </div>
+      <div className="flex items-center justify-center">
+        {
+          // container
+          <div
+            title="클릭하면 창이 닫힙니다."
+            ref={containerRef}
+            onClick={handleClick}
+            className={`fixed cursor-pointer table h-full w-full justify-center top-0 left-0 transform scale-0 transition-opacity duration-700`}
+            style={{ backgroundColor: "#f0faff", opacity: 0.91 }}
+          >
+            {/* background */}
+            <div className="table-cell bg-black/80 text-center align-middle modal-background">
+              {/* modal */}
+              <div
+                title=""
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white cursor-auto p-12 inline-block rounded-lg relative modal"
               >
-                오늘의 추천 키워드
-              </h2>
-              <div className="space-x-6">
-                {visible &&
-                  textArray.map((text, index) => (
-                    <span
-                      key={index}
-                      className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-5xl font-extrabold opacity-0"
-                      style={{
-                        animation: "textPop 1.5s ease forwards",
-                        animationDelay: `${index * 0.4 + 1.5}s`,
-                      }}
-                    >
-                      {text}
-                    </span>
-                  ))}
+                <h2
+                  className="text-3xl font-bold mb-6 
+              text-transparent bg-clip-text bg-gradient-to-l from-indigo-500 via-purple-500 to-pink-500"
+                >
+                  오늘의 추천 키워드
+                </h2>
+                <div className="space-x-6">
+                  {visible &&
+                    textArray.map((text, index) => (
+                      <span
+                        key={index}
+                        className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-5xl font-extrabold opacity-0"
+                        style={{
+                          animation: "textPop 1.5s ease forwards",
+                          animationDelay: `${index * 0.4 + 1.5}s`,
+                        }}
+                      >
+                        {text}
+                      </span>
+                    ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      }
+        }
 
-      <style>{`
+        <style>{`
 .modal-active {
   overflow: hidden;
 }
@@ -160,7 +167,8 @@ const CloudOverlay = () => {
 }
 
       `}</style>
-    </div>
+      </div>
+    </>
   );
 };
 

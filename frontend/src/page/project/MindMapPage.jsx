@@ -151,7 +151,7 @@ function MindMapPage() {
         <title>마인드맵페이지</title>
       </Helmet>
 
-      <div className="h-full w-full flex flex-col relative">
+      <div className="h-full w-full flex flex-col relative pb-10">
         {/* 검색창 */}
         <SearchBar
           handleInfoClick={handeInfoClick}
@@ -159,15 +159,12 @@ function MindMapPage() {
           searchKeyword={searchKeyword}
           setSearchKeyword={setSearchKeyword}
         />
-        <div className=" m-auto w-full my-2 max-w-5xl relative">
-          <DefaultButton
-            text="AI Support"
-            className="absolute right-0 animate-pulse hover:animate-none "
-            onClick={() => setIsPlanOpen(true)}
-          />
-          {/* 추천키워드 */}
-          <CloudOverlay />
+
+        <div className="m-auto w-full my-2 max-w-5xl relative">
+          {/* 추천키워드, AI플랜버튼 영역 */}
+          <CloudOverlay setIsPlanOpen={setIsPlanOpen} />
         </div>
+
         {/* 컨텐츠 레이아웃 */}
         <div className="flex justify-center">
           {/* 컨텐츠 영역 */}
@@ -185,8 +182,10 @@ function MindMapPage() {
                 />
                 {/* 관련 뉴스 리스트 영역 */}
                 <div className="w-1/3 p-6 bg-blue-100 border-l border-gray-300">
+                  <h2 className="text-center font-bold mb-4">asdf</h2>
+                  {/* {mindMapData.nodes} */}
                   <h2 className="text-center font-bold mb-4">
-                    ← 키워드와 관련된 정보 →
+                    키워드와 관련된 정보
                   </h2>
                   <div className="space-y-4 text-gray-700">
                     {mindMapData.nodes?.map((item, index) => (
@@ -214,11 +213,16 @@ function MindMapPage() {
                               )}
                               {!dataLoading &&
                                 (newsDatas.length ? (
-                                  <NewsCarousel
-                                    slides={newsDatas}
-                                    currentIndex={newsIndex}
-                                    setCurrentIndex={setNewsIndex}
-                                  />
+                                  <div>
+                                    <NewsCarousel
+                                      slides={newsDatas}
+                                      currentIndex={newsIndex}
+                                      setCurrentIndex={setNewsIndex}
+                                    />
+                                    <div className="text-end">
+                                      {newsIndex + 1} / {newsDatas.length}
+                                    </div>
+                                  </div>
                                 ) : (
                                   <p className="text-gray-400">
                                     뉴스 정보가 없습니다

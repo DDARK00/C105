@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 
-const Sticker = ({
-  delay,
-  x,
-  y,
-  color,
-  darkColor,
-  onClick,
-  isSelected,
-  animation,
-}) => {
+const Sticker = ({ delay, x, y, color, darkColor, onClick, animation }) => {
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
@@ -20,63 +11,37 @@ const Sticker = ({
 
   return (
     <div
-      className="absolute"
-      style={{ left: x, top: y, width: "145px", height: "144px" }}
+      className={`relative w-36 h-36 cursor-pointer transition-all z-10 ${
+        animate ? animation : "opacity-0"
+      }`}
+      style={{ left: x, top: y }}
+      onClick={onClick}
     >
-      {/* 선택된 상태에서 빛나는 보더 배경 */}
-      {isSelected && (
-        <div className="absolute inset-0 -m-1.5 bg-gradient-to-r from-red-500 via-blue-500 to-pink-500 animate-rotation z-0"></div>
-      )}
-
-      {/* 중앙에 정렬된 스티커 */}
+      {/* 상단 메모 부분 */}
       <div
-        className={`relative w-36 h-36 cursor-pointer transition-all z-10 ${
-          animate ? animation : "opacity-0"
-        }`}
-        onClick={onClick}
+        className="w-36 h-[120px] overflow-hidden"
+        style={{ backgroundColor: color, marginBottom: "-1px" }}
       >
-        {/* 상단 메모 부분 */}
-        <div
-          className="w-36 h-[120px] overflow-hidden"
-          style={{ backgroundColor: color, marginBottom: "-1px" }}
-        >
-          <div className="p-4">
-            <p className="text-gray-700 text-xs">메모 내용을 입력하세요...</p>
-          </div>
+        <div className="p-4">
+          <p className="text-gray-700 text-xs">메모 내용을 입력하세요...</p>
         </div>
-
-        {/* 하단 바 부분 */}
-        <div
-          className="w-[120px] h-6 ml-auto mr-0"
-          style={{ backgroundColor: color, marginTop: "-1.2px" }}
-        ></div>
-
-        {/* 왼쪽 하단 접힌 부분 */}
-        <div
-          className="absolute bottom-0 left-0 w-6 h-6"
-          style={{
-            backgroundColor: darkColor,
-            clipPath: "polygon(100% 100%, 100% 0, 0 0)", // 삼각형 모양
-            transform: "translate(0.2px, -0.7px)",
-          }}
-        ></div>
       </div>
 
-      {/* 애니메이션 스타일 추가 */}
-      <style>
-        {`@keyframes rotation {
-          0% {
-            background-position-x: 0;
-          }
-          100% {
-            background-position-x: 1000px;
-          }
-        }
-        .animate-rotation {
-          animation: rotation 2s linear infinite;
-        }
-        `}
-      </style>
+      {/* 하단 바 부분 */}
+      <div
+        className="w-[120px] h-6 ml-auto mr-0"
+        style={{ backgroundColor: color, marginTop: "-1.2px" }}
+      ></div>
+
+      {/* 왼쪽 하단 접힌 부분 */}
+      <div
+        className="absolute bottom-0 left-0 w-6 h-6"
+        style={{
+          backgroundColor: darkColor,
+          clipPath: "polygon(100% 100%, 100% 0, 0 0)", // 삼각형 모양
+          transform: "translate(0.2px, -0.7px)",
+        }}
+      ></div>
     </div>
   );
 };

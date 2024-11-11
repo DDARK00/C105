@@ -1,7 +1,10 @@
 import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { WebSocketProvider } from "../../components/websocket/WebSocketProvider";
-import { DOCUMENT_TYPES, API_ENDPOINTS } from "../../components/websocket/constants";
+import {
+  DOCUMENT_TYPES,
+  API_ENDPOINTS,
+} from "../../components/websocket/constants";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useRef } from "react";
@@ -30,7 +33,9 @@ function ProposalEditor() {
     const loadInitialContent = async () => {
       try {
         console.log("Loading content for ideaId:", ideaId);
-        const response = await authAxiosInstance.get(`/api/v1/planner/${ideaId}`);
+        const response = await authAxiosInstance.get(
+          `/api/v1/planner/${ideaId}`
+        );
         console.log("Loaded content:", response.data);
 
         if (editor && response.data.data?.content) {
@@ -68,7 +73,7 @@ function ProposalPage() {
   const { projectId, ideaId } = useParams();
 
   return (
-    <WebSocketProvider 
+    <WebSocketProvider
       projectId={projectId}
       ideaId={ideaId}
       documentType={DOCUMENT_TYPES.PROPOSAL}

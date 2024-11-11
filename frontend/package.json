@@ -22,6 +22,7 @@
     "axios": "^1.7.7",
     "d3": "^7.9.0",
     "frontend": "file:",
+    "dompurify": "^3.1.7",
     "gsap": "^3.12.5",
     "lodash": "^4.17.21",
     "lucide-react": "^0.454.0",

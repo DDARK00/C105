@@ -45,7 +45,7 @@ const Chatbot = () => {
           {/* Header */}
           <div className="flex justify-between items-center bg-indigo-600 text-white p-4 rounded-t-lg">
             <span className="font-semibold text-lg">
-              무엇이든 물어보삼. 나 GPT-4임
+              무엇이든 물어보삼. 나 GPT-3.5-turbo임
             </span>
             <button onClick={toggleChatbot} className="text-2xl font-bold">
               ×
@@ -68,7 +68,7 @@ const Chatbot = () => {
             ))}
             {isLoading && (
               <div className="bg-gray-200 text-gray-800 p-3 rounded-lg">
-                응답을 작성 중입니다...
+                응답을 작성 중입니다...잠시만 기다려주세요...
               </div>
             )}
           </div>

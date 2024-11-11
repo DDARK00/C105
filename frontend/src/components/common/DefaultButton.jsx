@@ -24,11 +24,12 @@ function DefaultButton({
 }) {
   const styles = {
     default:
-      "px-4 py-2 mt-1 bg-blue-900 text-white rounded-md shadow hover:bg-blue-800 transition",
+      "transition px-6 py-3 bg-indigo-600 text-sm text-white rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-md",
+    // " mt-1 bg-blue-900 text-white rounded-md shadow hover:bg-blue-800 ",
     bright:
-      "px-6 py-3 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition",
+      "px-6 py-3 bg-blue-500 text-white rounded-full shadow hover:bg-blue-600 transition",
     alert:
-      "px-6 py-3 border-2 border-red-500 text-red-500 rounded-lg shadow hover:bg-red-500 hover:text-white transition",
+      "px-6 py-3 border-2 border-red-500 text-red-500 rounded-full shadow hover:bg-red-500 hover:text-white transition",
   };
   return (
     <button
