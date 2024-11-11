@@ -22,9 +22,7 @@ export function WebSocketProvider({
   useEffect(() => {
     const client = new Client({
         webSocketFactory: () => {
-          const wsUrl = window.location.hostname === 'localhost'
-            ? 'ws://localhost:8080/ws'
-            : `wss://oracle1.mypjt.xyz/ws`;
+          const wsUrl = import.meta.env.VITE_WEBSOCKET_URL;
             
           console.log("Attempting to connect to:", wsUrl);
           

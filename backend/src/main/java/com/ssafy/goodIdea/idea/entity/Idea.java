@@ -1,8 +1,5 @@
 package com.ssafy.goodIdea.idea.entity;
 
-import java.util.Set;
-
-import com.ssafy.goodIdea.comment.entity.Comment;
 import com.ssafy.goodIdea.common.entity.BaseTime;
 import com.ssafy.goodIdea.idea.dto.request.IdeaUpdateRequestDto;
 import com.ssafy.goodIdea.project.entity.Project;
