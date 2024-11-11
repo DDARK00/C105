@@ -1,5 +1,6 @@
 import { createContext, useContext, useRef, useEffect } from "react";
 import { Client } from "@stomp/stompjs";
+import PropTypes from "prop-types";
 import { DOCUMENT_TYPES } from "./constants";
 
 const WebSocketContext = createContext(null);
@@ -10,7 +11,7 @@ export function useWebSocket() {
 
 export function WebSocketProvider({
   children,
-  projectId, // 프로젝트 ID 추가
+  projectId,
   ideaId,
   documentType,
   onMessageReceived,
@@ -40,23 +41,19 @@ export function WebSocketProvider({
       onConnect: () => {
         console.log(`Connected to WebSocket for ${documentType}`);
 
-        // projectId와 ideaId를 포함한 토픽 구독
-        client.subscribe(
-          `/topic/project/${projectId}/idea/${ideaId}/${documentType}`,
-          (message) => {
-            try {
-              const data = JSON.parse(message.body);
-              if (data.data.clientId === clientId.current) return;
-              onMessageReceived(data);
-            } catch (error) {
-              console.error("Parsing error details:", {
-                error: error.message,
-                step: error.stack,
-                rawMessage: message.body,
-              });
-            }
+        client.subscribe(`/topic/${documentType}/${ideaId}`, (message) => {
+          try {
+            const data = JSON.parse(message.body);
+            if (data.data.clientId === clientId.current) return;
+            onMessageReceived(data);
+          } catch (error) {
+            console.error("Parsing error details:", {
+              error: error.message,
+              step: error.stack,
+              rawMessage: message.body,
+            });
           }
-        );
+        });
       },
       onError: (error) => {
         console.error("WebSocket Error:", error);
@@ -91,7 +88,7 @@ export function WebSocketProvider({
     };
 
     stompClient.current.publish({
-      destination: `/app/project/${projectId}/idea/${ideaId}/${documentType}`,
+      destination: `/app/${documentType}/${ideaId}`,
       body: JSON.stringify(operation),
     });
   };
@@ -104,3 +101,12 @@ export function WebSocketProvider({
     </WebSocketContext.Provider>
   );
 }
+
+WebSocketProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+  projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    .isRequired,
+  ideaId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  documentType: PropTypes.oneOf(Object.values(DOCUMENT_TYPES)).isRequired,
+  onMessageReceived: PropTypes.func.isRequired,
+};
