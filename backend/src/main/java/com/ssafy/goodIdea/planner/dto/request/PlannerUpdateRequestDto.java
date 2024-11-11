@@ -1,4 +1,4 @@
-package com.ssafy.goodIdea.planner.dto.response;
+package com.ssafy.goodIdea.planner.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

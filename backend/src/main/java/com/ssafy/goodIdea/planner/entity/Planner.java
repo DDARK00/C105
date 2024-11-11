@@ -7,7 +7,6 @@ import lombok.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-
 public class Planner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

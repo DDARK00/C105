@@ -1,54 +1,45 @@
 import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { WebSocketProvider, useWebSocket } from "../../components/websocket/WebSocketProvider";
-import { DOCUMENT_TYPES, API_ENDPOINTS } from "../../components/websocket/constants";
+import {
+  WebSocketProvider,
+  useWebSocket,
+} from "../../components/websocket/WebSocketProvider";
+import {} from "../../components/websocket/constants";
 import authAxiosInstance from "../../api/http-commons/authAxios";
 import styles from "./ProposalPage.module.css"; // styles import 추가
+import PropTypes from "prop-types";
 
-function ProposalEditor() {
+function ProposalEditor({ initialContent }) {
   const { sendMessage } = useWebSocket();
   const isLocalUpdate = useRef(false);
-  const { ideaId } = useParams();
 
   const editor = useEditor({
     autofocus: true,
     extensions: [StarterKit.configure({ history: true })],
+    content: initialContent || '',
     editorProps: {
       attributes: {
-        class: `${styles.tiptap} prose max-w-none w-full focus:outline-none`, // styles 적용
+        class: `${styles.tiptap} prose max-w-none w-full focus:outline-none`,
       },
     },
     onUpdate: ({ editor }) => {
-      const content = editor.getHTML();
       if (!isLocalUpdate.current) {
+        const content = editor.getHTML();
         sendMessage(content);
       }
     },
   });
 
   useEffect(() => {
-    const loadInitialContent = async () => {
-      try {
-        const response = await authAxiosInstance.get(
-          API_ENDPOINTS[DOCUMENT_TYPES.PROPOSAL](ideaId)
-        );
-
-        if (editor && response.data.data?.content) {
-          isLocalUpdate.current = true;
-          editor.commands.setContent(response.data.data.content);
-          isLocalUpdate.current = false;
-        }
-      } catch (error) {
-        console.error("Failed to load content:", error);
-        console.error("Failed to load content:", error);
-      }
-    };
-
-    loadInitialContent();
-  }, [ideaId, editor]);
+    if (editor && initialContent !== null) {
+      isLocalUpdate.current = true;
+      editor.commands.setContent(initialContent);
+      isLocalUpdate.current = false;
+    }
+  }, [editor, initialContent]);
 
   return (
     <EditorContent
@@ -58,17 +49,39 @@ function ProposalEditor() {
   );
 }
 
+ProposalEditor.propTypes = {
+  initialContent: PropTypes.string,
+};
+
+ProposalEditor.defaultProps = {
+  initialContent: "",
+};
+
 function ProposalPage() {
   const { projectId, ideaId } = useParams();
+  const [plannerData, setPlannerData] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await authAxiosInstance.get(
+          `api/v1/planner/${ideaId}`
+        );
+        console.log("Loaded planner data:", response.data);
+        setPlannerData(response.data.data.content || '');
+      } catch (error) {
+        console.error("기획서 데이터 로딩 실패:", error);
+        setPlannerData('');
+      }
+    };
+
+    fetchData();
+  }, [ideaId]);
 
   const handleMessageReceived = (data) => {
-    const parsedData = JSON.parse(data.data);
-    if (parsedData.content) {
-      // 에디터 내용 업데이트
-      const editor = document.querySelector('.ProseMirror')?.editor;
-      if (editor) {
-        editor.commands.setContent(parsedData.content);
-      }
+    console.log("Received message:", data);
+    if (data && data.content) {
+      setPlannerData(data.content);
     }
   };
 
@@ -76,7 +89,7 @@ function ProposalPage() {
     <WebSocketProvider
       projectId={projectId}
       ideaId={ideaId}
-      documentType={"planner"}
+      documentType="planner"
       onMessageReceived={handleMessageReceived}
     >
       <Helmet>
@@ -84,7 +97,7 @@ function ProposalPage() {
       </Helmet>
       <div className="h-full w-full flex flex-col">
         <div className="flex-1 p-4">
-          <ProposalEditor />
+          <ProposalEditor initialContent={plannerData} />
         </div>
       </div>
     </WebSocketProvider>
