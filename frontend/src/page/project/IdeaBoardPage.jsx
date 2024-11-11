@@ -1,22 +1,24 @@
 import { Helmet } from "react-helmet-async";
 import Sticker from "../../components/ideaboard/Sticker";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import StickerModal from "../../components/ideaboard/StickerModal";
 import DefaultButton from "../../components/common/DefaultButton";
+import { createIdea, deleteIdea, fetchIdea } from "../../api/axios";
+import { useParams } from "react-router-dom";
 
 function IdeaBoardPage() {
+  const param = useParams();
   const [selectedSticker, setSelectedSticker] = useState(null); // 선택된 스티커
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const [scale, setScale] = useState(1); // 확대/축소 비율
   const [isDragging, setIsDragging] = useState(false);
   const [translate, setTranslate] = useState({ x: 0, y: 0 }); // 이동 비율
+  const [spacePressed, setSpacePressed] = useState(false);
   const containerRef = useRef(null);
+  const [coordinates, setCoordinates] = useState([]); // 스티커 상태
 
+  // 기본 브라우저 확대/축소 막기
   useEffect(() => {
-    console.log(selectedSticker);
-  }, [selectedSticker]);
-  useEffect(() => {
-    // 기본 브라우저 확대/축소 막기
     const preventDefaultZoom = (e) => {
       if (e.ctrlKey && e.type === "wheel") {
         e.preventDefault();
@@ -32,193 +34,88 @@ function IdeaBoardPage() {
     };
   }, []);
 
-  // 첫 6개 좌표를 각 섹션 범위 내에서 랜덤으로 생성
-  // const generateSectionCoordinates = () => {
-  //   const coordinates = [
-  //     { xRange: [0, 14], yRange: [0, 28] },
-  //     { xRange: [28, 43], yRange: [0, 28] },
-  //     { xRange: [57, 86], yRange: [0, 28] },
-  //     { xRange: [0, 14], yRange: [41, 71] },
-  //     { xRange: [28, 43], yRange: [41, 71] },
-  //     { xRange: [57, 86], yRange: [41, 71] },
-  //   ];
+  // 마우스로 화면 끌 때 스페이스바 누르고 움직임
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === " ") {
+        e.preventDefault();
+        setSpacePressed(true); // 스페이스바 눌림 상태
+      }
+    };
 
-  //   return coordinates.map(({ xRange, yRange }, index) => ({
-  //     x: `${xRange[0] + Math.random() * (xRange[1] - xRange[0])}%`,
-  //     y: `${yRange[0] + Math.random() * (yRange[1] - yRange[0])}%`,
-  //     delay: index * 100,
-  //   }));
-  // };
+    const handleKeyUp = (e) => {
+      if (e.key === " ") {
+        setSpacePressed(false); // 스페이스바 떼짐 상태
+      }
+    };
 
-  // 나머지 좌표는 전체 범위에서 랜덤으로 생성
-  // const generateRandomCoordinates = (count) => {
-  //   const coordinates = [];
-  //   for (let i = 0; i < count; i++) {
-  //     coordinates.push({
-  //       x: `${Math.random() * 86}%`, // x 범위 0% ~ 86%
-  //       y: `${Math.random() * 71}%`, // y 범위 0% ~ 71%
-  //       delay: (i + 6) * 100,
-  //     });
-  //   }
-  //   return coordinates;
-  // };
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
 
-  // 첫 6개의 섹션 랜덤 좌표 + 나머지 전체 범위 랜덤 좌표
-  const [coordinates, setCoordinates] = useState([
-    // ...generateSectionCoordinates(),
-    // ...generateRandomCoordinates(2),
-    {
-      x: "4%",
-      y: "0%",
-      delay: 0,
-      color: "#FFF8B7",
-      darkColor: "#E8DB78",
-      animation: "animate-tinDownIn",
-    },
-    {
-      x: "30%",
-      y: "8%",
-      delay: 100,
-      color: "#CFF3FF",
-      darkColor: "#A4E1F5",
-      animation: "animate-tinUpIn",
-    },
-    {
-      x: "67%",
-      y: "20%",
-      delay: 200,
-      color: "#C6FFDC",
-      darkColor: "#77FAA9",
-      animation: "animate-tinRightIn",
-    },
-    {
-      x: "8%",
-      y: "70%",
-      delay: 300,
-      color: "#FCCDF7",
-      darkColor: "#EF99E6",
-      animation: "animate-tinLeftIn",
-    },
-    {
-      x: "33%",
-      y: "55%",
-      delay: 400,
-      color: "#E8CAFC",
-      darkColor: "#D2A3F1",
-      animation: "animate-tinDownIn",
-    },
-    {
-      x: "86%",
-      y: "41%",
-      delay: 500,
-      color: "#D2D2F8",
-      darkColor: "#B1B1EE",
-      animation: "animate-tinUpIn",
-    },
-    {
-      x: "56%",
-      y: "54%",
-      delay: 600,
-      color: "#FFF8B7",
-      darkColor: "#E8DB78",
-      animation: "animate-tinRightIn",
-    },
-    {
-      x: "12%",
-      y: "38%",
-      delay: 700,
-      color: "#CFF3FF",
-      darkColor: "#A4E1F5",
-      animation: "animate-tinLeftIn",
-    },
-    {
-      x: "40%",
-      y: "71%",
-      delay: 800,
-      color: "#C6FFDC",
-      darkColor: "#77FAA9",
-      animation: "animate-tinDownIn",
-    },
-  ]);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
 
-  // 애니메이션
-  const animations = [
-    "animate-tinDownIn",
-    "animate-tinUpIn",
-    "animate-tinRightIn",
-    "animate-tinLeftIn",
-  ];
+  const fetchIdeas = useCallback(async () => {
+    const data = await fetchIdea(param?.id);
+    if (data) {
+      setCoordinates(data);
+    }
+  }, [param?.id]);
 
-  // 색상 배열 정의
-  const colors = [
-    "#FFF8B7",
-    "#CFF3FF",
-    "#C6FFDC",
-    "#FCCDF7",
-    "#E8CAFC",
-    "#D2D2F8",
-  ];
+  // 아이디어 목록 조회
+  useEffect(() => {
+    fetchIdeas();
+  }, [param?.id, fetchIdeas]);
 
-  const darkColors = [
-    "#E8DB78",
-    "#A4E1F5",
-    "#77FAA9",
-    "#EF99E6",
-    "#D2A3F1",
-    "#B1B1EE",
-  ];
-
-  // 스티커 클릭 시 선택 상태로 변경
+  // 스티커 클릭 시 선택 상태 변경
   const handleStickerClick = (index) => {
     setSelectedSticker(coordinates[index]);
   };
 
   // 스티커 추가 함수
-  const handleAddSticker = () => {
-    console.log("아이디어(스티커) 생성");
+  const handleAddSticker = async () => {
+    await createIdea(param?.id);
+    fetchIdeas();
   };
 
   // 스티커 삭제 함수
-  const handleDeleteSticker = () => {
-    if (selectedSticker) {
-      setCoordinates((prev) =>
-        prev.filter((sticker) => sticker !== selectedSticker)
-      );
-      setSelectedSticker(null); // 삭제 후 선택 해제
-    }
+  const handleDeleteSticker = async () => {
+    await deleteIdea(selectedSticker?.ideaId);
+    fetchIdeas();
+    setSelectedSticker(null); // 선택된 스티커 초기화
   };
 
   // 마우스로 화면을 드래그하여 이동하는 기능
   const handleMouseDown = (e) => {
+    if (!spacePressed) return; // 스페이스바가 눌린 상태에서만 화면 이동 활성화
+
     setIsDragging(true);
-    e.preventDefault(); // 기본 마우스 동작(텍스트 선택 등)을 방지
-    const startX = e.clientX; // 드래그 시작 X 좌표
-    const startY = e.clientY; // 드래그 시작 Y 좌표
-    const startTranslate = { ...translate }; // 현재 이동 상태 저장
+    e.preventDefault();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startTranslate = { ...translate };
 
-    // 마우스를 움직일 때 호출되는 함수
     const handleMouseMove = (moveEvent) => {
-      const dx = ((moveEvent.clientX - startX) / scale) * 2; // X축 이동 거리, 확대/축소 비율 반영
-      const dy = ((moveEvent.clientY - startY) / scale) * 2; // Y축 이동 거리, 확대/축소 비율 반영
+      const dx = ((moveEvent.clientX - startX) / scale) * 2;
+      const dy = ((moveEvent.clientY - startY) / scale) * 2;
 
-      // 부모 요소의 크기를 참조하여 화면 경계 설정
       const { offsetWidth: parentWidth, offsetHeight: parentHeight } =
         containerRef.current;
 
-      // 확대된 상태에 따른 X축 최대 이동 범위
       const maxTranslateX = (parentWidth * scale - parentWidth) / 2;
-      // 확대된 상태에 따른 Y축 최대 이동 범위
       const maxTranslateY = (parentHeight * scale - parentHeight) / 2;
 
-      // translate 값을 화면 경계 내로 제한하여 이동
       setTranslate({
         x: Math.max(
-          -maxTranslateX, // 최소 X값
-          Math.min(startTranslate.x + dx, maxTranslateX) // 최대 X값
+          -maxTranslateX,
+          Math.min(startTranslate.x + dx, maxTranslateX)
         ),
         y: Math.max(
-          -maxTranslateY, // 최소 Y값
-          Math.min(startTranslate.y + dy, maxTranslateY) // 최대 Y값
+          -maxTranslateY,
+          Math.min(startTranslate.y + dy, maxTranslateY)
         ),
       });
     };
@@ -230,7 +127,6 @@ function IdeaBoardPage() {
       window.removeEventListener("mouseup", handleMouseUp); // 마우스 버튼 떼기 이벤트 제거
     };
 
-    // 드래그 시작 시 이벤트 리스너 추가
     window.addEventListener("mousemove", handleMouseMove); // 마우스 이동 감지
     window.addEventListener("mouseup", handleMouseUp); // 마우스 버튼 떼기 감지
   };
@@ -239,7 +135,6 @@ function IdeaBoardPage() {
   const handleWheel = (e) => {
     if (e.ctrlKey) {
       // ctrl 키와 함께 휠을 움직일 때만 확대/축소 적용
-      e.preventDefault(); // 기본 확대/축소 동작 막기
       const zoomIntensity = 0.2; // 확대/축소 강도
       let newScale = scale - e.deltaY * zoomIntensity * 0.01; // 스케일 조정
       newScale = Math.min(Math.max(newScale, 1), 3); // 스케일을 최소 1배, 최대 3배로 제한
@@ -303,14 +198,14 @@ function IdeaBoardPage() {
           }}
         >
           {coordinates.map(
-            ({ x, y, delay, color, darkColor, animation }, index) => (
+            ({ ideaId, x, y, color, darkColor, animation }, index) => (
               <div
-                key={index}
-                className="relative"
-                style={{ left: x, top: y, position: "absolute" }}
+                key={ideaId}
+                style={{ left: `${x}%`, top: `${y}%`, position: "absolute" }}
               >
                 <Sticker
-                  delay={delay}
+                  x={`${x}%`}
+                  y={`${y}%`}
                   color={color}
                   darkColor={darkColor}
                   animation={animation}
@@ -321,21 +216,19 @@ function IdeaBoardPage() {
                   <div
                     className="absolute flex flex-row items-center space-x-2 z-10"
                     style={{
-                      top: "-1.2rem", // 스티커의 상단에서 약간 위로
-                      left: "4.5rem", // 스티커의 중심을 기준으로 위치
-                      transform: "translate(-50%, -50%)", // 중앙 정렬 및 약간 위로 이동
+                      top: "-1.2rem",
+                      left: "5rem",
+                      transform: "translate(-50%, -50%)",
                     }}
                   >
                     <button
                       className="px-2 py-1 bg-blue-500 text-white rounded text-xs whitespace-nowrap"
-                      style={{ minWidth: "60px" }}
                       onClick={() => setIsModalOpen(true)}
                     >
                       상세보기
                     </button>
                     <button
                       className="px-2 py-1 bg-red-500 text-white rounded text-xs whitespace-nowrap"
-                      style={{ minWidth: "60px" }}
                       onClick={handleDeleteSticker}
                     >
                       삭제
@@ -359,8 +252,8 @@ function IdeaBoardPage() {
         type="button"
         text={
           <svg
-            width="30"
-            height="30"
+            width="24"
+            height="24"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -387,7 +280,7 @@ function IdeaBoardPage() {
           <div
             className="absolute bottom-0 w-full bg-blue-500 transition-all duration-200 ease-in-out"
             style={{
-              height: `${((scale - 1) / 2) * 100}%`, // scale을 기반으로 높이 설정
+              height: `${((scale - 1) / 2) * 100} %`, // scale을 기반으로 높이 설정
             }}
           />
         </div>
