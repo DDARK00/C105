@@ -1,6 +1,6 @@
 import { createContext, useContext, useRef, useEffect } from "react";
 import { Client } from "@stomp/stompjs";
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import { DOCUMENT_TYPES } from "./constants";
 
 const WebSocketContext = createContext(null);
@@ -21,13 +21,18 @@ export function WebSocketProvider({
 
   useEffect(() => {
     const client = new Client({
-      webSocketFactory: () => {
-        const socket = new WebSocket("wss://oracle1.mypjt.xyz/ws");
-        socket.onerror = (error) => {
-          console.error("WebSocket native error:", error);
-        };
-        return socket;
-      },
+        webSocketFactory: () => {
+          // 개발/프로덕션 환경에 따른 WebSocket URL
+          const wsUrl = window.location.hostname === 'localhost'
+            ? 'ws://localhost:8080/ws'
+            : 'wss://oracle1.mypjt.xyz/ws';
+            
+          const socket = new WebSocket(wsUrl);
+          socket.onerror = (error) => {
+            console.error("WebSocket Error:", error);
+          };
+          return socket;
+        },
 
       connectHeaders: {
         Origin: window.location.origin,
@@ -35,8 +40,8 @@ export function WebSocketProvider({
 
       reconnectDelay: 5000,
       maxRetries: 5,
-      heartbeatIncoming: 10000,
-      heartbeatOutgoing: 10000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
 
       onConnect: () => {
         console.log(`Connected to WebSocket for ${documentType}`);
@@ -104,8 +109,7 @@ export function WebSocketProvider({
 
 WebSocketProvider.propTypes = {
   children: PropTypes.node.isRequired,
-  projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-    .isRequired,
+  projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   ideaId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   documentType: PropTypes.oneOf(Object.values(DOCUMENT_TYPES)).isRequired,
   onMessageReceived: PropTypes.func.isRequired,

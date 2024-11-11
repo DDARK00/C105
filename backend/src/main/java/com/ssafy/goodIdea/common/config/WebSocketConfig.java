@@ -56,7 +56,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws")
                 .setAllowedOrigins(
                     "http://localhost:5173",
-                    "https://oracle1.mypjt.xyz"
+                    "https://oracle1.mypjt.xyz",
+                    "wss://oracle1.mypjt.xyz",
+                    "ws://localhost:8080"
                 )
                 .setHandshakeHandler(new DefaultHandshakeHandler() {
                     /**

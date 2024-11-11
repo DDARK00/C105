@@ -15,15 +15,15 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     hmr: {
-      protocol: "ws",
+      protocol: "wss",
     },
     proxy: {
       "/api": {
         target: "http://localhost:8080",
         changeOrigin: true,
       },
-      "/ws": {
-        target: "ws://localhost:8080",
+      "/wss": {
+        target: "wss://oracle1.mypjt.xyz/ws",
         ws: true,
       },
     },
