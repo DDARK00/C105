@@ -22,14 +22,17 @@ export function WebSocketProvider({
   useEffect(() => {
     const client = new Client({
         webSocketFactory: () => {
-          // 개발/프로덕션 환경에 따른 WebSocket URL
           const wsUrl = window.location.hostname === 'localhost'
             ? 'ws://localhost:8080/ws'
-            : 'wss://oracle1.mypjt.xyz/ws';
+            : `wss://${window.location.hostname}/ws`;
             
           const socket = new WebSocket(wsUrl);
           socket.onerror = (error) => {
             console.error("WebSocket Error:", error);
+            if (error.target) {
+                console.error("ReadyState:", error.target.readyState);
+                console.error("URL:", error.target.url);
+            }
           };
           return socket;
         },
@@ -66,6 +69,9 @@ export function WebSocketProvider({
       onDisconnect: () => {
         console.log("Disconnected from WebSocket");
       },
+      debug: (str) => {
+        console.log("STOMP Debug:", str);
+      }
     });
 
     client.activate();
