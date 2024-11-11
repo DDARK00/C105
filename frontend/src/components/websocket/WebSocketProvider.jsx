@@ -24,7 +24,7 @@ export function WebSocketProvider({
         webSocketFactory: () => {
           const wsUrl = window.location.hostname === 'localhost'
             ? 'ws://localhost:8080/ws'
-            : `wss://${window.location.hostname}:8080/ws`;
+            : `wss://oracle1.mypjt.xyz/ws`;
             
           console.log("Attempting to connect to:", wsUrl);
           
@@ -33,7 +33,7 @@ export function WebSocketProvider({
           socket.onopen = () => {
             console.log("WebSocket connection established");
           };
-          
+
           socket.onerror = (error) => {
             console.error("WebSocket Error:", error);
             console.error("Connection State:", {

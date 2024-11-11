@@ -128,9 +128,7 @@ public class IdeaService {
      * */
     public List<IdeaListResponseDto> getIdeas(Long projectId) {
         List<Idea> ideas = ideaRepository.findByProjectId(projectId);
-        if (ideas.isEmpty()) {
-            throw new BaseException(ErrorType.IDEA_NOT_FOUND);
-        }
+
         return ideas.stream()
             .<IdeaListResponseDto>map(idea -> IdeaListResponseDto.builder()
                 .ideaId(idea.getId())
