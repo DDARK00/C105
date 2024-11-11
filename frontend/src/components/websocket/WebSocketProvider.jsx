@@ -24,16 +24,34 @@ export function WebSocketProvider({
         webSocketFactory: () => {
           const wsUrl = window.location.hostname === 'localhost'
             ? 'ws://localhost:8080/ws'
-            : `wss://${window.location.hostname}/ws`;
+            : `wss://${window.location.hostname}:8080/ws`;
             
+          console.log("Attempting to connect to:", wsUrl);
+          
           const socket = new WebSocket(wsUrl);
+          
+          socket.onopen = () => {
+            console.log("WebSocket connection established");
+          };
+          
           socket.onerror = (error) => {
             console.error("WebSocket Error:", error);
-            if (error.target) {
-                console.error("ReadyState:", error.target.readyState);
-                console.error("URL:", error.target.url);
-            }
+            console.error("Connection State:", {
+              readyState: socket.readyState,
+              url: socket.url,
+              protocol: socket.protocol,
+              bufferedAmount: socket.bufferedAmount
+            });
           };
+          
+          socket.onclose = (event) => {
+            console.log("WebSocket closed:", {
+              code: event.code,
+              reason: event.reason,
+              wasClean: event.wasClean
+            });
+          };
+          
           return socket;
         },
 
@@ -70,7 +88,7 @@ export function WebSocketProvider({
         console.log("Disconnected from WebSocket");
       },
       debug: (str) => {
-        console.log("STOMP Debug:", str);
+        console.log(`STOMP Debug [${new Date().toISOString()}]:`, str);
       }
     });
 
