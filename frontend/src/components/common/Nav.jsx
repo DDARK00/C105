@@ -7,6 +7,7 @@ function Nav() {
   const location = useLocation();
   const navigate = useNavigate();
   const param = useParams();
+  
   // ProjectStore에서 필요한 정보 가져오기
   const { setProjectInfo, mainIdea, setMainIdea } = useProjectStore();
 
