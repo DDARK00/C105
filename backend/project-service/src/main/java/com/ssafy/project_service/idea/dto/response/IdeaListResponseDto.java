@@ -10,5 +10,11 @@ public class IdeaListResponseDto {
     private String serviceName;
     private String introduction;
     private float averageRating;
+    private String x;
+    private String y;
+    private String color;
+    private String darkColor;
+    private String animation;
 }
+
 

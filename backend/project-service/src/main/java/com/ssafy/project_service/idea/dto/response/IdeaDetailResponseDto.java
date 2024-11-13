@@ -16,7 +16,7 @@ public class IdeaDetailResponseDto {
     private Long ideaId;
     private String serviceName;
     private String background;
-    private String introduction; 
+    private String introduction;
     private String target;
     private String expectedEffect;
     private float averageRating;
@@ -34,4 +34,6 @@ public class IdeaDetailResponseDto {
         private LocalDateTime createdAt;
     }
 }
+
+
 

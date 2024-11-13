@@ -25,6 +25,12 @@ public class AuthVerificationFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getPath().toString();
         String token = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
+        HttpHeaders headers = exchange.getRequest().getHeaders();
+        System.out.println("Incoming Request Headers:");
+        headers.forEach((headerName, headerValues) ->
+                System.out.println(headerName + ": " + String.join(", ", headerValues))
+        );
+
         if ((path.startsWith("/user-service/api/v1/user/") || path.startsWith("/project-service/api/v1/")) && token != null) {
             System.out.println("AuthVerificationFilter: Sending request to AUTH-SERVICE for verification with token: " + token);
 

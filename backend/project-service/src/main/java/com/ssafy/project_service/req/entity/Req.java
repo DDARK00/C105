@@ -20,7 +20,7 @@ public class Req extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reqDocs_id", nullable = false)
-    private ReqDocs reqDocsId;
+    private ReqDocs reqDocs;
 
     @Column(length = 1000, nullable = false)
     private String url; // URL
@@ -32,8 +32,8 @@ public class Req extends BaseTime {
     private String description; // 설명
 
     @Builder
-    public Req(ReqDocs reqDocsId, String url, String domain, String description) {
-        this.reqDocsId = reqDocsId;
+    public Req(ReqDocs reqDocs, String url, String domain, String description) {
+        this.reqDocs = reqDocs;
         this.url = url;
         this.domain = domain;
         this.description = description;

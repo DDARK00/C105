@@ -1,7 +1,6 @@
-package com.ssafy.project_service.apiDocs.repository;
+package com.ssafy.project_service.erd.repository;
 
-
-import com.ssafy.project_service.apiDocs.entity.APIDocs;
+import com.ssafy.project_service.erd.entity.ERD;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,10 +9,10 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface APIDocsRepository extends JpaRepository<APIDocs, Long> {
+public interface ERDRepository extends JpaRepository<ERD, Long> {
     @Modifying
-    @Query("DELETE FROM APIDocs a WHERE a.idea.id = :ideaId")
+    @Query("DELETE FROM ERD e WHERE e.idea.id = :ideaId")
     void deleteAllByIdeaId(@Param("ideaId") Long ideaId);
-    APIDocs findByIdea_Id(Long ideaId);
 
 }
+

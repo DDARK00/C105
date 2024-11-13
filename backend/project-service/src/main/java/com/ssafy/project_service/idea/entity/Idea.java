@@ -1,7 +1,5 @@
 package com.ssafy.project_service.idea.entity;
 
-import java.util.Set;
-
 
 import com.ssafy.project_service.common.entity.BaseTime;
 import com.ssafy.project_service.idea.dto.request.IdeaUpdateRequestDto;
@@ -40,8 +38,23 @@ public class Idea extends BaseTime {
     @Column(nullable = false)
     private float averageRating = 0.0f; // 평균 평점
 
+    @Column(nullable = false)
+    private String x;
+
+    @Column(nullable = false)
+    private String y;
+
+    @Column(nullable = false)
+    private String color;
+
+    @Column(nullable = false)
+    private String darkColor;
+
+    @Column(nullable = false)
+    private String animation;
+
     @Builder
-    public Idea(Project project, String serviceName, String background, String introduction, String target, String expectedEffect, float averageRating) {
+    public Idea(Project project, String serviceName, String background, String introduction, String target, String expectedEffect, float averageRating, String x, String y, String color, String darkColor, String animation) {
         this.project = project;
         this.serviceName = serviceName;
         this.background = background;
@@ -49,6 +62,12 @@ public class Idea extends BaseTime {
         this.target = target;
         this.expectedEffect = expectedEffect;
         this.averageRating = 0.0f;
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.darkColor = darkColor;
+        this.animation = animation;
+
     }
 
     /*
@@ -67,5 +86,10 @@ public class Idea extends BaseTime {
         this.introduction = dto.getIntroduction();
         this.target = dto.getTarget();
         this.expectedEffect = dto.getExpectedEffect();
+        this.x = dto.getX();
+        this.y = dto.getY();
+        this.color = dto.getColor();
+        this.darkColor = dto.getDarkColor();
+        this.animation = dto.getAnimation();
     }
 }

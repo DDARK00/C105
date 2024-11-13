@@ -43,6 +43,7 @@ public class ProjectService {
 
     public Optional<Project> findByUserIdAndProjectType(Long userId, ProjectType projectType) {
         // UserId를 통해 UserProject 목록을 가져옴
+        System.out.println("findByUserIdAndProjectType " + userId);
         List<UserProject> userProjects = userProjectService.findByUserId(userId);
 
         // 해당 userProjects에서 ProjectType 필터링
@@ -106,6 +107,7 @@ public class ProjectService {
                                     UserDto us = up.getUser();
                                     return UserDto.builder()
                                             .id(us.getId())
+                                            .name(us.getName())
                                             .grade(us.getGrade())
                                             .locationType(us.getLocationType())
                                             .username(us.getUsername())
@@ -158,6 +160,7 @@ public class ProjectService {
                                         UserDto us = up.getUser();
                                         return UserDto.builder()
                                                 .id(us.getId())
+                                                .name(us.getName())
                                                 .grade(us.getGrade())
                                                 .locationType(us.getLocationType())
                                                 .username(us.getUsername())
@@ -174,30 +177,49 @@ public class ProjectService {
      */
     public List<ProjectResponseDto> getUserProjects(UserDto user, Optional<ProjectType> projectType, Optional<Integer> grade) {
         List<UserProject> userProjects;
+        System.out.println(projectType.toString());
+        System.out.println(projectType.isPresent());
 
-        // 동적 쿼리 처리
-        if (projectType.isPresent() && grade.isPresent()) {
-            userProjects = userProjectService.findByUserIdAndGradeAndProjectType(user.getId(), grade.get(), projectType.get());
-        } else if (projectType.isPresent()) {
-            userProjects = userProjectService.findByUserIdAndProjectType(user.getId(), projectType.get());
-        } else if (grade.isPresent()) {
-            userProjects = userProjectService.findByUserIdAndGrade(user.getId(), grade.get());
-        } else {
-            userProjects = userProjectService.findByUserId(user.getId());
+        if ( user.getRoleType() != RoleType.CONSULTANT) {
+            // 동적 쿼리 처리
+            if (projectType.isPresent() && grade.isPresent()) {
+                userProjects = userProjectService.findByUserIdAndGradeAndProjectType(user.getId(), grade.get(), projectType.get());
+            } else if (projectType.isPresent()) {
+                userProjects = userProjectService.findByUserIdAndProjectType(user.getId(), projectType.get());
+            } else if (grade.isPresent()) {
+                userProjects = userProjectService.findByUserIdAndGrade(user.getId(), grade.get());
+            } else {
+                userProjects = userProjectService.findByUserId(user.getId());
+            }
+
+            return userProjects.stream()
+                    .map( userProject -> {
+                        Project project = userProject.getProject();
+                        return ProjectResponseDto.builder()
+                                .project_id(project.getId())
+                                .teamName(project.getTeamName())
+                                .gitlabName(project.getGitlabName())
+                                .gitlab_url(project.getGitlab_url())
+                                .projectType(project.getProjectType())
+                                .build();
+                    })
+                    .collect(Collectors.toList());
         }
-
-        return userProjects.stream()
-                .map( userProject -> {
-                    Project project = userProject.getProject();
+        else {
+            List<Project> projects = projectRepository.findAll();
+            return projects.stream().map( (project) -> {
                     return ProjectResponseDto.builder()
                             .project_id(project.getId())
                             .teamName(project.getTeamName())
                             .gitlabName(project.getGitlabName())
                             .gitlab_url(project.getGitlab_url())
                             .projectType(project.getProjectType())
-                        .build();
-                })
-                .collect(Collectors.toList());
+                            .build();
+                    }
+            ).collect(Collectors.toList());
+        }
+
+
     }
 
     /*

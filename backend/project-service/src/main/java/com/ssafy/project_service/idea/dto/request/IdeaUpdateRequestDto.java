@@ -17,4 +17,9 @@ public class IdeaUpdateRequestDto {
     private String introduction;
     private String target;
     private String expectedEffect;
+    private String x;
+    private String y;
+    private String color;
+    private String darkColor;
+    private String animation;
 }
