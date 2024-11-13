@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useProjectStore from "../../store/useProjectStore";
 import authAxiosInstance from "../../api/http-commons/authAxios";
+import { RoomProvider } from "@liveblocks/react";
 
 function Nav() {
   const location = useLocation();
@@ -233,19 +234,21 @@ function Nav() {
                     isResultOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
                   }`}
                 >
-                  <li className="mt-5">
-                    <Link
-                      to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/proposal`}
-                      className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                        activeItem === "기획서"
-                          ? "bg-[#666666] cursor-default"
-                          : "cursor-pointer"
-                      }`}
-                      onClick={() => handleItemClick("기획서")}
-                    >
-                      기획서
-                    </Link>
-                  </li>
+                  <RoomProvider id={`proposal-${mainIdea?.ideaId}`}>
+                    <li className="mt-5">
+                      <Link
+                        to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/proposal`}
+                        className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
+                          activeItem === "기획서"
+                            ? "bg-[#666666] cursor-default"
+                            : "cursor-pointer"
+                        }`}
+                        onClick={() => handleItemClick("기획서")}
+                      >
+                        기획서
+                      </Link>
+                    </li>
+                  </RoomProvider>
                   <li>
                     <Link
                       to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/requirementsspecification`}

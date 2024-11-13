@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import "./App.css";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { LiveblocksProvider } from "@liveblocks/react";
 import MainPage from "./page/MainPage";
 import NotFoundPage from "./page/NotFoundPage";
 import CommonLayout from "./components/CommonLayout";
@@ -46,36 +47,41 @@ function App() {
                   path="/project/:id/ideaboard"
                   element={<IdeaBoardPage />}
                 />
+                <LiveblocksProvider
+                  client={{
+                    publicApiKey: import.meta.env.VITE_LIVEBLOCKS_PUBLIC_KEY,
+                  }}
+                >
+                  {/* 기획서 페이지 */}
+                  <Route
+                    path="/project/:id/idea/:ideaId/proposal"
+                    element={<ProposalPage />}
+                  />
 
-                {/* 기획서 페이지 */}
-                <Route
-                  path="/project/:id/idea/:ideaId/proposal"
-                  element={<ProposalPage />}
-                />
+                  {/* api명세서 페이지 */}
+                  <Route
+                    path="/project/:id/idea/:ideaId/apispecification"
+                    element={<ApiSpecificationPage />}
+                  />
 
-                {/* api명세서 페이지 */}
-                <Route
-                  path="/project/:id/idea/:ideaId/apispecification"
-                  element={<ApiSpecificationPage />}
-                />
+                  {/* ERD페이지 */}
+                  <Route
+                    path="/project/:id/idea/:ideaId/erd"
+                    element={<ERDPage />}
+                  />
 
-                {/* ERD페이지 */}
-                <Route
-                  path="/project/:id/idea/:ideaId/erd"
-                  element={<ERDPage />}
-                />
+                  {/* 요구사항 명세서 페이지 */}
+                  <Route
+                    path="/project/:id/idea/:ideaId/requirementsspecification"
+                    element={<RequirementsSpecificationPage />}
+                  />
 
-                {/* 요구사항 명세서 페이지 */}
-                <Route
-                  path="/project/:id/idea/:ideaId/requirementsspecification"
-                  element={<RequirementsSpecificationPage />}
-                />
-
-                {/* 플로우차트 페이지 */}
-                <Route
-                  path="/project/:id/idea/:ideaId/flowchart"
-                  element={<FlowChartPage />}
-                />
+                  {/* 플로우차트 페이지 */}
+                  <Route
+                    path="/project/:id/idea/:ideaId/flowchart"
+                    element={<FlowChartPage />}
+                  />
+                </LiveblocksProvider>
               </Route>
             </Route>
 
