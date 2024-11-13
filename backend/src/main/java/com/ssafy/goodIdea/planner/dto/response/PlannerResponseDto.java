@@ -1,25 +1,27 @@
 package com.ssafy.goodIdea.planner.dto.response;
 
 import com.ssafy.goodIdea.planner.entity.Planner;
-
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
+@NoArgsConstructor
 public class PlannerResponseDto {
-    private Long ideaId;
+    private Long plannerId;
     private String content;
+    private Long ideaId; // Idea 엔티티와 관련된 ID를 저장
+
+    public PlannerResponseDto(Long plannerId, String content, Long ideaId) {
+        this.plannerId = plannerId;
+        this.content = content;
+        this.ideaId = ideaId;
+    }
 
     public static PlannerResponseDto from(Planner planner) {
-        return PlannerResponseDto.builder()
-            .ideaId(planner.getIdea().getId())
-            .content(planner.getContent())
-            .build();
+        return new PlannerResponseDto(
+                planner.getId(),
+                planner.getContent(),
+                planner.getIdea().getId()
+        );
     }
-} 
+}

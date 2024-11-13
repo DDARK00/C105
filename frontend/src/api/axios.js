@@ -137,3 +137,18 @@ export const getProposal = async (ideaId) => {
   // console.log(response.data);
   return response?.data?.data;
 };
+
+// --------------------liveblocks api 시작---------------------
+export const getLiveblcoksToken = async (ideaId, documentType) => {
+  const response = await helper(
+    () =>
+      authAxiosInstance.post("api/v1/liveblocks/auth", {
+        ideaId,
+        documentType,
+      }),
+    "Liveblocks 토큰 발급"
+  );
+  if (!response.ok) return;
+  // console.log(response.data);
+  return response?.data?.data; // 토큰 반환
+};

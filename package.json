@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "sockjs-client": "^1.6.1"
+    "sockjs-client": "^1.6.1",
+    "y-websocket": "^2.0.4",
+    "yjs": "^13.6.20"
   }
 }

@@ -17,7 +17,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(yjsWebSocketHandler, "/ws/**")
+        registry.addHandler(yjsWebSocketHandler, "ws/**")
                 .setAllowedOrigins(
                     "http://localhost:5173",
                     "https://oracle1.mypjt.xyz"

@@ -3,7 +3,6 @@ import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { debounce } from "lodash";
 import PropTypes from "prop-types";
-import authAxiosInstance from "../../api/http-commons/authAxios";
 
 const WebSocketContext = createContext(null);
 
@@ -29,20 +28,6 @@ export function WebSocketProvider({
     }, 500)
   ).current;
 
-  // 자동 저장을 위한 디바운스 함수
-  const debouncedSave = useRef(
-    debounce(async (content) => {
-      try {
-        await authAxiosInstance.put(`api/v1/planner/${ideaId}`, {
-          content: content,
-        });
-        console.log("Content saved successfully");
-      } catch (error) {
-        console.error("Failed to save content:", error);
-      }
-    }, 1000) // 1초 딜레이
-  ).current;
-
   useEffect(() => {
     // YJS 문서 초기화
     ydoc.current = new Y.Doc();
@@ -56,23 +41,28 @@ export function WebSocketProvider({
       {
         connect: true,
         WebSocketPolyfill: WebSocket,
-        // 연결 재시도 설정 추가
-        maxBackoffTime: 3000,
-        reconnectInterval: 1000,
+        // 연결 유지 설정 추가
+        maxBackoffTime: 10000,        // 최대 재연결 대기 시간
+        reconnectInterval: 3000,      // 재연결 시도 간격
+        disableBc: true,             // 브로드캐스트 채널 비활성화
+        keepAliveInterval: 30000,     // keepAlive 간격
       }
     );
+
+    console.log("===== WebSocket 연결 시도 =====");
+    console.log("연결 URL:", `ws://localhost:8080/ws/${documentType}/${ideaId}`);
 
     wsProvider.current = wsProvider;
 
     // 연결 상태 모니터링
     wsProvider.on("status", ({ status }) => {
-      console.log("WebSocket status:", status);
+      console.log("WebSocket 상태 변경:", status);
       setConnectionStatus(status);
     });
 
     // 에러 핸들링 추가
     wsProvider.on("connection-error", (error) => {
-      console.error("WebSocket connection error:", error);
+      console.error("WebSocket 연결 에러:", error);
     });
 
     // 텍스트 변경 관찰
@@ -85,7 +75,6 @@ export function WebSocketProvider({
 
     return () => {
       debouncedCallback.cancel();
-      debouncedSave.cancel();
       if (wsProvider) {
         wsProvider.disconnect();
         setTimeout(() => {
@@ -98,18 +87,36 @@ export function WebSocketProvider({
     };
   }, [ideaId, documentType, onMessageReceived, debouncedCallback]);
 
-  const sendMessage = (content) => {
-    if (!ytext.current) return;
-
-    // YJS 문서 업데이트
-    ydoc.current.transact(() => {
-      ytext.current.delete(0, ytext.current.length);
-      ytext.current.insert(0, content);
-    });
-
-    // 변경사항 자동 저장
-    debouncedSave(content);
-  };
+  const sendMessage = debounce((content) => {
+    try {
+      if (wsProvider.current && wsProvider.current.connected) {
+        const message = {
+          ideaId: ideaId,
+          content: content,
+          timestamp: Date.now()
+        };
+        
+        console.log("===== WebSocket 메시지 전송 시도 =====");
+        console.log("전송할 메시지:", message);
+        
+        // ytext를 통해 실시간 업데이트
+        ytext.current.delete(0, ytext.current.length);
+        ytext.current.insert(0, content);
+        
+        // 웹소켓으로 메시지 전송
+        wsProvider.current.send(JSON.stringify(message));
+        console.log("메시지 전송 완료");
+        
+        // 디바운스된 콜백 실행
+        debouncedCallback(content);
+      } else {
+        console.error("WebSocket이 연결되어 있지 않음!");
+        console.log("wsProvider 상태:", wsProvider.current);
+      }
+    } catch (error) {
+      console.error("WebSocket 메시지 전송 중 에러:", error);
+    }
+  }, 100); // 100ms 디바운스로 빠른 실시간 업데이트 유지
 
   return (
     <WebSocketContext.Provider value={{ sendMessage, connectionStatus }}>

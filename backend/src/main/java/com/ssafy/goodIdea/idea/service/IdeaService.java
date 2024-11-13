@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Objects;
 
+import com.ssafy.goodIdea.api.repository.APIRepository;
+import com.ssafy.goodIdea.req.repository.ReqRepository;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.goodIdea.apiDocs.entity.APIDocs;
@@ -51,6 +53,9 @@ public class IdeaService {
     private final APIDocsRepository apiDocsRepository;
     private final ERDRepository erdRepository;
     private final FlowChartRepository flowChartRepository;
+    private final APIRepository apiRepository;
+    private final ReqRepository reqRepository;
+
     /*
      * 아이디어 생성
      * return created idea
@@ -295,15 +300,26 @@ public class IdeaService {
         // 해당 프로젝트의 팀원이 아닐 경우 오류 발생
         checkUserInProject(user, projectId);
 
-        // 1. 먼저 연관된 댓글들을 삭제
-        commentRepository.deleteByIdeaId(ideaId);
-
         // 2. 프로젝트의 메인 아이디어였다면 null로 설정
         Project project = idea.getProject();
         if (project.getMainIdeaId() != null && project.getMainIdeaId().equals(ideaId)) {
             project.setMainIdeaId(null);
             projectRepository.save(project);
         }
+
+        plannerRepository.deleteAllByIdeaId(ideaId);
+
+        ReqDocs reqDocs = reqDocsRepository.findByIdeaId(ideaId).orElseThrow( () -> new BaseException(ErrorType.IDEA_NOT_FOUND) );
+        reqRepository.deleteAllByIReqDocsId(reqDocs.getReqDocsId());
+        reqDocsRepository.deleteAllByIdeaId(ideaId);
+
+        APIDocs apiDocs = apiDocsRepository.findByIdea_Id(ideaId);
+        apiRepository.deleteAllByApiDocsId(apiDocs.getApiDocsId());
+        apiDocsRepository.deleteAllByIdeaId(ideaId);
+
+        erdRepository.deleteAllByIdeaId(ideaId);
+        flowChartRepository.deleteAllByIdeaId(ideaId);
+        commentRepository.deleteByIdeaId(ideaId);
 
         // 3. 마지막으로 아이디어 삭제
         ideaRepository.delete(idea);

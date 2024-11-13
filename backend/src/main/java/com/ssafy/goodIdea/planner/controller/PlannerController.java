@@ -1,6 +1,8 @@
 package com.ssafy.goodIdea.planner.controller;
 
+import com.ssafy.goodIdea.planner.dto.response.PlannerResponseDto;
 import com.ssafy.goodIdea.planner.dto.response.PlannerUpdateResponseDto;
+import com.ssafy.goodIdea.planner.entity.Planner;
 import com.ssafy.goodIdea.planner.service.PlannerService;
 import lombok.RequiredArgsConstructor;
 
@@ -28,42 +30,9 @@ public class PlannerController {
      * 플래너 조회
      */
     @GetMapping("/{ideaId}")
-    public ApiResponse<PlannerUpdateResponseDto> getPlanner(@PathVariable(name = "ideaId") Long ideaId) {
-        PlannerUpdateResponseDto planner = plannerService.getPlanner(ideaId);
-        return ApiResponse.ok(planner);
-    }
-
-    /*
-     * 플래너 수정 (WebSocket & HTTP)
-     */
-    @MessageMapping("/planner/{ideaId}")
-    @PutMapping("/{ideaId}")  // PUT 메서드 추가
-    public ApiResponse<PlannerUpdateResponseDto> updatePlanner(
-        @PathVariable(required = false) Long ideaId,  // HTTP 요청용
-        @DestinationVariable Long wsIdeaId,  // WebSocket 요청용
-        @RequestBody(required = false) Map<String, String> payload,  // HTTP 요청용
-        DocumentOperationDto operation  // WebSocket 요청용
-    ) {
-        // WebSocket이나 HTTP 요청 구분하여 처리
-        if (operation == null && payload != null) {
-            // HTTP PUT 요청인 경우
-            operation = new DocumentOperationDto();
-            operation.setIdeaId(ideaId.toString());
-            
-            Map<String, Object> data = new HashMap<>();
-            data.put("content", payload.get("content"));
-            data.put("clientId", UUID.randomUUID().toString());
-            data.put("timestamp", System.currentTimeMillis());
-            
-            try {
-                String jsonData = new ObjectMapper().writeValueAsString(data);
-                operation.setData(jsonData);
-            } catch (JsonProcessingException e) {
-                throw new BaseException(ErrorType.SERVER_ERROR);
-            }
-        }
-
-        PlannerUpdateResponseDto updatedPlanner = plannerService.updateContent(operation);
-        return ApiResponse.ok(updatedPlanner);
+    public ApiResponse<PlannerResponseDto> getPlanner(@PathVariable(name = "ideaId") Long ideaId) {
+        // PlannerService를 통해 플래너 조회
+        PlannerResponseDto plannerResponseDto = plannerService.getPlanner(ideaId);
+        return ApiResponse.ok(plannerResponseDto);
     }
 }
