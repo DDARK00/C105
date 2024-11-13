@@ -10,14 +10,16 @@ import lombok.Setter;
 @Getter
 public class UserDto {
     private Long id;
+    private String name;
     private String username;
     private RoleType roleType;
     private LocationType locationType;
     private Integer grade;
 
     @Builder
-    public UserDto(Long id, String username, RoleType roleType, LocationType locationType, Integer grade) {
+    public UserDto(Long id, String name, String username, RoleType roleType, LocationType locationType, Integer grade) {
         this.id = id;
+        this.name = name;
         this.username = username;
         this.grade = grade;
         this.locationType = locationType;

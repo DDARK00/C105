@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class ResponseUser {
     private Long id;
+    private String name;
     private String username;
     private RoleType roleType;
     private LocationType locationType;
@@ -16,8 +17,9 @@ public class ResponseUser {
     private OAuthProvider oAuthProvider;
 
     @Builder
-    public ResponseUser(Long id, String username, RoleType roleType, LocationType locationType, Integer grade, OAuthProvider oAuthProvider) {
+    public ResponseUser(Long id, String name, String username, RoleType roleType, LocationType locationType, Integer grade, OAuthProvider oAuthProvider) {
         this.id = id;
+        this.name = name;
         this.username = username;
         this.grade = grade;
         this.locationType = locationType;

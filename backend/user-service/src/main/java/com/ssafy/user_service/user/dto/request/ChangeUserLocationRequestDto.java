@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class ChangeUserLocationRequestDto {
+    String name;
     LocationType locationType;
     Integer grade;
 }

@@ -18,6 +18,10 @@ public class User extends BaseTime {
     private Long id;
 
     @Setter
+    @Column(nullable = true)
+    private String name;
+
+    @Setter
     @Column(nullable = false, unique = true)
     private String username;
 
