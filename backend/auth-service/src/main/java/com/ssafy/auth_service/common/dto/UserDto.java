@@ -10,6 +10,7 @@ import lombok.Getter;
 @Getter
 public class UserDto {
     private Long id;
+    private String name;
     private String username;
     private RoleType roleType;
     private LocationType locationType;
@@ -17,8 +18,9 @@ public class UserDto {
     private OAuthProvider oAuthProvider;
 
     @Builder
-    public UserDto(Long id, String username, RoleType roleType, LocationType locationType, Integer grade, OAuthProvider oAuthProvider) {
+    public UserDto(Long id, String name, String username, RoleType roleType, LocationType locationType, Integer grade, OAuthProvider oAuthProvider) {
         this.id = id;
+        this.name = name;
         this.username = username;
         this.grade = grade;
         this.locationType = locationType;
