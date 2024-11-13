@@ -26,11 +26,11 @@ public class DocumentOperationDto {
         // FLOWCHART
     }
 
-    public void setIdeaId(String ideaId) {
+    public void setIdeaId(Long ideaId) {
         this.ideaId = ideaId;
     }
 
-    public String getIdeaId() {
+    public Long getIdeaId() {
         return ideaId;
     }
 
