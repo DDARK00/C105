@@ -11,7 +11,7 @@ function GithubCarousel({ slides, currentIndex, setCurrentIndex }) {
         {slides.map((slide) => (
           <div
             key={slide.id}
-            className=" w-full h-full flex-shrink-0 bg-slate-300 break-all space-x-2"
+            className=" w-full h-full flex-shrink-0 bg-slate-300 break-all space-x-2 p-4"
           >
             <div className="bg-overlay py-4 px-2 h-full w-full grid grid-cols-1 items-center ">
               {/* 슬라이드 콘텐츠 */}

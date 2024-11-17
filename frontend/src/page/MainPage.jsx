@@ -1,20 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import DefaultButton from "../components/common/DefaultButton";
 import { useUserStore } from "../store/useUserStore";
-import axios from "axios";
 import MainPhaseContent from "../components/main/MainPhaseContent";
+import { fetchUserInfo } from "../api/axios";
 
 function MainPage() {
   const [activeSection, setActiveSection] = useState("section1");
   const [isLastSection, setIsLastSection] = useState(false);
   const { setLogin } = useUserStore();
   const navigate = useNavigate();
-  const REDIRECT_URI = "https://oracle1.mypjt.xyz/api/v1/auth/callback";
+  const REDIRECT_URI =
+    "https://goodidea.world/gateway/auth-service/api/v1/auth/callback";
 
   const handleGitLabLogin = () => {
-    window.location.href = `https://lab.ssafy.com/oauth/authorize?client_id=423f3efe4f264ff88416dc5ad049498edfaeaf5a68dcdb835ee4ce5b0bf48f32&redirect_uri=${REDIRECT_URI}&response_type=code&scope=read_user%20api&state=random_state_string`;
+    window.location.href = `https://lab.ssafy.com/oauth/authorize?client_id=6f0e2194257deee5608935898a17395f218031088862493f206ef8a9df28a90c&redirect_uri=${REDIRECT_URI}&response_type=code&scope=read_user%20api&state=random_state_string`;
   };
 
   // 테스트 드라이버용 함수 ----------------- 시작 -----------------
@@ -24,26 +25,12 @@ function MainPage() {
       "refreshToken",
       import.meta.env.VITE_JUHO_REFRESHTOKEN
     );
-    const accessToken = localStorage.getItem("accessToken");
-    try {
-      // 프로필 정보 요청
-      const profileResponse = await axios.get(
-        `https://oracle1.mypjt.xyz/api/v1/user/profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      console.log("정보:", profileResponse.data.data);
-      const userInfo = profileResponse.data.data;
-      setLogin(userInfo); // userInfo 저장
-
-      // 메인 페이지로 리디렉트
-      navigate("/projectlist");
-    } catch (error) {
-      console.error("프로필 정보 가져오기 실패:", error);
-    }
+    // 프로필 정보 요청
+    const profileResponse = await fetchUserInfo();
+    setLogin(profileResponse); // userInfo 저장
+    console.log(profileResponse);
+    // 프로젝트 리스트 페이지로 리디렉트
+    navigate("/projectlist");
   };
   // 테스트 드라이버용 함수 ----------------- 끝 -----------------
   const sections = useMemo(
@@ -51,14 +38,15 @@ function MainPage() {
       {
         id: "section1",
         counter: "01",
-        title: "싸피인을 위한 올인원 기획 플랫폼 서비스",
+        title: "올인원 기획/설계 플랫폼",
         body: (
           <>
             이곳에서{" "}
             <span className="text-blue-300 font-extrabold "> 싸피인</span>을
             위한 최적의{" "}
-            <span className="text-yellow-300 font-extrabold">기획</span> 경험을
-            만나보세요.
+            <span className="text-yellow-300 font-extrabold">기획</span>과{" "}
+            <span className="text-red-300 font-extrabold">설계</span>를
+            경험해보세요.
           </>
         ),
         bgColor: "bg-gray-900",
@@ -67,49 +55,41 @@ function MainPage() {
       {
         id: "section2",
         counter: "02",
-        title: "Chat Bot Service",
-        body: "궁금한 점이 있다면, GPT 챗봇을 사용해 무엇이든 물어보세요!!",
+        title: "마인드맵 및 기획 TOOL",
+        body: (
+          <>
+            <span className="text-emerald-300 font-extrabold">마인드맵</span>과
+            이전 기수의{" "}
+            <span className="text-yellow-300 font-extrabold">레퍼런스</span>를
+            통해 창의적인 아이디어를 쉽게 도출할 수 있습니다. 다양한 기획 도구를
+            경험해보세요.
+          </>
+        ),
         bgColor: "bg-red-500",
         textBgColor: "bg-gray-500",
       },
       {
         id: "section3",
         counter: "03",
-        title: "마인드맵 및 기획 도구",
-        body: (
-          <>
-            <span className="text-emerald-300 font-extrabold">마인드맵</span>과
-            이전 기수의
-            <span className="text-yellow-300 font-extrabold">레퍼런스</span>를
-            통해 창의적인 아이디어를 쉽게 도출할 수 있습니다. 다양한 기획 도구를
-            경험해보세요.
-          </>
-        ),
-        bgColor: "bg-blue-500",
-        textBgColor: "bg-red-500",
-      },
-      {
-        id: "section4",
-        counter: "04",
-        title: "AI 기반 기획서 작성",
+        title: "AI 기획서 초안 서비스",
         body: (
           <>
             <span className="text-yellow-300 font-extrabold">AI</span>가
-            자동으로 기획서를 작성해줍니다. 아이디어가 떠오르지 않을 때{" "}
+            자동으로 기획서 초안을 작성해줍니다. 아이디어가 떠오르지 않을 때{" "}
             <span className="text-yellow-300 font-extrabold">AI</span>의 도움을
             받아보세요.
             <span className="text-red-600 font-extrabold">빠르고</span>{" "}
             <span className="text-blue-700 font-extrabold">간편</span>하게
-            기획을 시작할 수 있습니다
+            기획을 시작할 수 있습니다.
           </>
         ),
         bgColor: "bg-orange-500",
         textBgColor: "bg-emerald-500",
       },
       {
-        id: "section5",
-        counter: "05",
-        title: "기획 산출물 작성 및 공동 편집",
+        id: "section4",
+        counter: "04",
+        title: "설계 TOOL + 공동 편집",
         body: (
           <>
             <span className="text-amber-400 font-extrabold">
@@ -117,11 +97,9 @@ function MainPage() {
             </span>
             , <span className="text-sky-200 font-extrabold">API 명세서</span>,
             <span className="text-blue-600 font-extrabold">FLOW CHART</span>,{" "}
-            <span className="text-amber-800 font-extrabold">ERD</span>등 다양한
-            산출물을 작성할 수 있습니다.
-            <span className="text-red-600 font-extrabold">
-              CRDT
-            </span> 기반으로{" "}
+            <span className="text-amber-800 font-extrabold">ERD</span> 등 다양한
+            산출물을 작성할 수 있습니다.{" "}
+            <span className="text-red-600 font-extrabold">CRDT</span> 기반으로{" "}
             <span className="text-emerald-800 font-extrabold">공동 편집</span>과
             <span className="text-emerald-800 font-extrabold">커서 공유</span>를
             통해 팀원들과{" "}
@@ -130,24 +108,39 @@ function MainPage() {
           </>
         ),
         bgColor: "bg-purple-500",
-        textBgColor: "bg-orange-500",
+        textBgColor: "bg-[#f0bf93]",
+      },
+      {
+        id: "section5",
+        counter: "05",
+        title: "AI Chat Bot Service",
+        body: (
+          <>
+            "궁금한 점이 있다면,{" "}
+            <span className="text-amber-400 font-extrabold">GPT 챗봇</span>을
+            사용해{" "}
+            <span className="text-emerald-600 font-extrabold">무엇이든</span>{" "}
+            물어보세요!!"
+          </>
+        ),
+        bgColor: "bg-blue-500",
+        textBgColor: "bg-red-500",
       },
       {
         id: "section6",
         counter: "06",
-        title: "GitLab 연동으로 간편한 시작",
+        title: "GitLab 연동",
         body: (
           <>
             <span className="text-blue-600 font-extrabold">SSAFY</span>{" "}
             <span className="text-orange-600 font-extrabold">GitLab</span>과
             연동하여 프로젝트 정보를 손쉽게 가져오세요.{" "}
             <span className="text-orange-600 font-extrabold">GitLab</span>
-            계정으로 로그인하고 플랫폼 기능을 사용해서 프로젝트 기획을
-            시작해보세요.
+            계정으로 로그인하고 간편하게 프로젝트를 시작해보세요.
           </>
         ),
         bgColor: "bg-emerald-500",
-        textBgColor: "bg-gray-500",
+        textBgColor: "bg-gray-800",
       },
     ],
     []
@@ -172,12 +165,11 @@ function MainPage() {
     { top: "10%", left: "5%" },
     { top: "40%", left: "85%" },
     { top: "80%", left: "85%" },
-    { top: "83%", left: "82%" },
+    { top: "65%", left: "74%" },
   ];
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
       const windowHeight = window.innerHeight;
 
       const lastSection = document.getElementById("section6");
@@ -250,14 +242,14 @@ function MainPage() {
         />
 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
         <link
           href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap"
           rel="stylesheet"
         ></link>
       </Helmet>
 
-      <div className="min-h-screen font-serif relative overflow-x-hidden font-Maplestory">
+      <div className="min-h-screen font-serif relative overflow-x-hidden font-Maplestory main-page select-none">
         {/* 고정된 GitLab 로그인 버튼: 마지막 섹션에서 안 보이게 */}
         {!isLastSection && (
           <div className="fixed top-8 right-8 z-[51] flex flex-col items-center animate-tinUpIn">
@@ -330,7 +322,7 @@ function MainPage() {
             <img
               src="/bonobono.png"
               alt="bonobono"
-              className="absolute z-50"
+              className="absolute "
               style={{
                 top: "81%",
                 left: "75.5%",
@@ -453,21 +445,27 @@ function MainPage() {
         font-family: 'Maplestory', sans-serif;
         }
         
-        ::-webkit-scrollbar {
-            background-color: #000;
-            width: 12px;
-            // border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            // border-radius: 10px;
-            box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
-        }
-        
-        ::-webkit-scrollbar-thumb {  
+::-webkit-scrollbar {
+  background-color: #000; /* WebKit 브라우저에서만 적용 */
+  width: 12px;
+  border-radius:0px;
+}
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+        ::-webkit-scrollbar-thumb {
+        border-radius:0px;
+  background-image: linear-gradient(
+    to top, 
+    #ff5722, 
+    #a520ca 50%,
+    #2681cc
+  );
+}
 
-            background-image: -webkit-gradient(linear, left bottom, left top,color-stop(1, #ff5733), color-stop(.5, #a520ca), color-stop(0, #2681cc));
-            `}
+
+`}
       </style>
     </>
   );

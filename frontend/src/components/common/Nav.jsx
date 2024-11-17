@@ -1,48 +1,29 @@
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useProjectStore from "../../store/useProjectStore";
-import authAxiosInstance from "../../api/http-commons/authAxios";
-import { RoomProvider } from "@liveblocks/react";
+import { fetchProjectDetail } from "../../api/axios";
+import { Helmet } from "react-helmet-async";
 
 function Nav() {
   const location = useLocation();
   const navigate = useNavigate();
   const param = useParams();
-  
+
   // ProjectStore에서 필요한 정보 가져오기
-  const { setProjectInfo, mainIdea, setMainIdea } = useProjectStore();
+  const { setProjectInfo, mainIdea } = useProjectStore();
 
   // 프로젝트 정보 가져오기
   useEffect(() => {
     const fetchProjectInfo = async () => {
-      try {
-        const response = await authAxiosInstance.get(
-          `/api/v1/project/${param?.id}`
-        );
-        setProjectInfo(response.data.data);
-      } catch (error) {
-        console.error("프로젝트 정보 조회 실패:", error);
-      }
+      const projectDetail = await fetchProjectDetail(param.id);
+      console.log(projectDetail);
+      setProjectInfo(projectDetail);
     };
 
     if (param?.id) {
       fetchProjectInfo();
     }
-  }, [param?.id, setProjectInfo, setMainIdea]);
-  // useEffect(() => {
-  //   console.log(param?.id);
-  //   if (param?.id) {
-  //     console.log("프로젝트 리스트", projects);
-  //     projects.map((project) => {
-  //       console.log("반복문", project.project_id);
-  //       if (project.project_id === parseInt(param.id)) {
-  //         setContent(project.projectType);
-  //       }
-  //     });
-  //   } else {
-  //     setContent(null);
-  //   }
-  // }, [param]);
+  }, [param?.id, setProjectInfo]);
 
   const goHome = () => {
     // 프로젝트 리스트로 이동
@@ -93,8 +74,7 @@ function Nav() {
       { path: "flowchart", item: "FLOWCHART", setOpen: setResultOpen },
     ];
 
-    const lastPath = location.pathname.split("/")[2] ?? null;
-
+    const lastPath = location.pathname.split("/")[3] ?? null;
     const matchedPath = paths.find(
       (p) => lastPath === p.path || location.pathname.includes(p.path)
     );
@@ -106,109 +86,88 @@ function Nav() {
   }, [location.pathname]);
 
   return (
-    <div className="fixed w-64 min-h-screen bg-gradient-to-b from-[#999999] to-[#333333] text-white p-4 flex flex-col justify-between rounded-tr-[20px]">
-      <div>
-        <div className="flex flex-row justify-between mb-3">
-          <img
-            src="/logo.png"
-            alt="로고"
-            onClick={goHome}
-            className="cursor-pointer w-8 h-8"
-          />
-          <h1 className="text-base font-bold mb-4 select-none">GOOD IDEA</h1>
+    <>
+      <Helmet>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/fonts-archive/NEXONLv1Gothic/NEXONLv1Gothic.css"
+          type="text/css"
+        />
+      </Helmet>
+      <div className="fixed w-64 min-h-screen font-nexon   bg-slate-300 text-slate-950 p-4 flex flex-col justify-between rounded-tr-[20px] overflow-hidden shadow-lg">
+        {/* Decorative background patterns */}
+        <div className="absolute inset-0 z-0">
+          {/* Subtle geometric pattern */}
+          <svg
+            width="100%"
+            height="100%"
+            xmlns="http://www.w3.org/2000/svg"
+            className="opacity-[0.05]"
+          >
+            <pattern
+              id="grid"
+              x="0"
+              y="0"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M0 20h40M20 0v40"
+                stroke="currentColor"
+                strokeWidth="1.7"
+              />
+              <circle cx="20" cy="20" r="1" fill="currentColor" />
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
+
+          {/* Subtle accent shapes */}
+          <div className="absolute top-0 right-0 w-40 h-40 bg-rose-50 rounded-full -translate-y-1/2 translate-x-1/2 opacity-20" />
+          <div className="absolute bottom-20 left-0 w-32 h-32 bg-sky-50 rounded-full -translate-x-1/2 opacity-20" />
         </div>
-        <nav>
-          <ul className="space-y-4">
-            {/* 기본 정보 */}
-            <li>
-              <Link
-                to={`project/${param?.id}`}
-                className={`text-xl block w-full h-full p-2 border border-[#8F8F8F] shadow-md rounded-lg hover:bg-[#666666] select-none ${
-                  activeItem === "기본 정보"
-                    ? "bg-[#666666] cursor-default font-bold"
-                    : "cursor-pointer"
-                }`}
-                onClick={() => handleItemClick("기본 정보")}
-              >
-                기본 정보
-              </Link>
-            </li>
 
-            {/* 브레인 스토밍 메뉴 */}
-            <li>
-              <div
-                className={`text-xl flex justify-between items-center cursor-pointer border border-[#8F8F8F] shadow-md select-none p-2 rounded-lg ${
-                  isBrainstormingOpen ? "font-bold" : ""
-                }`}
-                onClick={toggleBrainstorming}
-              >
-                브레인 스토밍
-                <svg
-                  width="29"
-                  height="28"
-                  viewBox="0 0 29 28"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`ml-2 transition-transform duration-500 ${
-                    isBrainstormingOpen ? "rotate-[540deg]" : ""
+        <div className="relative z-10">
+          <div className="flex flex-row justify-between mb-3">
+            <img
+              src="/logo.png"
+              alt="로고"
+              onClick={goHome}
+              className="cursor-pointer w-8 h-8"
+            />
+            <h1 className="text-base font-bold mb-4 select-none text-slate-700">
+              GOOD IDEA
+            </h1>
+          </div>
+
+          <nav>
+            <ul className="space-y-4">
+              {/* 기본 정보 */}
+              <li>
+                <Link
+                  to={`project/${param?.id}`}
+                  className={`text-xl block w-full h-full backdrop-blur-lg border-slate-200 p-2 my-2 border shadow-md rounded-lg transition-all duration-500 select-none ${
+                    activeItem === "기본 정보"
+                      ? "font-semibold cursor-default shadow-inner bg-[#bfdbfe] text-[#00008b]"
+                      : "cursor-pointer bg-slate-100 hover:bg-[#bfdbfe]"
                   }`}
+                  onClick={() => handleItemClick("기본 정보")}
                 >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M16.3251 18.3025C15.9736 18.6107 15.497 18.7838 15.0001 18.7838C14.5032 18.7838 14.0267 18.6107 13.6751 18.3025L6.60262 12.096C6.25104 11.7872 6.05359 11.3685 6.05371 10.9319C6.05383 10.4953 6.2515 10.0766 6.60324 9.768C6.95499 9.45936 7.43199 9.28603 7.92931 9.28613C8.42664 9.28624 8.90354 9.45977 9.25512 9.76855L15.0001 14.8119L20.7451 9.76855C21.0986 9.46857 21.5721 9.30246 22.0638 9.30601C22.5554 9.30955 23.0257 9.48247 23.3736 9.7875C23.7214 10.0925 23.9188 10.5053 23.9233 10.9369C23.9278 11.3684 23.739 11.7843 23.3976 12.0949L16.3264 18.3036L16.3251 18.3025Z"
-                    fill="white"
-                  />
-                </svg>
-              </div>
+                  기본 정보
+                </Link>
+              </li>
 
-              {/* 브레인 스토밍 드롭다운 */}
-              <ul
-                className={`m-0 transition-all duration-500 overflow-hidden ${
-                  isBrainstormingOpen
-                    ? "max-h-40 opacity-100"
-                    : "max-h-0 opacity-0"
-                }`}
-              >
-                <li className="mt-5">
-                  <Link
-                    to={`/project/${param?.id}/mindmap`}
-                    className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                      activeItem === "마인드 맵"
-                        ? "bg-[#666666] cursor-default"
-                        : "cursor-pointer"
-                    }`}
-                    onClick={() => handleItemClick("마인드 맵")}
-                  >
-                    마인드 맵
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/project/${param?.id}/ideaboard`}
-                    className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                      activeItem === "아이디어 보드"
-                        ? "bg-[#666666] cursor-default"
-                        : "cursor-pointer"
-                    }`}
-                    onClick={() => handleItemClick("아이디어 보드")}
-                  >
-                    아이디어 보드
-                  </Link>
-                </li>
-              </ul>
-            </li>
-
-            {/* 산출물 메뉴 */}
-            {mainIdea?.ideaId && (
+              {/* 브레인 스토밍 메뉴 */}
               <li>
                 <div
-                  className={` text-xl flex flex-row justify-between items-center cursor-pointer border border-[#858585] shadow-md p-2 select-none rounded-lg ${
-                    isResultOpen ? "font-bold" : ""
+                  className={`text-xl flex justify-between items-center cursor-pointer border shadow-md backdrop-blur-md select-none p-2 mt-2 rounded-lg transition-all duration-500 ${
+                    isBrainstormingOpen
+                      ? "bg-[#bfdbfe] border-slate-300  font-semibold shadow-inner text-[#00008b]"
+                      : "bg-slate-100 hover:bg-[#bfdbfe]"
                   }`}
-                  onClick={toggleResult}
+                  onClick={toggleBrainstorming}
                 >
-                  채택 아이디어
+                  브레인 스토밍
                   <svg
                     width="29"
                     height="28"
@@ -216,99 +175,135 @@ function Nav() {
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     className={`ml-2 transition-transform duration-500 ${
-                      isResultOpen ? "rotate-[540deg]" : ""
+                      isBrainstormingOpen ? "rotate-[540deg]" : ""
                     }`}
                   >
                     <path
                       fillRule="evenodd"
                       clipRule="evenodd"
                       d="M16.3251 18.3025C15.9736 18.6107 15.497 18.7838 15.0001 18.7838C14.5032 18.7838 14.0267 18.6107 13.6751 18.3025L6.60262 12.096C6.25104 11.7872 6.05359 11.3685 6.05371 10.9319C6.05383 10.4953 6.2515 10.0766 6.60324 9.768C6.95499 9.45936 7.43199 9.28603 7.92931 9.28613C8.42664 9.28624 8.90354 9.45977 9.25512 9.76855L15.0001 14.8119L20.7451 9.76855C21.0986 9.46857 21.5721 9.30246 22.0638 9.30601C22.5554 9.30955 23.0257 9.48247 23.3736 9.7875C23.7214 10.0925 23.9188 10.5053 23.9233 10.9369C23.9278 11.3684 23.739 11.7843 23.3976 12.0949L16.3264 18.3036L16.3251 18.3025Z"
-                      fill="white"
+                      fill="currentColor"
                     />
                   </svg>
                 </div>
 
-                {/* 산출물 드롭다운 */}
                 <ul
                   className={`transition-all duration-500 overflow-hidden ${
-                    isResultOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+                    isBrainstormingOpen
+                      ? "max-h-40 opacity-100 mt-2"
+                      : "max-h-0 opacity-0"
                   }`}
                 >
-                  <RoomProvider id={`proposal-${mainIdea?.ideaId}`}>
-                    <li className="mt-5">
-                      <Link
-                        to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/proposal`}
-                        className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                          activeItem === "기획서"
-                            ? "bg-[#666666] cursor-default"
-                            : "cursor-pointer"
-                        }`}
-                        onClick={() => handleItemClick("기획서")}
-                      >
-                        기획서
-                      </Link>
-                    </li>
-                  </RoomProvider>
                   <li>
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/requirementsspecification`}
-                      className={`block w-full h-fullx text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                        activeItem === "요구사항 명세서"
-                          ? "bg-[#666666] cursor-default"
-                          : "cursor-pointer"
+                      to={`/project/${param?.id}/mindmap`}
+                      className={`block w-full  text-lg p-1 my-2 pl-6 select-none rounded-lg transition-all duration-300 hover:bg-slate-100 ${
+                        activeItem === "마인드 맵"
+                          ? "bg-slate-100 cursor-default"
+                          : "cursor-pointer "
                       }`}
-                      onClick={() => handleItemClick("요구사항 명세서")}
+                      onClick={() => handleItemClick("마인드 맵")}
                     >
-                      요구사항 명세서
+                      마인드 맵
                     </Link>
                   </li>
                   <li>
                     <Link
-                      to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/apispecification`}
-                      className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                        activeItem === "API 명세서"
-                          ? "bg-[#666666] cursor-default"
-                          : "cursor-pointer"
+                      to={`/project/${param?.id}/ideaboard`}
+                      className={`block w-full text-lg p-1 my-2 pl-6 select-none rounded-lg transition-all duration-300 hover:bg-slate-100 ${
+                        activeItem === "아이디어 보드"
+                          ? "bg-slate-100 cursor-default"
+                          : "cursor-pointer "
                       }`}
-                      onClick={() => handleItemClick("API 명세서")}
+                      onClick={() => handleItemClick("아이디어 보드")}
                     >
-                      API 명세서
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/erd`}
-                      className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                        activeItem === "ERD"
-                          ? "bg-[#666666] cursor-default"
-                          : "cursor-pointer"
-                      }`}
-                      onClick={() => handleItemClick("ERD")}
-                    >
-                      ERD
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/flowchart`}
-                      className={`block w-full h-full text-lg mb-1 p-1 pl-6 select-none rounded-lg hover:bg-[#666666] ${
-                        activeItem === "FLOWCHART"
-                          ? "bg-[#666666] cursor-default"
-                          : "cursor-pointer"
-                      }`}
-                      onClick={() => handleItemClick("FLOWCHART")}
-                    >
-                      FLOWCHART
+                      아이디어 보드
                     </Link>
                   </li>
                 </ul>
               </li>
-            )}
-          </ul>
-        </nav>
+
+              {/* 산출물 메뉴 */}
+              {mainIdea?.ideaId && (
+                <li>
+                  <div
+                    className={`backdrop-blur-lg  text-xl flex flex-row justify-between items-center cursor-pointer border border-slate-200 shadow-md p-2 select-none rounded-lg transition-all duration-500 ${
+                      isResultOpen
+                        ? "font-semibold border-slate-300 shadow-inner bg-[#bfdbfe] text-[#00008b]"
+                        : "bg-slate-100 hover:bg-[#bfdbfe]"
+                    }`}
+                    onClick={toggleResult}
+                  >
+                    채택 아이디어
+                    <svg
+                      width="29"
+                      height="28"
+                      viewBox="0 0 29 28"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={`ml-2 transition-transform duration-500 ${
+                        isResultOpen ? "rotate-[540deg]" : ""
+                      }`}
+                    >
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M16.3251 18.3025C15.9736 18.6107 15.497 18.7838 15.0001 18.7838C14.5032 18.7838 14.0267 18.6107 13.6751 18.3025L6.60262 12.096C6.25104 11.7872 6.05359 11.3685 6.05371 10.9319C6.05383 10.4953 6.2515 10.0766 6.60324 9.768C6.95499 9.45936 7.43199 9.28603 7.92931 9.28613C8.42664 9.28624 8.90354 9.45977 9.25512 9.76855L15.0001 14.8119L20.7451 9.76855C21.0986 9.46857 21.5721 9.30246 22.0638 9.30601C22.5554 9.30955 23.0257 9.48247 23.3736 9.7875C23.7214 10.0925 23.9188 10.5053 23.9233 10.9369C23.9278 11.3684 23.739 11.7843 23.3976 12.0949L16.3264 18.3036L16.3251 18.3025Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </div>
+
+                  <ul
+                    className={`transition-all duration-500 overflow-hidden ${
+                      isResultOpen
+                        ? "max-h-60 opacity-100"
+                        : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    {[
+                      { name: "기획서", path: "proposal" },
+                      {
+                        name: "요구사항 명세서",
+                        path: "requirementsspecification",
+                      },
+                      { name: "API 명세서", path: "apispecification" },
+                      { name: "ERD", path: "erd" },
+                      { name: "FLOWCHART", path: "flowchart" },
+                    ].map((item) => (
+                      <li key={item.path}>
+                        <Link
+                          to={`/project/${param?.id}/idea/${mainIdea?.ideaId}/${item.path}`}
+                          className={`block w-full text-lg p-1 my-2 pl-6 select-none rounded-lg  hover:bg-slate-100 transition-all duration-500 ${
+                            activeItem === item.name
+                              ? "bg-slate-100 cursor-default "
+                              : "cursor-pointer "
+                          }`}
+                          onClick={() => handleItemClick(item.name)}
+                        >
+                          {item.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              )}
+            </ul>
+          </nav>
+        </div>
+        <footer className="text-sm text-slate-900 relative z-10">
+          ©SSAFY 11TH C105
+        </footer>
       </div>
-      <footer className="text-sm">©SSAFY 11TH C105</footer>
-    </div>
+      <style>
+        {`
+        .font-nexon {
+  @apply font-sans; /* Tailwind의 기본 sans-serif 설정을 적용 */
+  font-family: 'NEXON Lv1 Gothic', sans-serif;
+}
+`}
+      </style>
+    </>
   );
 }
 

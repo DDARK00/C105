@@ -3,7 +3,7 @@ import axios from "axios";
 
 // AI 서버용 Axios
 // 필요 시에 적절히 변경
-//const BASE_URL = import.meta.env.VITE_BASE_URL_AI;
+//const BASE_URL = import.meta.env.VITE_AI_BASE_URL;
 const BASE_URL = "https://k11c105.p.ssafy.io/";
 // api/v1/recommend
 const AIAxios = axios.create({

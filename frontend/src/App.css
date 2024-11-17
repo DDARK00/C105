@@ -1,0 +1,14 @@
+.bg-floral-pattern {
+  background-color: #fafafa; /* 기본 배경 색상 */
+  background-image: radial-gradient(
+      circle,
+      rgba(255, 192, 203, 0.2) 20%,
+      transparent 20%
+    ),
+    /* 큰 꽃무늬 */
+      radial-gradient(circle, rgba(255, 182, 193, 0.1) 15%, transparent 15%),
+    /* 작은 꽃무늬 */
+      radial-gradient(circle, rgba(250, 128, 114, 0.1) 10%, transparent 10%); /* 미세 꽃무늬 */
+  background-size: 100px 100px, 50px 50px, 25px 25px; /* 패턴 크기 설정 */
+  background-position: 0 0, 25px 25px, 12.5px 12.5px; /* 패턴 위치 설정 */
+}

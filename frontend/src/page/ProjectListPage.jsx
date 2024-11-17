@@ -9,13 +9,18 @@ import CreateProject from "../components/projectlist/CreateProject";
 import { useProjectListStore } from "../store/useProjectListStore";
 import { fetchGitlabProjectList, fetchProjectList } from "../api/axios";
 import ProjectListItemSkeleton from "../components/skeleton/ProjectListItemSkeleton";
+import UpdateUser from "../components/projectlist/UpdateUser";
+import { useUserStore } from "../store/useUserStore";
+import { NOW_MAX_GRADE } from "../global";
 
 function ProjectListPage() {
   const [loading, setLoading] = useState(true);
   const [filter1, setFilter1] = useState({ value: "ALL", showOptions: false });
   const [filter2, setFilter2] = useState({ value: "ALL", showOptions: false });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const { projects } = useProjectListStore();
+  const { userInfo } = useUserStore();
 
   useEffect(() => {
     const init = async () => {
@@ -23,8 +28,6 @@ function ProjectListPage() {
         setLoading(true);
         const gitlabProjectList = await fetchGitlabProjectList();
         const projectList = await fetchProjectList();
-        // console.log(projectList, "gitlabProjectlist");
-        // console.log(gitlabProjectList, "gitlabProjectlist");
         if (gitlabProjectList && projectList) {
           useProjectListStore.setState({
             projects: [...projectList],
@@ -37,6 +40,38 @@ function ProjectListPage() {
 
     init();
   }, []);
+
+  useEffect(() => {
+    if (
+      userInfo.name === null ||
+      userInfo.locationType === null ||
+      userInfo.grade === null
+    ) {
+      setIsUpdateModalOpen(true);
+    }
+  }, [userInfo.name, userInfo.locationType, userInfo.grade]);
+
+  // filter change useEffect get fetch fetchProjectList
+  useEffect(() => {
+    const changeFilter = async () => {
+      try {
+        setLoading(true);
+        const projectList = await fetchProjectList({
+          grade: filter1.value === "ALL" ? null : filter1.value,
+          projectType: filter2.value === "ALL" ? null : filter2.value,
+        });
+        if (projectList) {
+          useProjectListStore.setState({
+            projects: [...projectList],
+          });
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    changeFilter();
+  }, [filter1.value, filter2.value]);
 
   // 프로젝트가 없을 시 이거
   const noProject = (
@@ -66,7 +101,13 @@ function ProjectListPage() {
               onChange={(e) => {
                 setFilter1(e.target.value);
               }}
-              options={["ALL", "12", "11"]}
+              options={[
+                "ALL",
+                ...Array.from(
+                  { length: NOW_MAX_GRADE },
+                  (_, i) => NOW_MAX_GRADE - i
+                ),
+              ]}
             />
 
             {/* 옵션2 : 지역 */}
@@ -77,7 +118,7 @@ function ProjectListPage() {
               onChange={(e) => {
                 setFilter2(e.target.value);
               }}
-              options={["ALL", "서울", "부산"]}
+              options={["ALL", "관통", "공통", "특화", "자율"]}
             />
             <div className="flex items-center gap-5 ml-auto">
               <DefaultButton
@@ -118,14 +159,26 @@ function ProjectListPage() {
       </div>
       {/* createProject Modal */}
       <PortalModal
-        className="p-0"
+        className="!p-0"
         isOpen={isCreateModalOpen}
         onClose={() => {
           setIsCreateModalOpen(false);
         }}
       >
         <div className="w-full h-full flex flex-col">
-          <CreateProject />
+          <CreateProject onClose={() => setIsCreateModalOpen(false)} />
+        </div>
+      </PortalModal>
+      {/* updateUser Modal */}
+      <PortalModal
+        className="!p-0"
+        isOpen={isUpdateModalOpen}
+        onClose={() => {
+          setIsUpdateModalOpen(false);
+        }}
+      >
+        <div className="w-full h-full flex flex-col">
+          <UpdateUser />
         </div>
       </PortalModal>
     </>

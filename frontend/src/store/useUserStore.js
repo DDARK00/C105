@@ -7,6 +7,10 @@ export const useUserStore = create()(
       userInfo: null,
       isLogin: false,
 
+      setUserInfo: (userInfo) => {
+        return set({ userInfo });
+      },
+
       setLogin: (userInfo) => {
         return set({
           userInfo,

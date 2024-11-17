@@ -1,15 +1,8 @@
-import { useRef, useEffect, useState, Children, isValidElement } from "react";
-// import dynamic from "next/dynamic";
-import mermaid from "mermaid";
-// import { useMutation, useStorage } from "../../../liveblocks.config";
+import { useMutation, useStorage } from "@liveblocks/react";
 import MDEditor from "@uiw/react-md-editor";
-
-// Mermaid 초기화 설정
-mermaid.initialize({
-  startOnLoad: true,
-  theme: "default",
-  securityLevel: "loose",
-});
+import mermaid from "mermaid";
+import { Children, isValidElement, useEffect, useRef } from "react";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 // Markdown에서 코드를 추출하는 함수
 const getCode = (arr = []) =>
@@ -63,21 +56,39 @@ function Code({ inline, children = [], className, ...props }) {
   return <code className={String(className)}>{children}</code>;
 }
 
-const ModalFlowChart = () => {
-  const [markdown, setMarkdown] = useState("");
+function ProposalEditor() {
+  const storage = useStorage((root) => root.proposal);
+
+  // const [markdown, setMarkdown] = useState(
+  //   `\# MARKDOWN\n \#\# 문법을\n \#\#\# 사용해서\n \#\#\#\# 기획서를 작성하세요.`
+  // );
+
+  const updateMarkdown = useMutation(({ storage }, value) => {
+    storage.set("proposal", value);
+    // const proposal = storage.get("proposal");
+    // console.log(proposal);
+    // proposal.set(value);
+  }, []);
+
+  if (!storage) {
+    return (
+      <LoadingSpinner
+        message={"기획서를 로드 중입니다. 잠시만 기다려주세요!"}
+      />
+    );
+  }
 
   return (
     <>
       <div className="h-full w-full flex flex-col">
         <div className="flex-1 w-full h-full p-4 bg-gray-100">
-          <h1 className="text-2xl font-bold mb-4">Flowchart Editor</h1>
           <MDEditor
-            value={markdown}
-            onChange={setMarkdown}
+            value={storage}
+            onChange={updateMarkdown}
             textareaProps={{
-              placeholder: "Mermaid 문법을 사용해 Flowchart를 작성하세요.",
+              placeholder: "Mermaid 문법을 사용해 기획서를 작성하세요.",
             }}
-            height={635}
+            height={675}
             previewOptions={{
               components: {
                 code: Code,
@@ -88,6 +99,6 @@ const ModalFlowChart = () => {
       </div>
     </>
   );
-};
+}
 
-export default ModalFlowChart;
+export default ProposalEditor;

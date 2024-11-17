@@ -29,6 +29,8 @@ const faqCache = {
     "https://velog.io/@junho5336/Mermaid-%EC%82%AC%EC%9A%A9%ED%95%B4%EC%84%9C-%EC%84%A4%EA%B3%84%ED%95%98%EA%B8%B0 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
   "플로우차트는 어떻게 하면 돼?.":
     "https://velog.io/@junho5336/Mermaid-%EC%82%AC%EC%9A%A9%ED%95%B4%EC%84%9C-%EC%84%A4%EA%B3%84%ED%95%98%EA%B8%B0 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
+  "플로우차트는 어떻게 씀?":
+    "https://velog.io/@junho5336/Mermaid-%EC%82%AC%EC%9A%A9%ED%95%B4%EC%84%9C-%EC%84%A4%EA%B3%84%ED%95%98%EA%B8%B0 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
   "ERD는 어떻게 생성함?":
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
   "ERD는 어떻게 생성하나요?":
@@ -39,7 +41,9 @@ const faqCache = {
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
   "ERD는 어떻게 만들어?":
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
-  "ERD는 어떻게 하면 돼?.":
+  "ERD는 어떻게 하면 돼?":
+    "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
+  "ERD는 어떻게 씀?":
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
   "이알디는 어떻게 생성함?":
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
@@ -51,7 +55,9 @@ const faqCache = {
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
   "이알디는 어떻게 만들어?":
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
-  "이알디는 어떻게 하면 돼?.":
+  "이알디는 어떻게 하면 돼?":
+    "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
+  "이알디는 어떻게 씀?":
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
   "다이어그램은 어떻게 생성함?":
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
@@ -63,7 +69,9 @@ const faqCache = {
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
   "다이어그램은 어떻게 만들어?":
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
-  "다이어그램은 어떻게 하면 돼?.":
+  "다이어그램은 어떻게 하면 돼?":
+    "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
+  "다이어그램은 어떻게 씀?":
     "https://wogus789789.tistory.com/292 해당 링크에 방문하면 보다 쉽게 사용할 수 있습니다.",
 };
 
@@ -77,7 +85,7 @@ export const sendMessageToGPT = async (messages) => {
 
   try {
     const response = await gptApi.post("", {
-      model: "gpt-3.5-turbo", // 또는 사용하고자 하는 모델로 변경
+      model: "gpt-4o", // 또는 사용하고자 하는 모델로 변경
       messages: messages,
     });
 

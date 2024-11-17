@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { createProject, fetchGitlabProjectList } from "../../api/axios";
+import { useNavigate } from "react-router-dom";
+import { useProjectListStore } from "../../store/useProjectListStore";
+import useGlobalLoadingStore from "../../store/useGlobalLoadingStore";
 
 const ProjectCard = ({ title, handleReader }) => {
   return (
@@ -21,7 +24,8 @@ const ProjectCard = ({ title, handleReader }) => {
   );
 };
 
-const ReaderWritePage = ({ title }) => {
+const ReaderWritePage = ({ title, onClose }) => {
+  const { startLoading, stopLoading } = useGlobalLoadingStore();
   const [gitlabProjectList, setGitlabProjectList] = useState([]);
   const [projectData, setProjectData] = useState({
     projectId: "", // GITLAB Respository 입력 값을 저장할 필드
@@ -29,6 +33,7 @@ const ReaderWritePage = ({ title }) => {
     projectType: title.split(" ")[0], // title에서 첫 단어 추출하여 저장
   });
 
+  const navigate = useNavigate();
   // GitLab 프로젝트 목록을 가져오는 useEffect
   useEffect(() => {
     const fetchProjects = async () => {
@@ -58,12 +63,27 @@ const ReaderWritePage = ({ title }) => {
 
   // 프로젝트 생성 버튼 클릭 시 호출되는 함수
   const handleButtonClick = async () => {
-    console.log("프로젝트 데이터:", projectData);
-    const isCreate = await createProject(projectData);
-    if (isCreate) {
-      window.location.reload();
-    } else {
-      window.alert("프로젝트 생성에 실패했습니다.");
+    try {
+      startLoading();
+      const isCreate = await createProject(projectData);
+      if (isCreate?.status) {
+        if (isCreate.data?.data)
+          useProjectListStore.setState({
+            projects: [
+              ...useProjectListStore.getState().projects,
+              isCreate.data?.data,
+            ],
+          });
+        console.log(isCreate.data?.data);
+        onClose();
+        navigate(`/project/${isCreate?.data?.data?.project_id}`);
+      } else {
+        window.alert(
+          "프로젝트 생성에 실패했습니다. " + (isCreate?.message ?? "")
+        );
+      }
+    } finally {
+      stopLoading();
     }
   };
 
@@ -104,10 +124,10 @@ const ReaderWritePage = ({ title }) => {
           />
         </label>
 
-        <label className="flex items-center space-x-2">
+        {/* <label className="flex items-center space-x-2">
           <input type="checkbox" />
           <span className="text-gray-600">정보가 정확한가요?</span>
-        </label>
+        </label> */}
       </div>
 
       <button
@@ -120,7 +140,7 @@ const ReaderWritePage = ({ title }) => {
   );
 };
 
-const CreateProject = () => {
+const CreateProject = ({ onClose }) => {
   const [page, setPage] = useState("project");
   const [isAnimating, setIsAnimating] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState("");
@@ -165,7 +185,7 @@ const CreateProject = () => {
             isAnimating ? "opacity-0 blur-sm" : "opacity-100 blur-0"
           }`}
         >
-          <ReaderWritePage title={selectedTitle} />
+          <ReaderWritePage onClose={onClose} title={selectedTitle} />
         </div>
       )}
     </div>

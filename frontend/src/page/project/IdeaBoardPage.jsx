@@ -1,22 +1,24 @@
 import { Helmet } from "react-helmet-async";
 import Sticker from "../../components/ideaboard/Sticker";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import StickerModal from "../../components/ideaboard/StickerModal";
 import DefaultButton from "../../components/common/DefaultButton";
+import { createIdea, deleteIdea, fetchIdea, updateIdea } from "../../api/axios";
+import { useParams } from "react-router-dom";
 
 function IdeaBoardPage() {
+  const param = useParams();
   const [selectedSticker, setSelectedSticker] = useState(null); // 선택된 스티커
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const [scale, setScale] = useState(1); // 확대/축소 비율
-  const [isDragging, setIsDragging] = useState(false);
   const [translate, setTranslate] = useState({ x: 0, y: 0 }); // 이동 비율
+  const [spacePressed, setSpacePressed] = useState(false);
   const containerRef = useRef(null);
+  const [coordinates, setCoordinates] = useState([]); // 스티커 상태
+  const [isTipOpen, setIsTipOpen] = useState(false);
 
+  // 기본 브라우저 확대/축소 막기
   useEffect(() => {
-    console.log(selectedSticker);
-  }, [selectedSticker]);
-  useEffect(() => {
-    // 기본 브라우저 확대/축소 막기
     const preventDefaultZoom = (e) => {
       if (e.ctrlKey && e.type === "wheel") {
         e.preventDefault();
@@ -32,205 +34,109 @@ function IdeaBoardPage() {
     };
   }, []);
 
-  // 첫 6개 좌표를 각 섹션 범위 내에서 랜덤으로 생성
-  // const generateSectionCoordinates = () => {
-  //   const coordinates = [
-  //     { xRange: [0, 14], yRange: [0, 28] },
-  //     { xRange: [28, 43], yRange: [0, 28] },
-  //     { xRange: [57, 86], yRange: [0, 28] },
-  //     { xRange: [0, 14], yRange: [41, 71] },
-  //     { xRange: [28, 43], yRange: [41, 71] },
-  //     { xRange: [57, 86], yRange: [41, 71] },
-  //   ];
+  // 마우스로 화면 끌 때 스페이스바 누르고 움직임
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === " ") {
+        e.preventDefault();
+        setSpacePressed(true); // 스페이스바 눌림 상태
+      }
+    };
 
-  //   return coordinates.map(({ xRange, yRange }, index) => ({
-  //     x: `${xRange[0] + Math.random() * (xRange[1] - xRange[0])}%`,
-  //     y: `${yRange[0] + Math.random() * (yRange[1] - yRange[0])}%`,
-  //     delay: index * 100,
-  //   }));
-  // };
+    const handleKeyUp = (e) => {
+      if (e.key === " ") {
+        setSpacePressed(false); // 스페이스바 떼짐 상태
+      }
+    };
 
-  // 나머지 좌표는 전체 범위에서 랜덤으로 생성
-  // const generateRandomCoordinates = (count) => {
-  //   const coordinates = [];
-  //   for (let i = 0; i < count; i++) {
-  //     coordinates.push({
-  //       x: `${Math.random() * 86}%`, // x 범위 0% ~ 86%
-  //       y: `${Math.random() * 71}%`, // y 범위 0% ~ 71%
-  //       delay: (i + 6) * 100,
-  //     });
-  //   }
-  //   return coordinates;
-  // };
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
 
-  // 첫 6개의 섹션 랜덤 좌표 + 나머지 전체 범위 랜덤 좌표
-  const [coordinates, setCoordinates] = useState([
-    // ...generateSectionCoordinates(),
-    // ...generateRandomCoordinates(2),
-    {
-      x: "4%",
-      y: "0%",
-      delay: 0,
-      color: "#FFF8B7",
-      darkColor: "#E8DB78",
-      animation: "animate-tinDownIn",
-    },
-    {
-      x: "30%",
-      y: "8%",
-      delay: 100,
-      color: "#CFF3FF",
-      darkColor: "#A4E1F5",
-      animation: "animate-tinUpIn",
-    },
-    {
-      x: "67%",
-      y: "20%",
-      delay: 200,
-      color: "#C6FFDC",
-      darkColor: "#77FAA9",
-      animation: "animate-tinRightIn",
-    },
-    {
-      x: "8%",
-      y: "70%",
-      delay: 300,
-      color: "#FCCDF7",
-      darkColor: "#EF99E6",
-      animation: "animate-tinLeftIn",
-    },
-    {
-      x: "33%",
-      y: "55%",
-      delay: 400,
-      color: "#E8CAFC",
-      darkColor: "#D2A3F1",
-      animation: "animate-tinDownIn",
-    },
-    {
-      x: "86%",
-      y: "41%",
-      delay: 500,
-      color: "#D2D2F8",
-      darkColor: "#B1B1EE",
-      animation: "animate-tinUpIn",
-    },
-    {
-      x: "56%",
-      y: "54%",
-      delay: 600,
-      color: "#FFF8B7",
-      darkColor: "#E8DB78",
-      animation: "animate-tinRightIn",
-    },
-    {
-      x: "12%",
-      y: "38%",
-      delay: 700,
-      color: "#CFF3FF",
-      darkColor: "#A4E1F5",
-      animation: "animate-tinLeftIn",
-    },
-    {
-      x: "40%",
-      y: "71%",
-      delay: 800,
-      color: "#C6FFDC",
-      darkColor: "#77FAA9",
-      animation: "animate-tinDownIn",
-    },
-  ]);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
 
-  // 애니메이션
-  const animations = [
-    "animate-tinDownIn",
-    "animate-tinUpIn",
-    "animate-tinRightIn",
-    "animate-tinLeftIn",
-  ];
+  const fetchIdeas = useCallback(async () => {
+    const data = await fetchIdea(param?.id);
+    if (data) {
+      setCoordinates(data);
+    }
+  }, [param?.id]);
 
-  // 색상 배열 정의
-  const colors = [
-    "#FFF8B7",
-    "#CFF3FF",
-    "#C6FFDC",
-    "#FCCDF7",
-    "#E8CAFC",
-    "#D2D2F8",
-  ];
+  // 아이디어 목록 조회
+  useEffect(() => {
+    fetchIdeas();
+  }, [param?.id, fetchIdeas]);
 
-  const darkColors = [
-    "#E8DB78",
-    "#A4E1F5",
-    "#77FAA9",
-    "#EF99E6",
-    "#D2A3F1",
-    "#B1B1EE",
-  ];
-
-  // 스티커 클릭 시 선택 상태로 변경
+  // 스티커 클릭 시 선택 상태 변경
   const handleStickerClick = (index) => {
-    setSelectedSticker(coordinates[index]);
+    const clickedSticker = coordinates[index];
+    setSelectedSticker((prevSelectedSticker) =>
+      prevSelectedSticker === clickedSticker ? null : clickedSticker
+    );
   };
 
   // 스티커 추가 함수
-  const handleAddSticker = () => {
-    console.log("아이디어(스티커) 생성");
+  const handleAddSticker = async () => {
+    await createIdea(param?.id);
+    fetchIdeas();
   };
 
   // 스티커 삭제 함수
-  const handleDeleteSticker = () => {
-    if (selectedSticker) {
-      setCoordinates((prev) =>
-        prev.filter((sticker) => sticker !== selectedSticker)
+  const handleDeleteSticker = async () => {
+    if (selectedSticker?.ideaId) {
+      await deleteIdea(selectedSticker.ideaId);
+
+      // 서버에서 삭제 후 로컬 상태에서도 해당 스티커를 제거하여 UX 개선
+      setCoordinates((prevCoordinates) =>
+        prevCoordinates.filter(
+          (sticker) => sticker.ideaId !== selectedSticker.ideaId
+        )
       );
-      setSelectedSticker(null); // 삭제 후 선택 해제
+
+      setSelectedSticker(null); // 선택된 스티커 초기화
     }
   };
 
   // 마우스로 화면을 드래그하여 이동하는 기능
   const handleMouseDown = (e) => {
-    setIsDragging(true);
-    e.preventDefault(); // 기본 마우스 동작(텍스트 선택 등)을 방지
-    const startX = e.clientX; // 드래그 시작 X 좌표
-    const startY = e.clientY; // 드래그 시작 Y 좌표
-    const startTranslate = { ...translate }; // 현재 이동 상태 저장
+    if (!spacePressed) return; // 스페이스바가 눌린 상태에서만 화면 이동 활성화
 
-    // 마우스를 움직일 때 호출되는 함수
+    e.preventDefault();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startTranslate = { ...translate };
+
     const handleMouseMove = (moveEvent) => {
-      const dx = ((moveEvent.clientX - startX) / scale) * 2; // X축 이동 거리, 확대/축소 비율 반영
-      const dy = ((moveEvent.clientY - startY) / scale) * 2; // Y축 이동 거리, 확대/축소 비율 반영
+      const dx = ((moveEvent.clientX - startX) / scale) * 2;
+      const dy = ((moveEvent.clientY - startY) / scale) * 2;
 
-      // 부모 요소의 크기를 참조하여 화면 경계 설정
       const { offsetWidth: parentWidth, offsetHeight: parentHeight } =
         containerRef.current;
 
-      // 확대된 상태에 따른 X축 최대 이동 범위
       const maxTranslateX = (parentWidth * scale - parentWidth) / 2;
-      // 확대된 상태에 따른 Y축 최대 이동 범위
       const maxTranslateY = (parentHeight * scale - parentHeight) / 2;
 
-      // translate 값을 화면 경계 내로 제한하여 이동
       setTranslate({
         x: Math.max(
-          -maxTranslateX, // 최소 X값
-          Math.min(startTranslate.x + dx, maxTranslateX) // 최대 X값
+          -maxTranslateX,
+          Math.min(startTranslate.x + dx, maxTranslateX)
         ),
         y: Math.max(
-          -maxTranslateY, // 최소 Y값
-          Math.min(startTranslate.y + dy, maxTranslateY) // 최대 Y값
+          -maxTranslateY,
+          Math.min(startTranslate.y + dy, maxTranslateY)
         ),
       });
     };
 
     // 마우스 버튼을 떼었을 때 이벤트 리스너를 제거하는 함수
     const handleMouseUp = () => {
-      setIsDragging(false);
       window.removeEventListener("mousemove", handleMouseMove); // 마우스 이동 이벤트 제거
       window.removeEventListener("mouseup", handleMouseUp); // 마우스 버튼 떼기 이벤트 제거
     };
 
-    // 드래그 시작 시 이벤트 리스너 추가
     window.addEventListener("mousemove", handleMouseMove); // 마우스 이동 감지
     window.addEventListener("mouseup", handleMouseUp); // 마우스 버튼 떼기 감지
   };
@@ -239,10 +145,9 @@ function IdeaBoardPage() {
   const handleWheel = (e) => {
     if (e.ctrlKey) {
       // ctrl 키와 함께 휠을 움직일 때만 확대/축소 적용
-      e.preventDefault(); // 기본 확대/축소 동작 막기
       const zoomIntensity = 0.2; // 확대/축소 강도
       let newScale = scale - e.deltaY * zoomIntensity * 0.01; // 스케일 조정
-      newScale = Math.min(Math.max(newScale, 1), 3); // 스케일을 최소 1배, 최대 3배로 제한
+      newScale = Math.min(Math.max(newScale, 1), 4); // 스케일을 최소 1배, 최대 3배로 제한
 
       // 부모 요소의 크기를 참조하여 새 스케일에 맞는 이동 범위 설정
       const { offsetWidth: parentWidth, offsetHeight: parentHeight } =
@@ -263,7 +168,7 @@ function IdeaBoardPage() {
   // 확대/축소 버튼 클릭 핸들러
   const handleZoom = (zoomIn) => {
     let newScale = zoomIn ? scale + 0.2 : scale - 0.2;
-    newScale = Math.min(Math.max(newScale, 1), 3);
+    newScale = Math.min(Math.max(newScale, 1), 4);
     updateTranslate(newScale);
   };
 
@@ -281,6 +186,25 @@ function IdeaBoardPage() {
 
     setScale(newScale);
   };
+
+  // 드래그 종료 시 호출되는 함수
+  const handleDragEnd = async (ideaId, newX, newY) => {
+    const updatedCoordinates = coordinates.map((sticker) =>
+      sticker.ideaId === ideaId ? { ...sticker, x: newX, y: newY } : sticker
+    );
+
+    // 상태 업데이트
+    setCoordinates(updatedCoordinates);
+
+    // 업데이트할 스티커 데이터 찾기
+    const updatedSticker = updatedCoordinates.find(
+      (sticker) => sticker.ideaId === ideaId
+    );
+
+    // 서버에 새로운 좌표 및 기존 데이터 업데이트 요청
+    await updateIdea(ideaId, { ...updatedSticker, x: newX, y: newY });
+  };
+
   return (
     <>
       <Helmet>
@@ -289,7 +213,7 @@ function IdeaBoardPage() {
       <div
         ref={containerRef}
         className={`relative overflow-hidden w-full h-full ${
-          isDragging ? "cursor-grab" : ""
+          spacePressed ? "cursor-grab" : ""
         }`}
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
@@ -302,51 +226,50 @@ function IdeaBoardPage() {
               "radial-gradient(circle, #a5a5a5 1px, transparent 1px) 0 0 / 20px 20px",
           }}
         >
-          {coordinates.map(
-            ({ x, y, delay, color, darkColor, animation }, index) => (
-              <div
-                key={index}
-                className="relative"
-                style={{ left: x, top: y, position: "absolute" }}
-              >
-                <Sticker
-                  delay={delay}
-                  color={color}
-                  darkColor={darkColor}
-                  animation={animation}
-                  isSelected={coordinates[index] === selectedSticker}
-                  onClick={() => handleStickerClick(index)}
-                />
-                {coordinates[index] === selectedSticker && (
-                  <div
-                    className="absolute flex flex-row items-center space-x-2 z-10"
-                    style={{
-                      top: "-1.2rem", // 스티커의 상단에서 약간 위로
-                      left: "4.5rem", // 스티커의 중심을 기준으로 위치
-                      transform: "translate(-50%, -50%)", // 중앙 정렬 및 약간 위로 이동
-                    }}
+          {coordinates.map((coordinate, index) => (
+            <div
+              className={coordinate === selectedSticker ? "z-40" : ""}
+              key={coordinate.ideaId}
+              style={{
+                left: `${coordinate.x}%`,
+                top: `${coordinate.y}%`,
+                position: "absolute",
+              }}
+            >
+              <Sticker
+                key={coordinate.ideaId}
+                coordinate={coordinate}
+                onClick={() => handleStickerClick(index)}
+                onDragEnd={handleDragEnd}
+              />
+              {coordinate === selectedSticker && (
+                <div
+                  className="absolute flex flex-row items-center space-x-2 z-10"
+                  style={{
+                    top: "-1rem",
+                    left: "3.3rem",
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                  <button
+                    className="px-2 py-1 bg-blue-500 text-white rounded text-[8px] whitespace-nowrap z-40"
+                    onClick={() => setIsModalOpen(true)}
                   >
-                    <button
-                      className="px-2 py-1 bg-blue-500 text-white rounded text-xs whitespace-nowrap"
-                      style={{ minWidth: "60px" }}
-                      onClick={() => setIsModalOpen(true)}
-                    >
-                      상세보기
-                    </button>
-                    <button
-                      className="px-2 py-1 bg-red-500 text-white rounded text-xs whitespace-nowrap"
-                      style={{ minWidth: "60px" }}
-                      onClick={handleDeleteSticker}
-                    >
-                      삭제
-                    </button>
-                  </div>
-                )}
-              </div>
-            )
-          )}
+                    상세보기
+                  </button>
+                  <button
+                    className="px-2 py-1 bg-red-500 text-white rounded text-[8px] whitespace-nowrap z-40"
+                    onClick={handleDeleteSticker}
+                  >
+                    삭제
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
+      {/* 스티커 상세 모달 */}
       {isModalOpen && selectedSticker && (
         <StickerModal
           closeModal={() => setIsModalOpen(false)}
@@ -359,8 +282,8 @@ function IdeaBoardPage() {
         type="button"
         text={
           <svg
-            width="30"
-            height="30"
+            width="24"
+            height="24"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -371,11 +294,11 @@ function IdeaBoardPage() {
             />
           </svg>
         }
-        className="fixed top-20 right-4"
+        className="fixed top-[11%] right-[1.6%] !px-3"
         theme="default"
       />
-      {/* 확대/축소 컨트롤러: transform 외부에 위치 */}
-      <div className="fixed right-4 top-[25%] -translate-y-1/2 flex flex-col items-center gap-2 bg-white rounded-lg p-2 shadow-md select-none">
+      {/* 확대/축소 컨트롤러 */}
+      <div className="fixed right-[2%] top-[30%] -translate-y-1/2 flex flex-col items-center gap-2 bg-white rounded-lg p-2 shadow-md select-none border-2">
         <button
           onClick={() => handleZoom(true)}
           className="text-lg font-semibold text-gray-700"
@@ -398,6 +321,51 @@ function IdeaBoardPage() {
         >
           -
         </button>
+      </div>
+      {/* 도움말 */}
+      <div className="fixed right-[2.1%] top-[43%] flex">
+        {isTipOpen && (
+          <div className=" bg-blue-500 rounded-md p-4 text-white -translate-y-[38%]  -translate-x-10">
+            <ul className="relative list-disc list-inside space-y-2">
+              <li>
+                Ctrl을 누르고 마우스휠을 굴리면 화면을 확대 및 축소할 수 있어요.
+              </li>
+              <li>
+                확대 후 SpaceBar를 누르고 마우스로 화면을 끌면 화면을 움직일 수
+                있어요.
+              </li>
+              <li>아이디어는 보드 안에서 자유롭게 위치를 변경 할 수 있어요.</li>
+              <li>상세보기에서 아이디어를 채택할 수 있어요.</li>
+              <li>아이디어 채택은 팀장만 가능합니다.</li>
+            </ul>
+            <div className="absolute top-1/2 right-3 transform -translate-y-1/2 w-0 h-0 border-t-[17.5px] border-t-transparent border-b-[15px] border-b-transparent border-l-[35px] border-l-blue-500 -mr-[35px] "></div>
+          </div>
+        )}
+        <div
+          className=" bg-blue-500 text-white rounded-full shadow h-[28px] hover:bg-blue-600 transition translate-y-1/3"
+          onMouseOver={() => {
+            setIsTipOpen(true);
+          }}
+          onMouseOut={() => {
+            setIsTipOpen(false);
+          }}
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M10.75 15.75H13.25V18.25H10.75V15.75Z" fill="white" />
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M12 8C10.805 8 10 9.086 10 10H8C8 8.198 9.496 6 12 6C14.496 6 16 8.142 16 10C16 11.578 14.892 12.378 14.206 12.873L14.09 12.957C13.335 13.509 13 13.823 13 14.5H11C11 12.738 12.161 11.89 12.907 11.345L12.91 11.343C13.742 10.734 14 10.503 14 10C14 9.05 13.204 8 12 8Z"
+              fill="white"
+            />
+          </svg>
+        </div>
       </div>
     </>
   );

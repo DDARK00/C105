@@ -1,91 +1,130 @@
-import React, { useRef, useState } from "react";
-import DefaultButton from "../common/DefaultButton";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { fetchMindMapHotKeyword } from "../../api/axios";
 
-const CloudOverlay = ({ setIsPlanOpen }) => {
-  const containerRef = useRef(null);
+const CloudOverlay = ({ setIsPlanOpen, handleRecommend, setSearchKeyword }) => {
+  const [textArray, setTextArray] = useState([]);
   const [visible, setVisible] = useState(false);
-  const textArray = ["1번", "2번", "3번", "4번", "5번"];
+  const [selectedRecommendText, setSelectedRecommendText] = useState("");
 
-  const handleClick = (evt) => {
-    evt.preventDefault();
-    if (!containerRef.current) return;
+  // 핫 키워드 가져오기
+  useEffect(() => {
+    fetchMindMapHotKeyword().then((item) => {
+      const getRandomElements = (arr, count) => {
+        return arr
+          ?.sort(() => Math.random() - 0.5) // 무작위로 섞기
+          ?.slice(0, count); // 원하는 개수만큼 선택
+      };
+      if (item.length === 0) return;
+      const randomFive = getRandomElements(item, 5);
+      setTextArray(randomFive);
+    });
+  }, []);
 
-    // 모달이 열려 있을 때 -> 닫기 애니메이션 실행
-    if (containerRef.current.classList.contains("modal-active")) {
-      containerRef.current.classList.add("modal-out"); // 닫기 애니메이션 추가
-      setVisible(false);
-      // 닫기 애니메이션 후에 modal-active 클래스를 제거
-      setTimeout(() => {
-        containerRef.current.classList.remove("modal-active", "modal-out");
-      }, 1000); // unfoldOut 애니메이션 시간(1s)과 동일하게 설정
-      return;
+  // selectedRecommendText 변경 시 handleRecommend 호출
+  useEffect(() => {
+    if (selectedRecommendText) {
+      handleRecommend();
     }
 
-    // 모달이 닫혀 있을 때 -> 열기 애니메이션 실행
-    setVisible(true);
-    containerRef.current.classList.remove("modal-out");
-    containerRef.current.classList.add("modal-active");
-  };
+    // handleRecommend이 계속 재생성되어 무한 호출을 방지하기 위해 의존성 배열에서 제외했습니다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRecommendText]);
+
+  const containerRef = useRef(null);
+
+  const handleClick = useCallback(
+    (evt) => {
+      evt?.preventDefault();
+      if (!containerRef.current) return;
+
+      // 모달이 열려 있을 때 -> 닫기 애니메이션 실행
+      if (containerRef.current.classList.contains("modal-active")) {
+        containerRef.current.classList.add("modal-out"); // 닫기 애니메이션 추가
+        setVisible(false);
+        // 닫기 애니메이션 후에 modal-active 클래스를 제거
+        setTimeout(() => {
+          containerRef.current.classList.remove("modal-active", "modal-out");
+        }, 1000); // unfoldOut 애니메이션 시간(1s)과 동일하게 설정
+        return;
+      }
+
+      // 모달이 닫혀 있을 때 -> 열기 애니메이션 실행
+      setVisible(true);
+      containerRef.current.classList.remove("modal-out");
+      containerRef.current.classList.add("modal-active");
+    },
+    [containerRef]
+  );
+
+  const selectKeyword = useCallback(
+    (text) => {
+      if (text === selectedRecommendText) return;
+      setSearchKeyword(text);
+      setSelectedRecommendText(text);
+      handleClick();
+    },
+    [selectedRecommendText, setSearchKeyword, handleClick]
+  );
 
   return (
     <>
       <div className="text-end space-x-3">
         <button
           onClick={handleClick}
-          className="px-4 py-2 bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 text-white font-bold rounded-full 
+          className="px-4 py-2 bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 text-white font-bold rounded-full hover:from-blue-400 hover:via-cyan-300 hover:to-blue-400
         border-blue-800 focus:outline-none focus:ring-4 focus:ring-yellow-500"
         >
-          <span className="text-xs tracking-wider uppercase">Keyword추천</span>
+          <span className="text-xs tracking-wider uppercase">
+            오늘의Keyword
+          </span>
         </button>
-        <DefaultButton
-          // theme="bright"
-          text="AI Support"
+        <button
           onClick={() => setIsPlanOpen(true)}
-        />
+          className="px-4 py-2 bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 text-white font-bold rounded-full hover:from-blue-400 hover:via-cyan-300 hover:to-blue-400
+        border-blue-800 focus:outline-none focus:ring-4 focus:ring-yellow-500"
+        >
+          <span className="text-xs tracking-wider">AI Support</span>
+        </button>
       </div>
       <div className="flex items-center justify-center">
-        {
-          // container
-          <div
-            title="클릭하면 창이 닫힙니다."
-            ref={containerRef}
-            onClick={handleClick}
-            className={`fixed cursor-pointer table h-full w-full justify-center top-0 left-0 transform scale-0 transition-opacity duration-700`}
-            style={{ backgroundColor: "#f0faff", opacity: 0.91 }}
-          >
-            {/* background */}
-            <div className="table-cell bg-black/80 text-center align-middle modal-background">
-              {/* modal */}
-              <div
-                title=""
-                onClick={(e) => e.stopPropagation()}
-                className="bg-white cursor-auto p-12 inline-block rounded-lg relative modal"
-              >
-                <h2
-                  className="text-3xl font-bold mb-6 
+        <div
+          title="클릭하면 창이 닫힙니다."
+          ref={containerRef}
+          onClick={handleClick}
+          className={`z-50 fixed cursor-pointer table h-full w-full justify-center top-0 left-0 transform scale-0 transition-opacity duration-700`}
+          style={{ backgroundColor: "#f0faff", opacity: 0.91 }}
+        >
+          <div className="table-cell bg-black/80 text-center align-middle modal-background">
+            <div
+              title=""
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white cursor-auto p-12 inline-block rounded-lg relative modal"
+            >
+              <h2
+                className="text-3xl font-bold mb-6 
               text-transparent bg-clip-text bg-gradient-to-l from-indigo-500 via-purple-500 to-pink-500"
-                >
-                  오늘의 추천 키워드
-                </h2>
-                <div className="space-x-6">
-                  {visible &&
-                    textArray.map((text, index) => (
-                      <span
-                        key={index}
-                        className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-5xl font-extrabold opacity-0"
-                        style={{
-                          animation: "textPop 1.5s ease forwards",
-                          animationDelay: `${index * 0.4 + 1.5}s`,
-                        }}
-                      >
-                        {text}
-                      </span>
-                    ))}
-                </div>
+              >
+                오늘의 추천 키워드
+              </h2>
+              <div className="space-x-6">
+                {visible &&
+                  textArray.map((text, index) => (
+                    <span
+                      onClick={() => selectKeyword(text)}
+                      key={index}
+                      className="text-transparent cursor-pointer bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-5xl font-extrabold opacity-0"
+                      style={{
+                        animation: "textPop 1.5s ease forwards",
+                        animationDelay: `${index * 0.4 + 1.5}s`,
+                      }}
+                    >
+                      {text}
+                    </span>
+                  ))}
               </div>
             </div>
           </div>
-        }
+        </div>
 
         <style>{`
 .modal-active {
@@ -165,7 +204,6 @@ const CloudOverlay = ({ setIsPlanOpen }) => {
 .modal-active.modal-out .modal-background .modal {
   animation: zoomOut 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
 }
-
       `}</style>
       </div>
     </>

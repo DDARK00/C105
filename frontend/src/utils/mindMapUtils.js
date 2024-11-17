@@ -1,4 +1,4 @@
-import { colorName } from "../dummy/brainstorming";
+import { colorName } from "../global";
 
 // 데이터를 마인드맵 형식에 맞게 만드는 함수
 export function CreateMindMapData(searchKeyword, SubKeywords) {

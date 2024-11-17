@@ -47,7 +47,7 @@ export const useProjectListStore = create(
       },
     }),
     {
-      name: "project-storage", // 로컬 스토리지에 저장될 키 이름
+      name: "projectlist-storage", // 로컬 스토리지에 저장될 키 이름
       partialize: (state) => ({
         projects: state.projects,
         nextProjectId: state.nextProjectId,

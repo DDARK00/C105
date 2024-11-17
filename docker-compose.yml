@@ -1,13 +1,82 @@
-version: "3"
-services:
-  front:
-    container_name: frontend
-    image: ssafy/frontend
-    ports:
-      - 3000:80
+networks:
+  msa-network:
+    external: true
+    driver: bridge
 
-  backend:
-    container_name: backend
-    image: ssafy/backend
+services:
+  discovery-service:
+    container_name: discovery-service
+    image: ssafy/discovery-service
     ports:
-      - 8080:8080
+      - "8761:8761"
+    networks:
+      - msa-network
+    environment:
+      - EUREKA_INSTANCE_HOSTNAME=discovery-service
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/eureka"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  gateway-service:
+    container_name: gateway-service
+    image: ssafy/gateway-service
+    ports:
+      - "8000:8000"
+    networks:
+      - msa-network
+    depends_on:
+      - discovery-service
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka
+
+  auth-service:
+    container_name: auth-service
+    image: ssafy/auth-service
+    ports:
+      - "8001:8001"
+    networks:
+      - msa-network
+    depends_on:
+      - discovery-service
+      - gateway-service
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka
+
+  user-service:
+    container_name: user-service
+    image: ssafy/user-service
+    ports:
+      - "8002:8002"
+    networks:
+      - msa-network
+    depends_on:
+      - discovery-service
+      - gateway-service
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka
+
+  project-service:
+    container_name: project-service
+    image: ssafy/project-service
+    ports:
+      - "8003:8003"
+    networks:
+      - msa-network
+    depends_on:
+      - discovery-service
+      - gateway-service
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka
+
+  frontend:
+      container_name: frontend
+      image: ssafy/frontend
+      ports:
+        - "3000:80"
+      networks:
+        - msa-network
+      depends_on:
+        - gateway-service

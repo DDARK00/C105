@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Divier from "../common/Divier";
 
 function ProjectListItem({ project }) {
-  console.log(project);
+  // console.log(project);
   const navigate = useNavigate();
   const navigateDetail = () => {
     // navigate to detail page
@@ -33,14 +33,16 @@ function ProjectListItem({ project }) {
         </div>
 
         {/* 우측 */}
-        <div
-          onClick={() => window.location.replace(project.gitlab_url)}
-          className="flex items-center h-full hover:underline cursor-pointer"
+        <a
+          href={project.gitlab_url}
+          className="flex hover:underline-offset-4 items-center h-full hover:underline cursor-pointer"
+          target="_blank" /* 새 탭에서 열기 */
+          rel="noopener noreferrer"
         >
           <strong className="text-sm text-[rgb(59,130,246)]">
             Go to Gitlab
           </strong>
-        </div>
+        </a>
       </div>
     </>
   );

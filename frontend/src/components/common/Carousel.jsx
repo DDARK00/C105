@@ -26,9 +26,9 @@ const Carousel = ({ slides, currentIndex, setCurrentIndex, children }) => {
   };
 
   return (
-    <section className="rounded-md relative overflow-hidden w-full ">
+    <section className="rounded-md relative overflow-hidden w-full">
       <div
-        className="flex h-[200px] transition-transform duration-500 ease-in-out"
+        className="flex h-[150px] transition-transform duration-500 ease-in-out"
         style={{
           transform: `translateX(-${currentIndex * 100}%)`,
         }}
@@ -40,13 +40,13 @@ const Carousel = ({ slides, currentIndex, setCurrentIndex, children }) => {
       {/* 이전/다음 버튼 */}
       <button
         onClick={handlePrev}
-        className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-black bg-opacity-50 rounded-full hover:bg-opacity-70"
+        className="absolute left-1 top-1/2 transform -translate-y-1/2 p-2 bg-black bg-opacity-50 rounded-full hover:bg-opacity-70"
       >
         <i className="fa-solid fa-chevron-left text-white"></i>
       </button>
       <button
         onClick={handleNext}
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-black bg-opacity-50 rounded-full hover:bg-opacity-70"
+        className="absolute right-1 top-1/2 transform -translate-y-1/2 p-2 bg-black bg-opacity-50 rounded-full hover:bg-opacity-70"
       >
         <i className="fa-solid fa-chevron-right text-white"></i>
       </button>

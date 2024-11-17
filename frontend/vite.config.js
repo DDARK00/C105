@@ -26,6 +26,11 @@ export default defineConfig({
         target: "ws://localhost:8080",
         ws: true,
       },
+      "/gateway": {
+        target: "https://goodidea.world",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });
