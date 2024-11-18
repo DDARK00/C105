@@ -1,0 +1,46 @@
+networks:
+  fastapi-network:
+  kafka_kafka_network:
+    external: true
+  docker-elk_elk:
+    external: true
+
+services:
+  # crawling:
+  #   build:
+  #     context: ./crawling
+  #     dockerfile: Dockerfile
+  #   container_name: crawling_service
+  #   env_file: .env
+  #   networks:
+  #     - fastapi-network
+  #     - kafka_kafka_network
+  #     - docker-elk_elk
+  #   ports:
+  #     - "8082:8080"  # 로컬 포트 8081을 컨테이너의 8080 포트에 매핑
+
+  # learning:
+  #   build:
+  #     context: ./learning
+  #     dockerfile: Dockerfile
+  #   container_name: learning_service
+  #   env_file: .env
+  #   networks:
+  #     - fastapi-network
+  #     - kafka_kafka_network
+  #     - docker-elk_elk
+  #   ports:
+  #     - "8083:8080"  # 로컬 포트 8082를 컨테이너의 8080 포트에 매핑
+
+  search:
+    build:
+      context: ./search
+      dockerfile: Dockerfile
+    container_name: search_service
+    env_file: .env
+    networks:
+      - fastapi-network
+      - kafka_kafka_network
+      - docker-elk_elk
+    ports:
+      - "8084:8080"  # 로컬 포트 8083을 컨테이너의 8080 포트에 매핑

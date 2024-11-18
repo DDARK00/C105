@@ -1,5 +1,6 @@
 annotated-types
 anyio
+uvicorn
 certifi
 cffi
 charset-normalizer
@@ -11,6 +12,7 @@ elastic-transport
 elasticsearch
 fastapi
 filelock
+regex
 fsspec
 h11
 httpcore
@@ -21,6 +23,7 @@ Jinja2
 jiter
 MarkupSafe
 mpmath
+konlpy
 networkx
 numpy
 openai
