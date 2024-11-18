@@ -25,7 +25,6 @@
 ---
 
 # ✨ 서비스 소개
-https://github.com/user-attachments/assets/c850a5a7-e61d-4873-b734-9c216a1eff65
 ## 기획 배경
 ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
 
