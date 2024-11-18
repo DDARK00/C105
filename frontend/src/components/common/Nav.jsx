@@ -16,7 +16,7 @@ function Nav() {
   useEffect(() => {
     const fetchProjectInfo = async () => {
       const projectDetail = await fetchProjectDetail(param.id);
-      console.log(projectDetail);
+      // console.log(projectDetail);
       setProjectInfo(projectDetail);
     };
 

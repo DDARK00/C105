@@ -5,14 +5,12 @@ import StarterKit from "@tiptap/starter-kit";
 import { useLiveblocksExtension } from "@liveblocks/react-tiptap";
 import { useMyPresence, useOthers, useStorage } from "@liveblocks/react";
 import { updateProposal } from "../../api/axios";
-import "./ProposalEditor.css";
 import { CursorMode, colorName } from "../../global";
 import { Cursor } from "../../components/common/Cursor";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 
 export function ProposalEditor() {
   const { ideaId } = useParams();
-  // const [isEditorReady, setIsEditorReady] = useState(false); // 로딩 상태 초기화
   const liveblocks = useLiveblocksExtension({
     publicApiKey: import.meta.env.VITE_LIVEBLOCKS_PUBLIC_KEY,
   });
@@ -118,7 +116,7 @@ export function ProposalEditor() {
     };
   }, [editor, saveContentToDB, ideaId]);
 
-  if (!storage) {
+  if (storage === null) {
     return (
       <LoadingSpinner
         message={"기획서 페이지를 로딩중입니다. 잠시만 기다리세요"}
@@ -128,7 +126,18 @@ export function ProposalEditor() {
 
   // 커서
   function handlePointerMove(e) {
-    const cursor = { x: Math.floor(e.clientX), y: Math.floor(e.clientY) };
+    const windowWidth = window.innerWidth; // 화면 너비 가져오기
+    const inputWidth = 290;
+
+    // x 좌표를 제한
+    const cursorX = Math.min(
+      Math.floor(e.clientX), // 마우스 커서 위치
+      windowWidth - inputWidth // 화면 너비 - input 너비
+    );
+
+    const cursorY = Math.floor(e.clientY); // y 좌표는 제한하지 않음
+
+    const cursor = { x: cursorX, y: cursorY }; // 제한된 좌표로 커서 설정
     updateMyPresence({ cursor });
   }
 

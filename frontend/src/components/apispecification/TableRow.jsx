@@ -7,7 +7,7 @@ function TableRow({ spec, onUriClick, columnWidths }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(`Updating spec ${spec.id}: ${name} = ${value}`);
+    // console.log(`Updating spec ${spec.id}: ${name} = ${value}`);
     updateSpec(spec.id, { [name]: value });
   };
 

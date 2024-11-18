@@ -7,7 +7,7 @@ const EnhancedModal = ({
   selectedSpec,
   formData,
   onSubmit,
-  onChange,
+  handleLiveChange, // Liveblocks 데이터 변경 함수
 }) => {
   if (!isOpen) return null;
 
@@ -18,7 +18,7 @@ const EnhancedModal = ({
         onClick={onClose}
       />
       <div className="relative w-full max-w-3xl max-h-[90vh] bg-gray-100 rounded-xl shadow-2xl flex flex-col overflow-hidden">
-        {/* 고정된 모달 헤더 */}
+        {/* 모달 헤더 */}
         <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center z-10">
           <h2 className="text-xl font-semibold">
             API 명세 수정 - {selectedSpec?.feature}
@@ -43,7 +43,7 @@ const EnhancedModal = ({
           </button>
         </div>
 
-        {/* 스크롤 가능한 모달 바디 */}
+        {/* 모달 바디 */}
         <div className="flex-1 p-6 overflow-y-auto space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -53,38 +53,39 @@ const EnhancedModal = ({
               type="text"
               name="uri"
               value={formData.uri || ""}
-              onChange={onChange}
+              onChange={(e) => handleLiveChange("uri", e.target.value)}
               className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
+          {/* Markdown 필드 */}
           <MarkdownEditor
             label="Request Header"
             name="requestHeader"
-            value={formData.requestHeader}
-            onChange={onChange}
+            value={formData.requestHeader || ""}
+            onChange={(value) => handleLiveChange("requestHeader", value)}
           />
           <MarkdownEditor
             label="Request Params"
             name="requestParams"
-            value={formData.requestParams}
-            onChange={onChange}
+            value={formData.requestParams || ""}
+            onChange={(value) => handleLiveChange("requestParams", value)}
           />
           <MarkdownEditor
             label="Request Body"
             name="requestBody"
-            value={formData.requestBody}
-            onChange={onChange}
+            value={formData.requestBody || ""}
+            onChange={(value) => handleLiveChange("requestBody", value)}
           />
           <MarkdownEditor
             label="Response Body"
             name="responseBody"
-            value={formData.responseBody}
-            onChange={onChange}
+            value={formData.responseBody || ""}
+            onChange={(value) => handleLiveChange("responseBody", value)}
           />
         </div>
 
-        {/* 고정된 모달 푸터 */}
+        {/* 모달 푸터 */}
         <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 flex justify-end gap-3">
           <button
             onClick={onClose}

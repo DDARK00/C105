@@ -34,11 +34,10 @@ const UpdateUser = () => {
 
   // 수정하기 버튼 클릭 시 호출되는 함수
   const handleButtonClick = async () => {
-    console.log(userProfile);
+    // console.log(userProfile);
     startLoading();
     const data = await updateUserInfo(userProfile);
     if (data) {
-      console.log(":?");
       setUserInfo(data);
       stopLoading();
       window.location.reload();

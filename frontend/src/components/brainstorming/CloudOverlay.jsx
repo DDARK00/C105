@@ -1,7 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { fetchMindMapHotKeyword } from "../../api/axios";
+import DeepGlowingButton from "./DeepGlowingButton";
 
-const CloudOverlay = ({ setIsPlanOpen, handleRecommend, setSearchKeyword }) => {
+const CloudOverlay = ({
+  setIsPlanOpen,
+  handleExtendClick,
+  handleRecommend,
+  setSearchKeyword,
+}) => {
   const [textArray, setTextArray] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedRecommendText, setSelectedRecommendText] = useState("");
@@ -68,7 +74,7 @@ const CloudOverlay = ({ setIsPlanOpen, handleRecommend, setSearchKeyword }) => {
 
   return (
     <>
-      <div className="text-end space-x-3">
+      <div className="text-end space-x-3 relative">
         <button
           onClick={handleClick}
           className="px-4 py-2 bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 text-white font-bold rounded-full hover:from-blue-400 hover:via-cyan-300 hover:to-blue-400
@@ -85,6 +91,8 @@ const CloudOverlay = ({ setIsPlanOpen, handleRecommend, setSearchKeyword }) => {
         >
           <span className="text-xs tracking-wider">AI Support</span>
         </button>
+
+        <DeepGlowingButton onClick={handleExtendClick} />
       </div>
       <div className="flex items-center justify-center">
         <div

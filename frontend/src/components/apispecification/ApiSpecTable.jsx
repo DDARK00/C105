@@ -7,17 +7,23 @@ import {
 } from "@liveblocks/react";
 import { CursorMode, colorName } from "../../global";
 import { Cursor } from "../common/Cursor";
-import RequirementsTableSkeleton from "../skeleton/RequirementsTableSkeleton";
+import EnhancedModal from "./EnhancedModal";
+import ApiSpecTableSkeleton from "../skeleton/ApiSpecTableSkeleton";
 
-function RequirementsTable() {
-  const storage = useStorage((storage) => storage.requirements); // 항상 최상위에서 호출
+function ApiSpecTable() {
+  const storage = useStorage((storage) => storage.apiSpecifications); // apiSpecifications 저장소 접근
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSpec, setSelectedSpec] = useState(null);
+
   const columnWidths = {
-    status: 150,
-    relatedPage: 150,
-    isRequired: 150,
-    name: 150,
-    description: 300,
-    author: 150,
+    feature: 150,
+    domain: 150,
+    method: 100,
+    uri: 200,
+    importance: 100,
+    backendOwner: 150,
+    frontendOwner: 150,
+    memo: 200,
   };
 
   // 커서
@@ -27,6 +33,7 @@ function RequirementsTable() {
 
   // 커서
   useEffect(() => {
+    // console.log(others);
     function onKeyUp(e) {
       if (e.key === "/") {
         setCursorState({
@@ -79,50 +86,61 @@ function RequirementsTable() {
   }
   // --커서 끝 ---
 
+  const handleAddRow = useMutation(({ storage }) => {
+    const apiSpecifications = storage.get("apiSpecifications");
+    apiSpecifications.push({
+      id: Date.now(),
+      feature: "",
+      domain: "",
+      method: "GET",
+      uri: "",
+      importance: "Low",
+      backendOwner: "",
+      frontendOwner: "",
+      memo: "",
+    });
+  }, []);
+
   const handleChange = useMutation(({ storage }, id, field, value) => {
-    const requirements = storage.get("requirements");
-    const index = requirements.findIndex((req) => req.id === id);
+    const apiSpecifications = storage.get("apiSpecifications");
+    const index = apiSpecifications.findIndex((spec) => spec.id === id);
     if (index !== -1) {
-      requirements.set(index, { ...requirements.get(index), [field]: value });
+      apiSpecifications.set(index, {
+        ...apiSpecifications.get(index),
+        [field]: value,
+      });
     }
   }, []);
 
-  const handleAddRow = useMutation(({ storage }) => {
-    const requirements = storage.get("requirements");
-    console.log(requirements.toArray());
-    requirements.push({
-      id: Date.now(),
-      status: "미진행",
-      relatedPage: "",
-      isRequired: "필수 기능",
-      name: "",
-      description: "",
-      author: "",
-    });
-    // setLocalRequirements(requirements.toArray()); // localRequirements 업데이트
-  }, []);
+  // 모달 열기
+  const openModal = (spec) => {
+    setSelectedSpec(spec); // 선택된 spec 데이터 저장
+    setIsModalOpen(true); // 모달 열기
+  };
 
-  // const handleResize = (column, e) => {
-  //   const startX = e.clientX;
-  //   const startWidth = columnWidths[column];
+  // 모달 닫기
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSpec(null);
+  };
 
-  //   const onMouseMove = (e) => {
-  //     const newWidth = Math.max(startWidth + e.clientX - startX, 50);
-  //     columnWidths[column] = newWidth; // 컬럼 너비 업데이트
-  //     storage.set("columnWidths", columnWidths);
-  //   };
-
-  //   const onMouseUp = () => {
-  //     document.removeEventListener("mousemove", onMouseMove);
-  //     document.removeEventListener("mouseup", onMouseUp);
-  //   };
-
-  //   document.addEventListener("mousemove", onMouseMove);
-  //   document.addEventListener("mouseup", onMouseUp);
-  // };
-  // storage가 초기화되지 않은 경우 로딩 상태 표시
+  const handleLiveChange = useMutation(
+    ({ storage }, field, value) => {
+      const apiSpecifications = storage.get("apiSpecifications");
+      const index = apiSpecifications.findIndex(
+        (spec) => spec.id === selectedSpec.id
+      );
+      if (index !== -1) {
+        apiSpecifications.set(index, {
+          ...apiSpecifications.get(index),
+          [field]: value,
+        });
+      }
+    },
+    [selectedSpec]
+  );
   if (storage === null) {
-    return <RequirementsTableSkeleton columnWidths={columnWidths} />;
+    return <ApiSpecTableSkeleton columnWidths={columnWidths} />;
   }
 
   return (
@@ -138,90 +156,109 @@ function RequirementsTable() {
               {Object.keys(columnWidths)?.map((column) => (
                 <th
                   key={column}
-                  className="p-1 relative"
+                  className="p-2 relative"
                   style={{ width: columnWidths[column] }}
                 >
-                  {column === "status" && "구현"}
-                  {column === "relatedPage" && "관련 페이지"}
-                  {column === "isRequired" && "필수 여부"}
-                  {column === "name" && "요구사항 명"}
-                  {column === "description" && "상세 설명"}
-                  {column === "author" && "작성자"}
-                  <span
-                    // onMouseDown={(e) => handleResize(column, e)}
-                    className="absolute right-0 top-1 h-full cursor-col-resize px-1 text-slate-200"
-                    title="너비 조정 가능"
-                  >
-                    &#x22EE;
-                  </span>
+                  {column === "feature" && "기능"}
+                  {column === "domain" && "도메인"}
+                  {column === "method" && "Method"}
+                  {column === "uri" && "URI"}
+                  {column === "importance" && "중요도"}
+                  {column === "backendOwner" && "BE"}
+                  {column === "frontendOwner" && "FE"}
+                  {column === "memo" && "메모"}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {storage.map((req) => (
-              <tr key={req.id} className="hover:bg-gray-50">
-                <td className="p-2" style={{ width: columnWidths.status }}>
-                  <select
-                    value={req.status}
+            {storage.map((spec) => (
+              <tr key={spec.id} className="hover:bg-gray-50">
+                <td className="p-2" style={{ width: columnWidths.feature }}>
+                  <input
+                    type="text"
+                    value={spec.feature}
                     onChange={(e) =>
-                      handleChange(req.id, "status", e.target.value)
+                      handleChange(spec.id, "feature", e.target.value)
+                    }
+                    className="w-full p-1 rounded border-b focus:outline-none"
+                  />
+                </td>
+                <td className="p-2" style={{ width: columnWidths.domain }}>
+                  <input
+                    type="text"
+                    value={spec.domain}
+                    onChange={(e) =>
+                      handleChange(spec.id, "domain", e.target.value)
+                    }
+                    className="w-full p-1 rounded border-b focus:outline-none"
+                  />
+                </td>
+                <td className="p-2" style={{ width: columnWidths.method }}>
+                  <select
+                    value={spec.method}
+                    onChange={(e) =>
+                      handleChange(spec.id, "method", e.target.value)
                     }
                     className="w-full p-1 rounded border-b focus:outline-none"
                   >
-                    <option value="미진행">미진행</option>
-                    <option value="진행중">진행중</option>
-                    <option value="완료">완료</option>
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
                   </select>
                 </td>
-                <td className="p-2" style={{ width: columnWidths.relatedPage }}>
-                  <input
-                    type="text"
-                    value={req.relatedPage}
-                    onChange={(e) =>
-                      handleChange(req.id, "relatedPage", e.target.value)
-                    }
-                    className="w-full p-1 rounded border-b focus:outline-none"
-                  />
+                <td
+                  className="cursor-pointer text-blue-500 text-center"
+                  onClick={() => openModal(spec)} // URI 클릭 시 모달 열기
+                >
+                  {spec.uri || "URI 입력"}
                 </td>
-                <td className="p-2" style={{ width: columnWidths.isRequired }}>
+                <td className="p-2" style={{ width: columnWidths.importance }}>
                   <select
-                    value={req.isRequired}
+                    value={spec.importance}
                     onChange={(e) =>
-                      handleChange(req.id, "isRequired", e.target.value)
+                      handleChange(spec.id, "importance", e.target.value)
                     }
                     className="w-full p-1 rounded border-b focus:outline-none"
                   >
-                    <option value="필수 기능">필수 기능</option>
-                    <option value="부가 기능">부가 기능</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
                   </select>
                 </td>
-                <td className="p-2" style={{ width: columnWidths.name }}>
+                <td
+                  className="p-2"
+                  style={{ width: columnWidths.backendOwner }}
+                >
                   <input
                     type="text"
-                    value={req.name}
+                    value={spec.backendOwner}
                     onChange={(e) =>
-                      handleChange(req.id, "name", e.target.value)
+                      handleChange(spec.id, "backendOwner", e.target.value)
                     }
                     className="w-full p-1 rounded border-b focus:outline-none"
                   />
                 </td>
-                <td className="p-2" style={{ width: columnWidths.description }}>
+                <td
+                  className="p-2"
+                  style={{ width: columnWidths.frontendOwner }}
+                >
                   <input
                     type="text"
-                    value={req.description}
+                    value={spec.frontendOwner}
                     onChange={(e) =>
-                      handleChange(req.id, "description", e.target.value)
+                      handleChange(spec.id, "frontendOwner", e.target.value)
                     }
                     className="w-full p-1 rounded border-b focus:outline-none"
                   />
                 </td>
-                <td className="p-2" style={{ width: columnWidths.author }}>
+                <td className="p-2" style={{ width: columnWidths.memo }}>
                   <input
                     type="text"
-                    value={req.author}
+                    value={spec.memo}
                     onChange={(e) =>
-                      handleChange(req.id, "author", e.target.value)
+                      handleChange(spec.id, "memo", e.target.value)
                     }
                     className="w-full p-1 rounded border-b focus:outline-none"
                   />
@@ -236,8 +273,16 @@ function RequirementsTable() {
         >
           + 추가하기
         </button>
+        {/* 모달 */}
+        <EnhancedModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          selectedSpec={selectedSpec}
+          formData={selectedSpec}
+          handleLiveChange={handleLiveChange}
+          onSubmit={closeModal} // 저장 후 닫기
+        />
       </div>
-
       {cursor && (
         <div
           className="absolute top-0 left-0"
@@ -271,7 +316,7 @@ function RequirementsTable() {
                     });
                   }}
                   onKeyDown={(e) => {
-                    console.log(e.key, CursorMode.Chat);
+                    // console.log(e.key, CursorMode.Chat);
                     if (e.key === "Enter") {
                       setCursorState({
                         mode: CursorMode.Chat,
@@ -314,4 +359,4 @@ function RequirementsTable() {
   );
 }
 
-export default RequirementsTable;
+export default ApiSpecTable;

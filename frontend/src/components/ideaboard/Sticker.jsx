@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import useProjectStore from "../../store/useProjectStore";
 
 const Sticker = ({ coordinate, onClick, onDragEnd }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const stickerRef = useRef(null);
-
+  const { mainIdea } = useProjectStore();
   // 드래그 시작
   const handleMouseDown = (e) => {
     e.preventDefault();
@@ -76,9 +77,19 @@ const Sticker = ({ coordinate, onClick, onDragEnd }) => {
       onMouseDown={handleMouseDown}
       onClick={onClick}
     >
+      {/* 선택된 상태에서 빛나는 보더 배경 */}
+      {mainIdea.ideaId === coordinate.ideaId && (
+        <div
+          className="absolute inset-0 -m-1.5 bg-gradient-to-r from-red-500 via-blue-500 to-pink-500 animate-rotation z-0 pointer-events-none"
+          style={{
+            zIndex: -1, // 명시적으로 낮은 z-index 설정
+          }}
+        ></div>
+      )}
+
       <div
-        className="w-[100px] h-[84px] overflow-hidden"
-        style={{ backgroundColor: coordinate.color }}
+        className="w-[100px] h-[84px] overflow-hidden z-20"
+        style={{ backgroundColor: coordinate.color, marginBottom: "-1px" }}
       >
         <div className="px-2 py-2">
           <p
@@ -108,16 +119,40 @@ const Sticker = ({ coordinate, onClick, onDragEnd }) => {
         </div>
       </div>
       <div
-        className="w-[84px] h-[16px] ml-auto mr-0"
+        className="w-[84px] h-[16px] ml-auto mr-0 z-20"
         style={{ backgroundColor: coordinate.color }}
       ></div>
       <div
-        className="absolute bottom-[0.4px] left-[0.1px] w-[16px] h-[16px]"
+        className="absolute bottom-[0.3px] left-[0.1px] w-[16px] h-[16px] z-20"
         style={{
           backgroundColor: coordinate.darkColor,
           clipPath: "polygon(100% 100%, 100% 0, 0 0)",
         }}
       ></div>
+      {/* 애니메이션 스타일 추가 */}
+      <style>
+        {`
+          .animate-rotation {
+            background: linear-gradient(
+              to right,
+              #ef4444,
+              #3b82f6,
+              #ec4899
+            );
+            background-size: 300% 100%;
+            animation: gradient 2s linear infinite;
+          }
+          
+          @keyframes gradient {
+            0% {
+              background-position: 0% 0%;
+            }
+            100% {
+              background-position: 150% 0%;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };

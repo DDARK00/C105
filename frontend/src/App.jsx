@@ -10,7 +10,6 @@ import CommonLayout from "./components/CommonLayout";
 import MainPage from "./page/MainPage";
 import NotFoundPage from "./page/NotFoundPage";
 import LoginPage from "./page/LoginPage";
-import liveblocksClient from "../liveblocks.config"; // Liveblocks 클라이언트 import
 
 import LoadingSpinner from "./components/common/LoadingSpinner";
 
@@ -21,11 +20,10 @@ const LazyProjectEssentialPage = React.lazy(() =>
 );
 
 // 환경변수 확인
-console.log("Public Key from env:", import.meta.env.VITE_LIVEBLOCKS_PUBLIC_KEY);
-
+// console.log("Public Key from env:", import.meta.env.VITE_LIVEBLOCKS_PUBLIC_KEY);
+const PublicApiKey = import.meta.env.VITE_LIVEBLOCKS_PUBLIC_KEY;
 const client = createClient({
-  publicApiKey:
-    "pk_dev_nJXrR6Wtow_BqktuYQvAWmBdZ7ybi5UK7O-0_Ix1DlBiVGTSKzWxCSZeSDT5oWsh",
+  publicApiKey: `${PublicApiKey}`,
 });
 // 산출물 목록들 페이지
 const LazyMindMapPage = React.lazy(() => import("./page/project/MindMapPage"));
@@ -56,7 +54,7 @@ function App() {
             name: "Anonymous", // 모든 사용자에게 'Anonymous'라는 이름을 반환
           }));
         }}
-        publicApiKey="pk_dev_nJXrR6Wtow_BqktuYQvAWmBdZ7ybi5UK7O-0_Ix1DlBiVGTSKzWxCSZeSDT5oWsh"
+        publicApiKey={PublicApiKey}
       >
         <BrowserRouter>
           <Routes>

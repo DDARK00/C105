@@ -74,7 +74,7 @@ const ReaderWritePage = ({ title, onClose }) => {
               isCreate.data?.data,
             ],
           });
-        console.log(isCreate.data?.data);
+        // console.log(isCreate.data?.data);
         onClose();
         navigate(`/project/${isCreate?.data?.data?.project_id}`);
       } else {

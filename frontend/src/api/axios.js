@@ -196,13 +196,15 @@ export const updateIdea = async (ideaId, ideaData) => {
     introduction,
     target,
     expectedEffect,
+    projectTopic,
+    techStack,
+    advancedStack,
     x,
     y,
     color,
     darkColor,
     animation,
   } = ideaData;
-  console.log(ideaData);
   const response = await helper(
     () =>
       authAxiosInstance.put(
@@ -213,6 +215,9 @@ export const updateIdea = async (ideaId, ideaData) => {
           introduction,
           target,
           expectedEffect,
+          projectTopic,
+          techStack,
+          advancedStack,
           x,
           y,
           color,
@@ -228,7 +233,6 @@ export const updateIdea = async (ideaId, ideaData) => {
 };
 
 export const deleteIdea = async (ideaId) => {
-  console.log(ideaId);
   const response = await helper(
     () =>
       authAxiosInstance.delete(
@@ -291,7 +295,6 @@ export const fetchMindMap = async (projectId) => {
     "마인드맵 조회"
   );
   if (!response.ok) return;
-  // console.log(response.data);
   return response?.data?.data;
 };
 
@@ -321,7 +324,6 @@ export const fetchMindMapSubKeyword = async (keyword) => {
     "마인드맵 서브 키워드 조회"
   );
   if (!response.ok) return;
-  // console.log(response.data);
   return response?.data?.data;
 };
 
@@ -332,7 +334,6 @@ export const fetchMindMapHotKeyword = async () => {
     "마인드맵 핫힌 키워드 조회"
   );
   if (!response.ok) return;
-  // console.log(response.data);
   return response?.data?.data;
 };
 
@@ -343,7 +344,6 @@ export const fetchAllGenGithubPJTtoKeyword = async (keyword) => {
     "마인드맵-> 깃허브 조회"
   );
   if (!response.ok) return;
-  // console.log(response.data);
   return response?.data;
 };
 
@@ -354,7 +354,6 @@ export const fetchNewstoKeyword = async (keyword) => {
     "마인드맵 키워드 -> 뉴스 조회"
   );
   if (!response.ok) return;
-  // console.log(response.data);
   return response?.data;
 };
 
@@ -368,7 +367,6 @@ export const getProposal = async (ideaId) => {
     "기획서 조회"
   );
   if (!response.ok) return;
-  // console.log(response.data);
   return response?.data?.data;
 };
 

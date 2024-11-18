@@ -23,7 +23,7 @@ function RequirementsSpecificationPage() {
   return (
     <>
       <Helmet>
-        <title>요구사항명세서페이지</title>
+        <title>GOODIDEA - 요구사항 명세서</title>
       </Helmet>
       <Room>
         <RequirementsTable />

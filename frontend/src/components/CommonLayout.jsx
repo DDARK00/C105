@@ -11,9 +11,7 @@ function CommonLayout() {
   const { loading } = useGlobalLoadingStore();
   const params = useParams();
   const location = useLocation();
-  useEffect(() => {
-    console.log(loading);
-  }, [loading]);
+
   useEffect(() => {
     if (params?.id) setisproject(true);
     else setisproject(false);

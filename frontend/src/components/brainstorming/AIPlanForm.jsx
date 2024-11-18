@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DefaultButton from "../common/DefaultButton";
 import { generatePlan } from "../../api/aiPlan";
 import { useNavigate } from "react-router-dom";
@@ -33,6 +33,17 @@ const AIPlanForm = ({ onClose, projectId }) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [error, setError] = useState(null);
 
+  // Refs for each textarea
+  const textareaRefs = {
+    background: useRef(null),
+    service_intro: useRef(null),
+    target_users: useRef(null),
+    expected_effects: useRef(null),
+    project_topics: useRef(null),
+    tech_stack: useRef(null),
+    advanced_stack: useRef(null),
+  };
+
   const handleInputChange = (event, key) => {
     setInputs({ ...inputs, [key]: event.target.value });
   };
@@ -64,16 +75,15 @@ const AIPlanForm = ({ onClose, projectId }) => {
   };
 
   const generatePlanHandler = async () => {
-    if (
-      !generatedPlan.background ||
-      !generatedPlan.service_intro ||
-      !generatedPlan.target_users ||
-      !generatedPlan.expected_effects ||
-      !generatedPlan.project_topics ||
-      !generatedPlan.tech_stack ||
-      !generatedPlan.advanced_stack
-    ) {
-      alert("값을 입력해주세요.");
+    if (isLoading) return;
+    // 검증: 모든 태그 배열에 최소 하나 이상의 태그가 있는지 확인
+    const emptyTags = Object.keys(tags).filter((key) => tags[key].length === 0);
+    if (emptyTags.length > 0) {
+      alert(
+        `${emptyTags.join(", ")} ${
+          emptyTags.length > 1 ? "키워드를" : "키워드를"
+        } 입력해주세요.`
+      );
       return;
     }
 
@@ -101,7 +111,7 @@ const AIPlanForm = ({ onClose, projectId }) => {
   };
 
   const goToIdeaBoard = async () => {
-    // check the all of generatedPlan status
+    // 모든 generatedPlan 상태 확인
     if (
       !generatedPlan.background ||
       !generatedPlan.service_intro ||
@@ -129,6 +139,21 @@ const AIPlanForm = ({ onClose, projectId }) => {
       onClose();
     }
   };
+
+  // 자동 높이 조절 함수
+  const autoResizeTextarea = (ref) => {
+    if (ref.current) {
+      ref.current.style.height = "auto"; // 기존 높이 초기화
+      ref.current.style.height = `${ref.current.scrollHeight}px`; // 새로운 높이 설정
+    }
+  };
+
+  // useEffect to adjust height when generatedPlan changes
+  useEffect(() => {
+    Object.values(textareaRefs).forEach((ref) => {
+      autoResizeTextarea(ref);
+    });
+  }, [generatedPlan]);
 
   return (
     <div className="flex flex-col max-w-3xl mx-auto h-full border border-gray-300 rounded-lg shadow-lg">
@@ -199,10 +224,11 @@ const AIPlanForm = ({ onClose, projectId }) => {
                     {label}
                   </label>
                   <textarea
+                    ref={textareaRefs[key]}
                     value={generatedPlan[key]}
                     onChange={(e) => handleGeneratedPlanChange(e, key)}
-                    className="w-full p-3 border border-gray-300 rounded-md bg-gray-50 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows={3}
+                    className="w-full p-3 border border-gray-300 rounded-md bg-gray-50 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-hidden"
+                    rows={1} // 최소 높이 설정
                     placeholder={`AI가 작성한 ${label}의 내용이 표시됩니다.`}
                   />
                 </div>
@@ -245,6 +271,9 @@ const AIPlanForm = ({ onClose, projectId }) => {
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+        textarea {
+          resize: vertical; /* 세로 방향으로만 크기 조절 가능 */
         }
       `}</style>
     </div>

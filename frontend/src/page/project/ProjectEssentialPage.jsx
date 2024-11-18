@@ -1,4 +1,3 @@
-import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { ClientSideSuspense, RoomProvider } from "@liveblocks/react";
@@ -35,7 +34,7 @@ function ProjectEssentialPage() {
     <>
       <Room>
         <Helmet>
-          <title>프로젝트 기본 정보 페이지</title>
+          <title>GOODIDEA - 기본 정보</title>
         </Helmet>
         <ProjectEssentialEditor />
       </Room>

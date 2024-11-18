@@ -8,9 +8,9 @@ function GithubCarousel({ slides, currentIndex, setCurrentIndex }) {
         setCurrentIndex={setCurrentIndex}
         slides={slides}
       >
-        {slides.map((slide) => (
+        {slides.map((slide, idx) => (
           <div
-            key={slide.id}
+            key={idx}
             className=" w-full h-full flex-shrink-0 bg-slate-300 break-all space-x-2 p-4"
           >
             <div className="bg-overlay py-4 px-2 h-full w-full grid grid-cols-1 items-center ">

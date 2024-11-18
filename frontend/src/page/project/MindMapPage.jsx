@@ -19,13 +19,14 @@ import NotYetSearchText from "../../components/brainstorming/NoSearchText";
 import GithubCarousel from "../../components/brainstorming/GithubCarousel";
 import NewsCarousel from "../../components/brainstorming/NewsCarousel";
 import CarouselItemSkeleton from "../../components/skeleton/CarouselItemSkeleton";
-import useGlobalLoadingStore from "../../store/useGlobalLoadingStore";
+import { colorName } from "../../global";
+import LoadingSpinner2 from "../../components/common/LoadingSpinner2";
 
 function MindMapPage() {
   const params = useParams();
   const { id } = useParams();
 
-  const { loading, startLoading, stopLoading } = useGlobalLoadingStore();
+  // const { loading, startLoading, stopLoading } = useGlobalLoadingStore();
   const [isPlanOpen, setIsPlanOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedDetail, setSelectedDetail] = useState(null);
@@ -39,6 +40,7 @@ function MindMapPage() {
   const [githubDatas, setGithubdatas] = useState([]);
   const [newsDatas, setNewsdatas] = useState([]);
   const [dataLoading, setDataLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // 스크롤 애니메이션 효과
@@ -84,7 +86,8 @@ function MindMapPage() {
   useEffect(() => {
     const init = async () => {
       try {
-        startLoading();
+        // startLoading();
+        setLoading(true);
         const response = await fetchMindMap(params?.id);
         if (response) {
           // 이미 생성된 마인드맵이 있으면
@@ -103,14 +106,15 @@ function MindMapPage() {
           setSearchKeyword(newNodes[0]?.id);
         }
       } finally {
-        stopLoading();
+        setLoading(false);
+        // stopLoading();
       }
     };
     if (params.id === undefined) return;
 
     if (!handleDetailClick) return;
     init();
-  }, [params.id, handleDetailClick, startLoading, stopLoading]);
+  }, [params.id, handleDetailClick]);
 
   // 마인드맵 검색
   const handleSearch = async () => {
@@ -134,7 +138,6 @@ function MindMapPage() {
         mainKeyword: searchKeyword,
         keywords: SubKeywords,
       });
-
       // 세팅
       setMindMapData({
         nodes: newNodes,
@@ -168,10 +171,59 @@ function MindMapPage() {
     [selectedDetail, mindMapData, handleDetailClick]
   );
 
+  const upgradeMindMap = async () => {
+    alert("베타 기능입니다.");
+    const nextNode = [];
+    const nextLinks = [];
+
+    await Promise.all(
+      mindMapData.nodes
+        .filter((i) => i.category !== "center") // center 노드는 제외
+        .map(async (node) => {
+          const keywords = await fetchMindMapSubKeyword(node.id); // 각 노드에 대한 서브 키워드 가져오기
+
+          // 새 노드 추가 (중복 방지)
+          keywords.forEach((keyword, idx) => {
+            if (
+              !mindMapData.nodes.some((n) => n.id === keyword) &&
+              !nextNode.some((n) => n.id === keyword)
+            ) {
+              nextNode.push({
+                id: keyword,
+                category: colorName[idx % colorName.length],
+              });
+            }
+          });
+
+          // 링크 추가 (중복 방지)
+          keywords.forEach((subNode) => {
+            if (
+              !mindMapData.links.some(
+                (link) => link.source === node.id && link.target === subNode
+              ) &&
+              !nextLinks.some(
+                (link) => link.source === node.id && link.target === subNode
+              )
+            ) {
+              nextLinks.push({
+                source: node.id, // 링크의 시작점은 노드의 ID
+                target: subNode, // 링크의 끝점은 서브 키워드 ID
+              });
+            }
+          });
+        })
+    );
+
+    // MindMap 데이터 업데이트
+    setMindMapData({
+      nodes: [...mindMapData.nodes, ...nextNode], // 기존 노드와 새 노드 병합
+      links: [...mindMapData.links, ...nextLinks], // 기존 링크와 새 링크 병합
+    });
+  };
   return (
     <>
       <Helmet>
-        <title>마인드맵페이지</title>
+        <title>GOODIDEA - 마인드맵</title>
       </Helmet>
 
       <div className="h-full w-full flex flex-col relative pb-10">
@@ -186,6 +238,7 @@ function MindMapPage() {
         <div className="m-auto w-full my-2 max-w-5xl relative">
           {/* 추천키워드, AI플랜버튼 영역 */}
           <CloudOverlay
+            handleExtendClick={upgradeMindMap}
             setSearchKeyword={setSearchKeyword}
             handleRecommend={handleSearch}
             setIsPlanOpen={setIsPlanOpen}
@@ -193,6 +246,11 @@ function MindMapPage() {
         </div>
 
         {/* 컨텐츠 레이아웃 */}
+        {loading && (
+          <div className="flex justify-center">
+            <LoadingSpinner2 />
+          </div>
+        )}
         {!loading && (
           <div className="flex justify-center">
             {/* 컨텐츠 영역 */}

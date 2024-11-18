@@ -11,11 +11,8 @@ function MainPage() {
   const [isLastSection, setIsLastSection] = useState(false);
   const { setLogin } = useUserStore();
   const navigate = useNavigate();
-  const REDIRECT_URI =
-    "https://goodidea.world/gateway/auth-service/api/v1/auth/callback";
-
   const handleGitLabLogin = () => {
-    window.location.href = `https://lab.ssafy.com/oauth/authorize?client_id=6f0e2194257deee5608935898a17395f218031088862493f206ef8a9df28a90c&redirect_uri=${REDIRECT_URI}&response_type=code&scope=read_user%20api&state=random_state_string`;
+    window.location.href = import.meta.env.VITE_REDIRECT_URI;
   };
 
   // 테스트 드라이버용 함수 ----------------- 시작 -----------------
@@ -320,7 +317,7 @@ function MainPage() {
               flex flex-col justify-center items-center gap-8 relative`}
           >
             <img
-              src="/bonobono.png"
+              src="/bonobono.webp"
               alt="bonobono"
               className="absolute "
               style={{

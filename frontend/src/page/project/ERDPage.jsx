@@ -1,6 +1,9 @@
 import React, { Suspense } from "react";
 import { Helmet } from "react-helmet-async";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
+import { ClientSideSuspense, RoomProvider } from "@liveblocks/react";
+import { useLocation } from "react-router-dom";
+import { LiveObject } from "@liveblocks/client";
 
 const ERDDrawing = React.lazy(() => import("../../components/erd/ERDDrawing"));
 
@@ -10,19 +13,37 @@ const ERDDrawing = React.lazy(() => import("../../components/erd/ERDDrawing"));
   2. 툴팁 만들어서 대충 사용법 알 수 있도록 수정 필요
   */
 
+const Room = ({ children }) => {
+  const { pathname } = useLocation();
+  console.log(pathname);
+  return (
+    <RoomProvider
+      id={`erd-room-${pathname}`}
+      initialStorage={{
+        erdData: new LiveObject({
+          tables: "",
+        }),
+      }}
+    >
+      <ClientSideSuspense fallback={<div>loading...</div>}>
+        {() => children}
+      </ClientSideSuspense>
+    </RoomProvider>
+  );
+};
+
 function ERDPage() {
   return (
     <>
-      <Helmet>
-        <title>ERD페이지</title>
-      </Helmet>
-      <div className="w-full h-full flex flex-col">
-        <div className="flex-1 flex">
-          <Suspense fallback={<LoadingSpinner />}>
-            <ERDDrawing />
-          </Suspense>
-        </div>
-      </div>
+      <Room>
+        <Helmet>
+          <title>ERD페이지</title>
+        </Helmet>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ERDDrawing />
+        </Suspense>
+      </Room>
     </>
   );
 }

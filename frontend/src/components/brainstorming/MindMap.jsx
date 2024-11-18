@@ -8,7 +8,7 @@ const MindMap = ({ mindMapData, onClick }) => {
   const clickHandle = useCallback(
     (event, d) => {
       onClick(d.id);
-      console.log("Clicked node:", d);
+      // console.log("Clicked node:", d);
     },
     [onClick]
   );
@@ -85,8 +85,9 @@ const MindMap = ({ mindMapData, onClick }) => {
       .attr("dy", "0.35em")
       .attr("fill", "white")
       .style("cursor", "pointer")
-      .style("font-size", "14px")
-      .style("font-family", "Arial, sans-serif")
+      .style("font-size", "20px")
+      // .style("font-weight", "bold")
+      .style("font-family", "NEXON Lv1 Gothic")
       .on("click", function (event, d) {
         clickHandle(event, d);
       });
@@ -96,14 +97,14 @@ const MindMap = ({ mindMapData, onClick }) => {
       .selectAll("rect")
       .attr("width", function () {
         const textWidth = this.parentNode.querySelector("text").getBBox().width;
-        return textWidth + 20;
+        return textWidth + 30;
       })
-      .attr("height", 30)
+      .attr("height", 50)
       .attr("x", function () {
         const width = this.getAttribute("width");
         return -width / 2;
       })
-      .attr("y", -15);
+      .attr("y", -25);
 
     // 시뮬레이션 업데이트
     simulation.on("tick", () => {
