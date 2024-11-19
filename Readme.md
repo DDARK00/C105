@@ -254,11 +254,11 @@
 
 - 팀장
 - UCC 제작
-- **[Frontend]**아이디어 보드 UI 및 API 연결
-- **[Frontend]**NAV UI 초안
-- **[Frontend]**프로젝트 생성/수정/조회 API
+- **[Frontend]** 아이디어 보드 UI 및 API 연결
+- **[Frontend]** NAV UI 초안
+- **[Frontend]** 프로젝트 생성/수정/조회 API
 - **[Frontend]** 아이디어 보드 확대/축소 등 애니메이션
--
+- **[Frontend]** UX 개선(엔드유저 플로우)
 
 ✔ 전지훈
 
@@ -272,13 +272,13 @@
 
 ✔ 한세훈
 
--
--
--
--
--
--
--
+- **[Frontend]** 마인드맵
+- **[Frontend]** CRDT
+- **[Frontend]** QA
+- **[Backend]** QA
+- **[Backend]** 코드 낭독, 설계 보조
+- **[ETC]** 코드 최적화(퍼포먼스, 번들링, 네트워크)
+- **[ETC]** 그외 잡다한 일
 
 ✔ 김태연
 
