@@ -11,6 +11,9 @@ import com.ssafy.project_service.common.exception.ErrorType;
 import com.ssafy.project_service.idea.dto.response.IdeaCreateResponseDto;
 import com.ssafy.project_service.idea.entity.Idea;
 import com.ssafy.project_service.idea.repository.IdeaRepository;
+import com.ssafy.project_service.mongodb.entity.MongoIdea;
+import com.ssafy.project_service.mongodb.repository.MongoIdeaRepository;
+import com.ssafy.project_service.mongodb.service.MongoIdeaService;
 import com.ssafy.project_service.project.dto.request.ProjectCreateRequestDto;
 import com.ssafy.project_service.project.dto.request.ProjectUpdateRequestDto;
 import com.ssafy.project_service.project.dto.response.GitLabProjectResponseDto;
@@ -41,6 +44,7 @@ public class ProjectService {
     private final UserProjectRepository userProjectRepository;
     private final IdeaRepository ideaRepository;
 
+
     public Optional<Project> findByUserIdAndProjectType(Long userId, ProjectType projectType) {
         // UserId를 통해 UserProject 목록을 가져옴
         System.out.println("findByUserIdAndProjectType " + userId);
@@ -58,7 +62,7 @@ public class ProjectService {
     * @param GitLabProjectResponseDto
     * @param List<GitLabUserResponseDto>
     */
-    @Transactional
+//    @Transactional
     public ProjectResponseDto createProject(UserDto user, ProjectCreateRequestDto dto, GitLabProjectResponseDto myProject, List<GitLabUserResponseDto> users) {
 
 //        같은 타입의 프로젝트를 생성하려할 경우 에러 발생
@@ -66,7 +70,7 @@ public class ProjectService {
         if(ou.isPresent()){
             throw new BaseException(ErrorType.PROJECT_ALREADY_EXIST);
         }
-        System.out.println(user.getId());
+
         Project project = projectRepository.save(
                 Project.builder()
                     .teamName(dto.getTeamName())
@@ -78,7 +82,10 @@ public class ProjectService {
                 .build()
         );
 
-        users.forEach(us -> {
+
+        users.stream()
+                .filter(Objects::nonNull) // null 값 제거
+                .forEach(us -> {
                     Optional<UserDto> member = userServiceClient.getUser(us.getUsername());
                     if (member.isEmpty()) {
                         member = userServiceClient.joinMember( UserDto.builder()
@@ -86,10 +93,10 @@ public class ProjectService {
                                 .roleType(RoleType.USER)
                                 .build());
                     }
-            userProjectRepository.save(UserProject.builder()
-                    .project(project)
-                    .userId(member.get().getId())
-                    .build());
+                    userProjectRepository.saveAndFlush(UserProject.builder()
+                            .project(project)
+                            .userId(userServiceClient.getUser(us.getUsername()).get().getId())
+                            .build());
                 });
 
         return ProjectResponseDto.builder()
@@ -104,7 +111,8 @@ public class ProjectService {
                         userProjectService.findAllByProjectId(project.getId())
                                 .stream()
                                 .map( up -> {
-                                    UserDto us = up.getUser();
+                                    Long upUserId = up.getUserId();
+                                    UserDto us = userServiceClient.getUserById(upUserId).get();
                                     return UserDto.builder()
                                             .id(us.getId())
                                             .name(us.getName())
@@ -177,8 +185,6 @@ public class ProjectService {
      */
     public List<ProjectResponseDto> getUserProjects(UserDto user, Optional<ProjectType> projectType, Optional<Integer> grade) {
         List<UserProject> userProjects;
-        System.out.println(projectType.toString());
-        System.out.println(projectType.isPresent());
 
         if ( user.getRoleType() != RoleType.CONSULTANT) {
             // 동적 쿼리 처리
@@ -206,17 +212,67 @@ public class ProjectService {
                     .collect(Collectors.toList());
         }
         else {
-            List<Project> projects = projectRepository.findAll();
-            return projects.stream().map( (project) -> {
-                    return ProjectResponseDto.builder()
-                            .project_id(project.getId())
-                            .teamName(project.getTeamName())
-                            .gitlabName(project.getGitlabName())
-                            .gitlab_url(project.getGitlab_url())
-                            .projectType(project.getProjectType())
-                            .build();
+            List<Long> projectIds = userProjectRepository.findDistinctProjectIds();
+
+            // 동적 쿼리 처리
+            if (projectType.isPresent() && grade.isPresent()) {
+                projectIds = projectIds.stream().map( (projectId) -> {
+                    Project nowp = projectRepository.findById(projectId).orElseThrow( () -> new BaseException(ErrorType.PROJECT_NOT_FOUND));
+                    if ( nowp.getProjectType().equals(projectType.get())
+                            && userServiceClient.getUserById(nowp.getLeader()).orElseThrow( () -> new BaseException(ErrorType.USER_NOT_FOUND))
+                            .getGrade().equals(grade.get()) ){
+                        return projectId;
                     }
-            ).collect(Collectors.toList());
+                    else
+                        return null;
+                })
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+            } else if (projectType.isPresent()) {
+                projectIds = projectIds.stream().map( (projectId) -> {
+                    Project nowp = projectRepository.findById(projectId).orElseThrow( () -> new BaseException(ErrorType.PROJECT_NOT_FOUND));
+                    if ( nowp.getProjectType().equals(projectType.get())){
+                        return projectId;
+                    }
+                    else
+                        return null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            } else if (grade.isPresent()) {
+                projectIds = projectIds.stream().map( (projectId) -> {
+                    Project nowp = projectRepository.findById(projectId).orElseThrow( () -> new BaseException(ErrorType.PROJECT_NOT_FOUND));
+                    if ( userServiceClient.getUserById(nowp.getLeader()).orElseThrow( () -> new BaseException(ErrorType.USER_NOT_FOUND))
+                            .getGrade().equals(grade.get()) ){
+                        return projectId;
+                    }
+                    else
+                        return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+            }
+
+            return projectIds.stream().map( (projectId) -> {
+                Optional<Project> op = projectRepository.findById(projectId);
+                if ( op.isEmpty() ) {
+                    return null;
+                }
+
+                else {
+                    Project np = op.get();
+                    return ProjectResponseDto.builder()
+                            .project_id(np.getId())
+                            .teamName(np.getTeamName())
+                            .gitlabName(np.getGitlabName())
+                            .gitlab_url(np.getGitlab_url())
+                            .projectType(np.getProjectType())
+                            .build();
+                }
+            }
+            )
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
         }
 
 

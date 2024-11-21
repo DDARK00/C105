@@ -1,5 +1,6 @@
 package com.ssafy.project_service.idea.service;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import java.util.List;
@@ -25,14 +26,26 @@ import com.ssafy.project_service.idea.dto.response.IdeaListResponseDto;
 import com.ssafy.project_service.idea.dto.response.IdeaUpdateResponseDto;
 import com.ssafy.project_service.idea.entity.Idea;
 import com.ssafy.project_service.idea.repository.IdeaRepository;
+import com.ssafy.project_service.mongodb.entity.MongoIdea;
+import com.ssafy.project_service.mongodb.entity.apiDoc.ApiDoc;
+import com.ssafy.project_service.mongodb.entity.apiDoc.ApiDocs;
+import com.ssafy.project_service.mongodb.entity.apiDoc.ApiImportance;
+import com.ssafy.project_service.mongodb.entity.apiDoc.MethodType;
+import com.ssafy.project_service.mongodb.entity.reqDoc.IsRequired;
+import com.ssafy.project_service.mongodb.entity.reqDoc.ReqDoc;
+import com.ssafy.project_service.mongodb.entity.reqDoc.ReqDocs;
+import com.ssafy.project_service.mongodb.entity.reqDoc.Status;
+import com.ssafy.project_service.mongodb.repository.MongoIdeaRepository;
+import com.ssafy.project_service.mongodb.service.MongoIdeaService;
 import com.ssafy.project_service.planner.entity.Planner;
 import com.ssafy.project_service.planner.repository.PlannerRepository;
 import com.ssafy.project_service.project.entity.Project;
 import com.ssafy.project_service.project.repository.ProjectRepository;
 import com.ssafy.project_service.req.repository.ReqRepository;
-import com.ssafy.project_service.reqDocs.entity.ReqDocs;
+
 import com.ssafy.project_service.reqDocs.repository.ReqDocsRepository;
 import com.ssafy.project_service.userProject.repository.UserProjectRepository;
+import com.ssafy.project_service.userProject.service.UserProjectService;
 import org.springframework.stereotype.Service;
 
 
@@ -56,8 +69,9 @@ public class IdeaService {
     private final FlowChartRepository flowChartRepository;
     private final APIRepository apiRepository;
     private final ReqRepository reqRepository;
-
-
+    private final MongoIdeaService mongoIdeaService;
+    private final MongoIdeaRepository mongoIdeaRepository;
+    private final UserProjectService userProjectService;
 
 
     /*
@@ -75,6 +89,9 @@ public class IdeaService {
                 .introduction(dto.getIntroduction())
                 .target(dto.getTarget())
                 .expectedEffect(dto.getExpectedEffect())
+                .techStack(dto.getTechStack())
+                .advancedStack(dto.getAdvancedStack())
+                .projectTopic(dto.getProjectTopic())
                 .x(dto.getX())
                 .y(dto.getY())
                 .color(dto.getColor())
@@ -82,41 +99,8 @@ public class IdeaService {
                 .animation(dto.getAnimation())
                 .build();
 
-
         idea = ideaRepository.save(idea);
 
-        // 기획서 생성
-        Planner planner = Planner.builder()
-                .idea(idea)
-                .content("")
-                .build();
-        plannerRepository.save(planner);
-
-        // 요구사항 명세서 생성
-        ReqDocs reqDocs = ReqDocs.builder()
-                .idea(idea)
-                .build();
-        reqDocsRepository.save(reqDocs);
-
-        // API 명세서 생성
-        APIDocs apiDocs = APIDocs.builder()
-                .idea(idea)
-                .build();
-        apiDocsRepository.save(apiDocs);
-
-        // ERD 생성
-        ERD erd = ERD.builder()
-                .idea(idea)
-                .code("")
-                .build();
-        erdRepository.save(erd);
-
-        // 플로우차트 생성
-        Flowchart flowchart = Flowchart.builder()
-                .idea(idea)
-                .code("")
-                .build();
-        flowChartRepository.save(flowchart);
 
         return IdeaCreateResponseDto.builder()
                 .ideaId(idea.getId())
@@ -125,6 +109,9 @@ public class IdeaService {
                 .introduction(idea.getIntroduction())
                 .target(idea.getTarget())
                 .expectedEffect(idea.getExpectedEffect())
+                .techStack(idea.getTechStack())
+                .advancedStack(idea.getAdvancedStack())
+                .projectTopic(idea.getProjectTopic())
                 .x(idea.getX())
                 .y(idea.getY())
                 .color(idea.getColor())
@@ -139,14 +126,18 @@ public class IdeaService {
      * */
     public List<IdeaListResponseDto> getIdeas(Long projectId) {
         List<Idea> ideas = ideaRepository.findByProjectId(projectId);
-        if (ideas.isEmpty()) {
-            throw new BaseException(ErrorType.IDEA_NOT_FOUND);
-        }
+
         return ideas.stream()
                 .<IdeaListResponseDto>map(idea -> IdeaListResponseDto.builder()
                         .ideaId(idea.getId())
                         .serviceName(idea.getServiceName())
                         .introduction(idea.getIntroduction())
+                        .background(idea.getBackground())
+                        .target(idea.getTarget())
+                        .expectedEffect(idea.getExpectedEffect())
+                        .projectTopic(idea.getProjectTopic())
+                        .advancedStack(idea.getAdvancedStack())
+                        .techStack(idea.getTechStack())
                         .averageRating(idea.getAverageRating())
                         .x(idea.getX())
                         .y(idea.getY())
@@ -178,26 +169,49 @@ public class IdeaService {
                 .orElse(0.0) * 100) / 100.0);
 
         // 댓글 DTO 변환
-        List<IdeaDetailResponseDto.CommentDto> commentDtos = comments.stream()
-                .<IdeaDetailResponseDto.CommentDto>map(comment -> IdeaDetailResponseDto.CommentDto.builder()
-                        .commentId(comment.getId())
-                        .rating(comment.getRating())
-                        .userName(comment.getUser().getUsername())
-                        .commentContent(comment.getCommentContent())
-                        .createdAt(comment.getCreatedAt())
-                        .build())
-                .collect(Collectors.toList());
+        if ( comments.isEmpty() ) {
 
-        return IdeaDetailResponseDto.builder()
-                .ideaId(idea.getId())
-                .serviceName(idea.getServiceName())
-                .background(idea.getBackground())
-                .introduction(idea.getIntroduction())
-                .target(idea.getTarget())
-                .expectedEffect(idea.getExpectedEffect())
-                .averageRating(avgRating)
-                .comments(commentDtos)
-                .build();
+            return IdeaDetailResponseDto.builder()
+                    .ideaId(idea.getId())
+                    .serviceName(idea.getServiceName())
+                    .introduction(idea.getIntroduction())
+                    .background(idea.getBackground())
+                    .target(idea.getTarget())
+                    .expectedEffect(idea.getExpectedEffect())
+                    .projectTopic(idea.getProjectTopic())
+                    .advancedStack(idea.getAdvancedStack())
+                    .techStack(idea.getTechStack())
+                    .averageRating(idea.getAverageRating())
+                    .averageRating(avgRating)
+                    .comments(null)
+                    .build();
+        }
+        else {
+            List<IdeaDetailResponseDto.CommentDto> commentDtos = comments.stream()
+                    .<IdeaDetailResponseDto.CommentDto>map(comment -> IdeaDetailResponseDto.CommentDto.builder()
+                            .commentId(comment.getId())
+                            .rating(comment.getRating())
+                            .userId(comment.getUserId())
+                            .commentContent(comment.getCommentContent())
+                            .createdAt(comment.getCreatedAt())
+                            .build())
+                    .collect(Collectors.toList());
+
+            return IdeaDetailResponseDto.builder()
+                    .ideaId(idea.getId())
+                    .serviceName(idea.getServiceName())
+                    .introduction(idea.getIntroduction())
+                    .background(idea.getBackground())
+                    .target(idea.getTarget())
+                    .expectedEffect(idea.getExpectedEffect())
+                    .projectTopic(idea.getProjectTopic())
+                    .advancedStack(idea.getAdvancedStack())
+                    .techStack(idea.getTechStack())
+                    .averageRating(idea.getAverageRating())
+                    .averageRating(avgRating)
+                    .comments(commentDtos)
+                    .build();
+        }
     }
 
     /*
@@ -219,6 +233,56 @@ public class IdeaService {
         // 메인 아이디어 설정
         project.setMainIdeaId(ideaId);
         projectRepository.save(project);
+
+        // MongoDB에 동일한 프로젝트 ID로 프로젝트 저장
+        MongoIdea mongoIdea = new MongoIdea();
+        mongoIdea.setId(idea.getId());  // 동일한 ID 설정
+        mongoIdea.setErd(mongoIdeaService.getSampleErdDoc());  // 예시 데이터
+        mongoIdea.setFlowChart("default flow chart");  // 예시 데이터
+
+        // ApiDocs 생성
+        ApiDoc apiDoc = new ApiDoc();
+        apiDoc.setId(UUID.nameUUIDFromBytes("1".getBytes()));
+        apiDoc.setDomain("example.com");
+        apiDoc.setName("Sample API");
+        apiDoc.setMethodType(MethodType.GET);
+        apiDoc.setApiUrl("/api/sample");
+        apiDoc.setRequestHeader("{\"Authorization\": \"Bearer token\"}");
+        apiDoc.setRequestParams("{\"id\": \"123\"}");
+        apiDoc.setRequestBody("{\"name\": \"example\"}");
+        apiDoc.setResponseBody("{\"result\": \"success\"}");
+        apiDoc.setApiImportance(ApiImportance.HIGH);
+        apiDoc.setBackendManager("John Doe");
+        apiDoc.setFrontendManager("Jane Doe");
+
+        ApiDocs apiDocs = ApiDocs.builder()
+                .apiBaseUrl("https://example.com/api")
+                .apiDocList(List.of(apiDoc))
+                .build();
+
+        mongoIdea.setApiDocs(apiDocs);
+
+        // ReqDocs 생성
+        ReqDoc reqDoc = new ReqDoc();
+        reqDoc.setId(UUID.nameUUIDFromBytes("1".getBytes()));
+        reqDoc.setStatus(Status.INCOMPLETE);
+        reqDoc.setRelatedPage("sample-page.html");
+        reqDoc.setIsRequired(IsRequired.ESSENTIAL);
+        reqDoc.setName("Sample Requirement");
+        reqDoc.setDescription("This is a sample requirement for demonstration.");
+        reqDoc.setAuthor("Jane Developer");
+
+        ReqDocs reqDocs = ReqDocs.builder()
+                .reqDocList(List.of(reqDoc))
+                .build();
+
+        mongoIdea.setReqDocs(reqDocs);
+
+        // Proposal 생성
+        mongoIdea.setProposal("This is a default proposal for the project.");
+
+        // MongoDB에 저장
+        mongoIdeaRepository.save(mongoIdea);
     }
 
     /*
@@ -270,12 +334,15 @@ public class IdeaService {
 
         // 수정 후 아이디어 정보 저장
         IdeaUpdateResponseDto responseDto = IdeaUpdateResponseDto.builder()
-                .ideaId(ideaId)
-                .serviceName(dto.getServiceName())
-                .background(dto.getBackground())
-                .introduction(dto.getIntroduction())
-                .target(dto.getTarget())
-                .expectedEffect(dto.getExpectedEffect())
+                .ideaId(idea.getId())
+                .serviceName(idea.getServiceName())
+                .introduction(idea.getIntroduction())
+                .background(idea.getBackground())
+                .target(idea.getTarget())
+                .expectedEffect(idea.getExpectedEffect())
+                .projectTopic(idea.getProjectTopic())
+                .advancedStack(idea.getAdvancedStack())
+                .techStack(idea.getTechStack())
                 .x(dto.getX())
                 .y(dto.getY())
                 .color(dto.getColor())
@@ -318,21 +385,6 @@ public class IdeaService {
             project.setMainIdeaId(null);
             projectRepository.save(project);
         }
-
-        plannerRepository.deleteAllByIdeaId(ideaId);
-
-        ReqDocs reqDocs = reqDocsRepository.findByIdeaId(ideaId).orElseThrow( () -> new BaseException(ErrorType.IDEA_NOT_FOUND) );
-        reqRepository.deleteAllByIReqDocsId(reqDocs.getId());
-        reqDocsRepository.deleteAllByIdeaId(ideaId);
-
-        APIDocs apiDocs = apiDocsRepository.findByIdea_Id(ideaId);
-        apiRepository.deleteAllByApiDocsId(apiDocs.getApiDocsId());
-        apiDocsRepository.deleteAllByIdeaId(ideaId);
-
-        erdRepository.deleteAllByIdeaId(ideaId);
-        flowChartRepository.deleteAllByIdeaId(ideaId);
-        commentRepository.deleteByIdeaId(ideaId);
-
 
         // 3. 마지막으로 아이디어 삭제
         ideaRepository.delete(idea);

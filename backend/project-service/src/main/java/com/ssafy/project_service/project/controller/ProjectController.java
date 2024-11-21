@@ -40,9 +40,8 @@ public class ProjectController {
                                                          @RequestBody ProjectCreateRequestDto dto) throws JsonProcessingException {
         String token = authorizationHeader.replace("Bearer ", "");
         String username = jwtTokenProvider.extractSubject(token);
-        System.out.println(username);
         UserDto user = userServiceClient.getUser(username).orElseThrow();
-        System.out.println("userID" + user.getId());
+
         GitLabProjectResponseDto myProject = gitLabApiClient.getGitLabProject(username, dto.getProjectId());
         List<GitLabUserResponseDto> users = gitLabApiClient.getGitLabMembers(username, dto.getProjectId());
         return ApiResponse.ok(projectService.createProject(user, dto, myProject, users));

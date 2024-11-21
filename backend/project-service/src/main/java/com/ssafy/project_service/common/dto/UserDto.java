@@ -6,9 +6,11 @@ import com.ssafy.project_service.common.entity.LocationType;
 import com.ssafy.project_service.common.entity.RoleType;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 
 @Getter
+@NoArgsConstructor
 public class UserDto {
     private Long id;
     private String name;

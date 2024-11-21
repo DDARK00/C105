@@ -35,6 +35,15 @@ public class Idea extends BaseTime {
     @Column(length = 1000, nullable = true)
     private String expectedEffect; // 기대효과
 
+    @Column(length = 1000, nullable = true)
+    private String projectTopic; // ㅁㄴㅇㄹ
+
+    @Column(length = 1000, nullable = true)
+    private String techStack; // ㅇㄴㅀㄴㅇㅀ
+
+    @Column(length = 1000, nullable = true)
+    private String advancedStack; // ㅇㄴㅀㅇㅀ
+
     @Column(nullable = false)
     private float averageRating = 0.0f; // 평균 평점
 
@@ -54,13 +63,16 @@ public class Idea extends BaseTime {
     private String animation;
 
     @Builder
-    public Idea(Project project, String serviceName, String background, String introduction, String target, String expectedEffect, float averageRating, String x, String y, String color, String darkColor, String animation) {
+    public Idea(Project project, String serviceName, String background, String introduction, String target, String expectedEffect, float averageRating, String x, String y, String color, String darkColor, String animation, String projectTopic, String techStack, String advancedStack) {
         this.project = project;
         this.serviceName = serviceName;
         this.background = background;
         this.introduction = introduction;
         this.target = target;
         this.expectedEffect = expectedEffect;
+        this.advancedStack = advancedStack;
+        this.techStack = techStack;
+        this.projectTopic = projectTopic;
         this.averageRating = 0.0f;
         this.x = x;
         this.y = y;

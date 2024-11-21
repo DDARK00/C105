@@ -15,6 +15,9 @@ public class IdeaCreateRequestDto {
     private String introduction; // 서비스 소개
     private String target; // 서비스 타겟
     private String expectedEffect; // 기대효과
+    private String projectTopic;
+    private String techStack;
+    private String advancedStack;
     private String x; // x좌표
     private String y; // y좌표
     private String color; // 색상

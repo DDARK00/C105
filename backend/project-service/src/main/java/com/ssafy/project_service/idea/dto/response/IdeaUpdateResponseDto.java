@@ -14,6 +14,9 @@ public class IdeaUpdateResponseDto {
     private String introduction;
     private String target;
     private String expectedEffect;
+    private String projectTopic;
+    private String techStack;
+    private String advancedStack;
     private String x;
     private String y;
     private String color;

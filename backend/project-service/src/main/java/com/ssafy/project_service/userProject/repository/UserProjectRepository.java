@@ -3,6 +3,7 @@ package com.ssafy.project_service.userProject.repository;
 
 import com.ssafy.project_service.userProject.entity.UserProject;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -19,5 +20,6 @@ public interface UserProjectRepository extends JpaRepository<UserProject, Long> 
 
     boolean existsByUserIdAndProject_Id(Long userId, Long projectId);
 
-
+    @Query("SELECT DISTINCT u.project.id FROM UserProject u")
+    List<Long> findDistinctProjectIds();
 }

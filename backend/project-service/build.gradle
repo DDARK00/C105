@@ -28,9 +28,11 @@ ext {
 }
 
 dependencies {
+
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
 	// Eureka
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-
 	//	SpringBoot
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -70,8 +72,14 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+	// MongoDB
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
 	// Feign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	// https://mvnrepository.com/artifact/com.google.code.gson/gson
+	implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 dependencyManagement {

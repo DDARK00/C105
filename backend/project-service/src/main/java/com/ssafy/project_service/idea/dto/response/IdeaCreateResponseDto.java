@@ -12,6 +12,9 @@ public class IdeaCreateResponseDto {
     private String introduction;
     private String target;
     private String expectedEffect;
+    private String projectTopic;
+    private String techStack;
+    private String advancedStack;
     private float averagRating;
     private String x;
     private String y;
