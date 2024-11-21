@@ -1,6 +1,6 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=BDBDC8&height=150&section=header" width="100%" >
 
-# Newstock
+# GOODIDEA
 
 기획이 어려운 SSAFY인을 위한 [SSAFY 프로젝트 기획 보조] 서비스 “**GoodIdea**”
 
