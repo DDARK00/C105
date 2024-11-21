@@ -8,7 +8,7 @@
 
 `개발기간: 24.10.14 ~ 24.11.19 (5주)`
 
-![image (21).png](Picture/Logo.png)
+![image](https://github.com/user-attachments/assets/91c83406-fbec-411a-84da-afea3631f346)
 
 # 목차
 
@@ -71,22 +71,21 @@
  <summary>📢 페이지 상세설명</summary>
  <div markdonw="1">
 
-![사1](/uploads/292e5fd3845f997454dc53084eccbace/사1.JPG)
-![사2](/uploads/861ba765523edac0f3e92f11a10adb19/사2.JPG)
-![사3](/uploads/2d453208068b5b014ab7a5353949518a/사3.JPG)
-![사4](/uploads/7f1ac2acd939be1bcb1b6e77a4763367/사4.JPG)
-![사5](/uploads/8d162e959cb85243c535475099ac4f28/사5.JPG)
-![사6](/uploads/3531e4dd145841a6d03ef2747ecf3861/사6.JPG)
-![사7](/uploads/cc6281fd8cabd719237661bec9fff1bb/사7.JPG)
-![사8](/uploads/1292f0d17e3a7f130d2cbd9c5071b2d5/사8.JPG)
-![사9](/uploads/dbd6820f583a767586242c9aeb7b970a/사9.JPG)
-![사10](/uploads/4c35087a19c868d53002d948d1e2225d/사10.JPG)
-![사11](/uploads/ec36e7409794b975ee3914a3025cfc2c/사11.JPG)
-![사12](/uploads/59e81de9b0f75c22bf9b609fc7e3da1e/사12.JPG)
-![사13](/uploads/9af6fa24b1d982e247c844127bde8f61/사13.JPG)
-![사14](/uploads/e68bf9faff1946b3576e3e75e20473b2/사14.JPG)
-![사15](/uploads/7d60418943d41034fcff8f46f437c45b/사15.JPG)
-
+![사1](https://github.com/user-attachments/assets/c5d49a67-63df-4f07-929d-6ee51defb634)
+![사2](https://github.com/user-attachments/assets/75179c17-2c08-409b-8c3f-9ccf6416b0a5)
+![사3](https://github.com/user-attachments/assets/699e69f3-0a5c-40b1-bf43-4d846954ce5c)
+![사4](https://github.com/user-attachments/assets/621d86f8-3439-4e79-97b8-cbbf3c2dd684)
+![사5](https://github.com/user-attachments/assets/20647eee-40c5-434c-ac3d-cd7e8a1a2e31)
+![사6](https://github.com/user-attachments/assets/3c507491-25eb-4239-bacf-09a514d0ae8f)
+![사7](https://github.com/user-attachments/assets/d5b70900-fda5-44e6-9192-c0b89e458504)
+![사8](https://github.com/user-attachments/assets/7e3d8151-7dda-48e0-8158-80c8e408e5e5)
+![사9](https://github.com/user-attachments/assets/6b5a7a86-27dc-4aec-827e-d5def53a061b)
+![사10](https://github.com/user-attachments/assets/c5ce4e05-202d-48e4-be99-c17987a2e0ae)
+![사11](https://github.com/user-attachments/assets/73cdc612-9839-4f25-863c-d0d989d8c3a1)
+![사12](https://github.com/user-attachments/assets/0af92f94-59e4-4514-946b-88039b8fdff8)
+![사13](https://github.com/user-attachments/assets/4d87ac26-26f7-4bb6-b84b-5f945e83e96a)
+![사14](https://github.com/user-attachments/assets/f9ca4105-7a9f-45cf-b6cf-10b0db01ce64)
+![사15](https://github.com/user-attachments/assets/9249ca5e-9712-46a8-8402-862780f949ea)
  </div>
 </details>
 
@@ -94,17 +93,22 @@
  <summary>📢 기능 GIF</summary>
  <div markdonw="1">
 
-![gif1](/uploads/343ba34d823ac46e51c84f5cae80b6bb/gif1.gif)
-![gif2](/uploads/987fe1e4a999a15272c7a211ccf48036/gif2.gif)
-![gif3](/uploads/02db450a20b1639f2855f8baf4e53593/gif3.gif)
-![gif4](/uploads/48e7761f4ee20a4a110263519419b2b1/gif4.gif)
-![gif5](/uploads/6de9b8389127fffa7f28eb2c0790bdb6/gif5.gif)
-![gif6](/uploads/28aa1388762d814b81c23082127af103/gif6.gif)
-![gif7](/uploads/4bfff855bf6c4907afbf354766a3fa64/gif7.gif)
-![gif8](/uploads/4267636d9596e6fafe17c20cbc75edf6/gif8.gif)
-![gif9](/uploads/d7b18e05817ae9793a821aaca7edc180/gif9.gif)
-![gif10](/uploads/449bc42a71138734f221eaee164aee53/gif10.gif)
-![gif11](/uploads/f76310c773c593cd93be796caa0675a3/gif11.gif)
+![gif1](https://github.com/user-attachments/assets/6cf5eb36-80c0-40fb-abac-1d49d826c37b)
+![gif2](https://github.com/user-attachments/assets/f96cfc79-1849-4f7f-a099-ec38a59e1842)
+![gif3](https://github.com/user-attachments/assets/41321e44-95d8-4c91-98ac-e1c64678dede)
+![gif4](https://github.com/user-attachments/assets/96ead155-10f1-4268-83cf-e1ed0e5604fc)
+![gif5](https://github.com/user-attachments/assets/5e9c0409-6b91-4e36-8928-5bb2be4875b8)
+![gif6](https://github.com/user-attachments/assets/7bafce9e-b6a7-45ee-ae73-02b1f32554e7)
+![gif7](https://github.com/user-attachments/assets/76883073-ed91-4111-9e0f-96765b54fcd7)
+![gif8](https://github.com/user-attachments/assets/4e0fd6cc-fc1b-49c4-80f7-83e637202008)
+![gif9](https://github.com/user-attachments/assets/c3f0ef74-e8c9-4e1c-8986-1ba28b37b562)
+![gif10](https://github.com/user-attachments/assets/36b200eb-037a-4336-b04a-31c9fd75afe7)
+![gif11](https://github.com/user-attachments/assets/b3728119-136a-4921-b1f7-c5ab18756678)
+![gif12](https://github.com/user-attachments/assets/7e736b78-00cd-4f6a-b6a0-d1137cd9d911)
+![gif13](https://github.com/user-attachments/assets/63202642-7cb2-425b-95a1-827ce7611cd1)
+![gif14](https://github.com/user-attachments/assets/5e5220d4-0967-473a-8ff0-ab6d1c0281de)
+![gif15](https://github.com/user-attachments/assets/2d637f95-5ce6-4d38-af7f-51579cfb99e6)
+
 
 ### 마인드맵 기능
 
@@ -178,37 +182,36 @@
 
 # 📌 기술 상세 설명
 
-![핵1](/uploads/75dfad332b6197e635807e014e0294cc/핵1.JPG)
-![핵2](/uploads/7bb4c7fe2046a471b85a1715896c3d9a/핵2.JPG)
-![핵3](/uploads/7ada22ff57dbb91207bc8d2cb18e652f/핵3.JPG)
-![핵4](/uploads/a66da607eadbcfec672fec9c76b267e8/핵4.JPG)
-![핵5](/uploads/25e19b3d9e926914bf8f8d6665d86e4e/핵5.JPG)
-![핵6](/uploads/38e4982f4b66c81f600ce54d7fb959cd/핵6.JPG)
-![핵7](/uploads/2640563714d8a5c82bad45301b55fed0/핵7.JPG)
-![핵8](/uploads/379b578fe85fdb677ed997fa34ef9c5d/핵8.JPG)
-![핵9](/uploads/023bd2b5b262a69fac08bfba3cdae3c9/핵9.JPG)
-![핵10](/uploads/4b1d292ddd90800d5b8ae503ad542b18/핵10.JPG)
-![핵11](/uploads/7211c13d048e5bed84c0b32eed5715e2/핵11.JPG)
-![핵12](/uploads/32b6ee821717ad65a13970b1492d1263/핵12.JPG)
-![핵13](/uploads/306c52dac97ccaaf1dc24a8bb7e3c9a8/핵13.JPG)
+![핵1](https://github.com/user-attachments/assets/41ce141f-feea-470e-9f0f-954265ecb1a7)
+![핵2](https://github.com/user-attachments/assets/2733109e-f7f3-4a7d-bd4a-96af2074dbfd)
+![핵3](https://github.com/user-attachments/assets/a5f946fa-d723-458f-9d2d-87d6e6034d79)
+![핵4](https://github.com/user-attachments/assets/145e9467-5ef5-43f6-a9e4-5e364d00a381)
+![핵5](https://github.com/user-attachments/assets/414cf0ed-cb8c-4d10-a5a0-4078b9473222)
+![핵6](https://github.com/user-attachments/assets/1a772355-4a32-4ce9-a530-53b75f11895f)
+![핵7](https://github.com/user-attachments/assets/726f126d-031c-403d-afb0-4676d567af04)
+![핵8](https://github.com/user-attachments/assets/8b1da45e-baec-43b8-b01c-892df2799256)
+![핵9](https://github.com/user-attachments/assets/7fc5d6b3-294a-4a45-b76b-b1212957f9b5)
+![핵10](https://github.com/user-attachments/assets/0c6662f5-c07d-480a-b769-b547ba83c443)
+![핵11](https://github.com/user-attachments/assets/89bd1b6d-5485-49b4-86c9-74600f548e4f)
+![핵13](https://github.com/user-attachments/assets/339f4c74-a44e-427d-a05f-226e3960e940)
 
 # 📚 프로젝트 산출물
 
 ## 1. Figma([url](https://www.figma.com/design/PlhssolhdTtgMaYcgImZ6B/C105?node-id=0-1&node-type=canvas&t=JCbGzA0Uc2WUfZQ6-0))
 
-![figma](/uploads/57845c1a32e83e0654687a99df379b9d/figma.JPG)
+![figma](https://github.com/user-attachments/assets/280c5b2d-44e7-4335-a372-e8066942e067)
 
 ## 2. ERD
 
-![ERD]()
+![ERD](https://github.com/user-attachments/assets/42853b99-a6d0-4b20-a532-174b338678ef)
 
 ## 3. 요구사항 명세서
 
-![요구](/uploads/926f51ccc506bbd5b19d559f8614b02e/요구.JPG)
+![요구](https://github.com/user-attachments/assets/f98137a3-23e5-4449-bf05-5b9fb534843d)
 
 ## 4. 아키텍처
 
-![아키](/uploads/6922ba7a7334f21899c4ee6a0e8e0b10/아키.JPG)
+![아키](https://github.com/user-attachments/assets/071d659e-6c5a-4287-a777-9fbfb67d67e6)
 
 # 👨‍👨‍👧‍👦 팀원 구성
 
@@ -219,6 +222,8 @@
         <img src="Picture/juho.JPG" alt="FE 팀장 : 이주호" width="100px"/>
         <br />
         <sub><b>FE 팀장 : 이주호</b></sub>
+        <br />
+        <sub><b><a href="https://github.com/zxxv1245">@zxxv1245</a></b></sub>
       </td>
       <td align="center">
         <img src="Picture/jh.jpg" alt="BE 팀원 : 전지훈" width="100px"/>
@@ -226,9 +231,11 @@
         <sub><b>FE/AI 팀원 : 전지훈</b></sub>
       </td>
       <td align="center">
-        <img src="Picture/sh.png" alt="FE 팀원 : 한세훈" width="100px"/>
+        <img src=https://github.com/user-attachments/assets/5532cecd-f9ea-4d0b-829c-a2a4ac719900 alt="FE 팀원 : 한세훈" width="100px"/>
         <br />
         <sub><b>FE LEADER 팀원 : 한세훈</b></sub>
+        <br />
+        <sub><b><a href="https://github.com/DDARK00">@DDARK00</a></b></sub>
       </td>
       <td align="center">
         <img src="Picture/ty.png" alt="BE 팀원 : 김태연" width="100px"/>
@@ -253,12 +260,14 @@
 ✔ 이주호
 
 - 팀장
-- UCC 제작
 - **[Frontend]** 아이디어 보드 UI 및 API 연결
 - **[Frontend]** NAV UI 초안
 - **[Frontend]** 프로젝트 생성/수정/조회 API
 - **[Frontend]** 아이디어 보드 확대/축소 등 애니메이션
 - **[Frontend]** UX 개선(엔드유저 플로우)
+- **[PT]** PPT 제작
+- **[PT]** UUC 제작
+- **[PT]** 일정 관리
 
 ✔ 전지훈
 
@@ -283,8 +292,10 @@
 ✔ 김태연
 - **[Backend]** 아이디어 관련 추가 서비스 로직 작성 및 오류 테스트, 수정
 - **[Backend]** 웹소켓 초기 설정 및 연결
-- **[Frontend] ** 웹 소켓 초기 설정 및 연결
-- **[Frontend] ** liveblocks 라이브러리 연결 및 Provider 설정
+- **[Frontend]** 웹 소켓 초기 설정 및 연결
+- **[Frontend]** liveblocks 라이브러리 연결 및 Provider 설정
+- **[PT]** PPT 제작
+- **[PT]** 최종 발표
 
 ✔ 천요성
 
