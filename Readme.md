@@ -235,7 +235,7 @@
       <td align="center">
         <img src=https://github.com/user-attachments/assets/5532cecd-f9ea-4d0b-829c-a2a4ac719900 alt="FE 팀원 : 한세훈" width="100px"/>
         <br />
-        <sub><b>FE LEADER 팀원 : 한세훈</b></sub>
+        <sub><b>FE LEADER/QA 팀원 : 한세훈</b></sub>
         <br />
         <sub><b><a href="https://github.com/DDARK00">@DDARK00</a></b></sub>
       </td>
