@@ -7,9 +7,9 @@
 `SSAFY 11th 자율 PJT`
 
 `개발기간: 24.10.14 ~ 24.11.19 (5주)`
-
+<div align="center">
 ![image](https://github.com/user-attachments/assets/91c83406-fbec-411a-84da-afea3631f346)
-
+</div>
 # 목차
 
 1. [서비스 소개](#-서비스-소개)
